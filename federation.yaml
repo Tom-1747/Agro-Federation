@@ -152,6 +152,36 @@ paths:
         '201':
           description: Présence enregistrée
 
+  /collectivites/{collectiviteId}/statistiques:
+    get:
+      tags: [ G - Statistiques ]
+      summary: Statistiques détaillées d’une collectivité (Fonctionnalité G)
+      parameters:
+        - name: collectiviteId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: mois
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+        - name: annee
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rapport statistique complet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RapportStatistique'
+
 components:
   schemas:
     Collectivite:
@@ -363,3 +393,31 @@ components:
           type: boolean
         motif_absence:
           type: string
+
+    RapportStatistique:
+      type: object
+      properties:
+        collectivite_id:
+          type: integer
+        mois:
+          type: integer
+        annee:
+          type: integer
+        taux_assiduite_globale:
+          type: number
+          format: float
+        nb_membres_actifs:
+          type: integer
+        statistiques_par_membre:
+          type: array
+          items:
+            type: object
+            properties:
+              membre_id:
+                type: integer
+              taux_assiduite:
+                type: number
+              montant_encaisse:
+                type: number
+              montant_impaye:
+                type: number
