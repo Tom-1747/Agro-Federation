@@ -44,6 +44,32 @@ paths:
                 items:
                   $ref: '#/components/schemas/Collectivite'
 
+  /collectivites/{collectiviteId}/membres:
+    post:
+      tags: [ B - Membres ]
+      summary: Admettre un nouveau membre dans une collectivité (Fonctionnalité B)
+      description: Nécessite parrainage par membre confirmé (>90 jours) + paiement des 50 000 MGA.
+      operationId: admettreMembre
+      parameters:
+        - name: collectiviteId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembreAdmission'
+      responses:
+        '201':
+          description: Membre admis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membre'
+
 components:
   schemas:
     Collectivite:
@@ -70,4 +96,58 @@ components:
         ville:
           type: string
         specialite_id:
+          type: integer
+
+    Membre:
+      type: object
+      properties:
+        id_membre:
+          type: integer
+        nom:
+          type: string
+        prenom:
+          type: string
+        date_naissance:
+          type: string
+          format: date
+        genre:
+          type: string
+          enum: [ Masculin, Féminin ]
+        adresse:
+          type: string
+        email:
+          type: string
+        telephone:
+          type: string
+        date_adhesion:
+          type: string
+          format: date
+        est_demission:
+          type: boolean
+        metier:
+          type: string
+
+    MembreAdmission:
+      type: object
+      required: [ nom, prenom, date_naissance, genre, adresse, email, telephone, parrain_id, collectivite_id ]
+      properties:
+        nom:
+          type: string
+        prenom:
+          type: string
+        date_naissance:
+          type: string
+          format: date
+        genre:
+          type: string
+          enum: [ Masculin, Féminin ]
+        adresse:
+          type: string
+        email:
+          type: string
+        telephone:
+          type: string
+        parrain_id:
+          type: integer
+        collectivite_id:
           type: integer
