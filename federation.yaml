@@ -70,6 +70,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Membre'
 
+  /cotisations:
+    post:
+      tags: [ C - Cotisations ]
+      summary: Enregistrer une cotisation (Fonctionnalité C)
+      operationId: creerCotisation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CotisationCreation'
+      responses:
+        '201':
+          description: Cotisation créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cotisation'
+
 components:
   schemas:
     Collectivite:
@@ -151,3 +170,37 @@ components:
           type: integer
         collectivite_id:
           type: integer
+
+    Cotisation:
+      type: object
+      properties:
+        id_cotisation:
+          type: integer
+        membre_id:
+          type: integer
+        collectivite_id:
+          type: integer
+        type_cotisation:
+          type: string
+          enum: [ mensuelle, annuelle, ponctuelle ]
+        montant:
+          type: number
+          format: decimal
+        date_echeance:
+          type: string
+          format: date
+
+    CotisationCreation:
+      type: object
+      required: [ membre_id, collectivite_id, type_cotisation, montant ]
+      properties:
+        membre_id:
+          type: integer
+        collectivite_id:
+          type: integer
+        type_cotisation:
+          type: string
+          enum: [ mensuelle, annuelle, ponctuelle ]
+        montant:
+          type: number
+          format: decimal
