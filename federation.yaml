@@ -89,6 +89,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Cotisation'
 
+  /encaissements:
+    post:
+      tags: [ C - Cotisations ]
+      summary: Enregistrer un encaissement (Fonctionnalité C)
+      operationId: enregistrerEncaissement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncaissementCreation'
+      responses:
+        '201':
+          description: Encaissement enregistré avec succès
+
 components:
   schemas:
     Collectivite:
@@ -204,3 +219,20 @@ components:
         montant:
           type: number
           format: decimal
+
+    EncaissementCreation:
+      type: object
+      required: [ cotisation_id, montant, date_encaissement, mode_paiement, compte_id ]
+      properties:
+        cotisation_id:
+          type: integer
+        montant:
+          type: number
+        date_encaissement:
+          type: string
+          format: date-time
+        mode_paiement:
+          type: string
+          enum: [ espece, virement_bancaire, mobile_money ]
+        compte_id:
+          type: integer
