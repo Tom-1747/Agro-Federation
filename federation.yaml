@@ -104,6 +104,20 @@ paths:
         '201':
           description: Encaissement enregistré avec succès
 
+  /comptes:
+    get:
+      tags: [ D - Trésorerie ]
+      summary: Lister tous les comptes (collectivités + fédération)
+      responses:
+        '200':
+          description: Liste des comptes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Compte'
+
 components:
   schemas:
     Collectivite:
@@ -236,3 +250,26 @@ components:
           enum: [ espece, virement_bancaire, mobile_money ]
         compte_id:
           type: integer
+
+    Compte:
+      type: object
+      properties:
+        id_compte:
+          type: integer
+        owner_type:
+          type: string
+          enum: [ collectivite, federation ]
+        owner_id:
+          type: integer
+        type_compte:
+          type: string
+          enum: [ caisse, bancaire, mobile_money ]
+        titulaire:
+          type: string
+        banque_service:
+          type: string
+        numero_compte_ou_telephone:
+          type: string
+        solde:
+          type: number
+          format: decimal
