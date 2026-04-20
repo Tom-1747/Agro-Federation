@@ -137,6 +137,21 @@ paths:
       tags: [ E - Activités ]
       summary: Lister les activités
 
+  /presences:
+    post:
+      tags: [ F - Assiduité ]
+      summary: Enregistrer la présence d’un membre (Fonctionnalité F)
+      operationId: enregistrerPresence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresenceEnregistrement'
+      responses:
+        '201':
+          description: Présence enregistrée
+
 components:
   schemas:
     Collectivite:
@@ -335,3 +350,16 @@ components:
             type: boolean
           description:
             type: string
+
+    PresenceEnregistrement:
+      type: object
+      required: [ activite_id, membre_id, est_present ]
+      properties:
+        activite_id:
+          type: integer
+        membre_id:
+          type: integer
+        est_present:
+          type: boolean
+        motif_absence:
+          type: string
