@@ -118,6 +118,25 @@ paths:
                 items:
                   $ref: '#/components/schemas/Compte'
 
+  /activites:
+    post:
+      tags: [ E - Activités ]
+      summary: Créer une activité (obligatoire ou exceptionnelle) - Fonctionnalité E
+      operationId: creerActivite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActiviteCreation'
+      responses:
+        '201':
+          description: Activité créée
+
+    get:
+      tags: [ E - Activités ]
+      summary: Lister les activités
+
 components:
   schemas:
     Collectivite:
@@ -273,3 +292,46 @@ components:
         solde:
           type: number
           format: decimal
+
+    Activite:
+      type: object
+      properties:
+        id_activite:
+          type: integer
+        owner_type:
+          type: string
+          enum: [ collectivite, federation ]
+        owner_id:
+          type: integer
+        titre:
+          type: string
+        type_activite:
+          type: string
+        date:
+          type: string
+          format: date-time
+        presence_obligatoire:
+          type: boolean
+        description:
+          type: string
+
+    ActiviteCreation:
+      type: object
+      required: [ owner_type, owner_id, titre, date ]
+      properties:
+        owner_type:
+          type: string
+          enum: [ collectivite, federation ]
+          owner_id:
+            type: integer
+          titre:
+            type: string
+          type_activite:
+            type: string
+          date:
+            type: string
+            format: date-time
+          presence_obligatoire:
+            type: boolean
+          description:
+            type: string
