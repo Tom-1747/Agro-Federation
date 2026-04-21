@@ -15,7 +15,7 @@ public class Collective {
 
     public Collective() {}
 
-    public Collective(int collectiveId, int federationId, Integer specialityId, Integer branchId, String name, String location, String phone, LocalDate creationDate, Integer presidentId) {
+    public Collective(int collectiveId, int federationId, Integer specialityId, String name, String location, String phone, LocalDate creationDate) {
         this.collectiveId = collectiveId;
         this.federationId = federationId;
         this.specialityId = specialityId;
