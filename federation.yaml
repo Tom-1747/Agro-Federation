@@ -4,16 +4,17 @@ info:
   description: Spécification OpenAPI pour la fédération nationale de collectivités agricoles.
     Couvre les fonctionnalités A à G du TD PROG3.
   version: 1.0.0
-  servers:
-    - url: http://localhost:8080/api/v1
-      description: Serveur de développement local
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Serveur de développement local
 
 paths:
   /collectivites:
     post:
       tags: [A - Collectivités]
       summary: Ouvrir une nouvelle collectivité (Fonctionnalité A)
-      description: Crée une collectivité uniquement si les conditions (≥10 membres avec ≥6 mois d’ancienneté, postes occupés, autorisation fédération) sont remplies.
+      description: Crée une collectivité uniquement si les conditions (≥10 membres avec ≥6 mois d'ancienneté, postes occupés, autorisation fédération) sont remplies.
       operationId: ouvrirCollectivite
       requestBody:
         required: true
@@ -29,7 +30,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Collectivite'
         '400':
-          description: Conditions d’ouverture non remplies
+          description: Conditions d'ouverture non remplies
 
     get:
       tags: [A - Collectivités]
@@ -44,184 +45,69 @@ paths:
                 items:
                   $ref: '#/components/schemas/Collectivite'
 
-/collectivites/{collectiviteId}/membres:
-  post:
-    tags: [ B - Membres ]
-    summary: Admettre un nouveau membre dans une collectivité
-    description: >
-      Permet d'admettre un nouveau membre dans une collectivité agricole.
-      Conditions requises :
-        - Être parrainé par un membre confirmé dont l'ancienneté dépasse 90 jours.
-        - Fournir les informations personnelles complètes (nom, prénoms, date de naissance, genre, adresse, métier, téléphone, email).
-        - Régler un frais d'adhésion de 50 000 MGA par mobile money ou virement bancaire.
-      Il est également possible de changer de collectivité ou de démissionner.
-    operationId: admettreMembre
-    parameters:
-      - name: collectiviteId
-        in: path
-        required: true
-        schema:
-          type: integer
-        description: Identifiant unique de la collectivité agricole
-    requestBody:
-      required: true
-      content:
-        application/json:
+  /collectivites/{collectiviteId}/membres:
+    post:
+      tags: [ B - Membres ]
+      summary: Admettre un nouveau membre dans une collectivité (Fonctionnalité B)
+      description: >
+        Permet d'admettre un nouveau membre dans une collectivité agricole.
+        Conditions requises :
+          - Être parrainé par un membre confirmé dont l'ancienneté dépasse 90 jours.
+          - Fournir les informations personnelles : nom, prénoms, date de naissance,
+            genre, adresse, métier, téléphone et email.
+          - Régler un frais d'adhésion de 50 000 MGA par mobile money ou virement bancaire.
+        Un membre peut changer de collectivité ou démissionner à tout moment.
+      operationId: admettreMembre
+      parameters:
+        - name: collectiviteId
+          in: path
+          required: true
           schema:
-            $ref: '#/components/schemas/MembreAdmission'
-          example:
-            parrainId: 42
-            nom: "Rakoto"
-            prenoms: "Jean Pierre"
-            dateNaissance: "1990-05-15"
-            genre: "M"
-            adresse: "Lot II A 34, Antananarivo"
-            metier: "Agriculteur"
-            telephone: "+261 34 00 000 00"
-            email: "jean.rakoto@example.com"
-            modePaiement: "MOBILE_MONEY"
-    responses:
-      '201':
-        description: Membre admis avec succès
+            type: integer
+          description: Identifiant unique de la collectivité agricole
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Membre'
-      '400':
-        description: Données invalides ou incomplètes
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Erreur'
-            example:
-              code: "DONNEES_INVALIDES"
-              message: "Tous les champs obligatoires doivent être renseignés."
-      '402':
-        description: Frais d'adhésion non réglés ou mode de paiement invalide
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Erreur'
-            example:
-              code: "PAIEMENT_REQUIS"
-              message: "Le frais d'adhésion de 50 000 MGA doit être réglé par mobile money ou virement bancaire."
-      '403':
-        description: Parrain invalide — ancienneté insuffisante (moins de 90 jours)
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Erreur'
-            example:
-              code: "PARRAIN_INVALIDE"
-              message: "Le parrain désigné doit avoir une ancienneté supérieure à 90 jours."
-      '404':
-        description: Collectivité introuvable
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Erreur'
-      '409':
-        description: Le membre est déjà inscrit dans cette collectivité
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Erreur'
-            example:
-              code: "MEMBRE_EXISTANT"
-              message: "Cet utilisateur est déjà membre de cette collectivité."
-
-components:
-  schemas:
-    MembreAdmission:
-      type: object
-      required:
-        - parrainId
-        - nom
-        - prenoms
-        - dateNaissance
-        - genre
-        - adresse
-        - metier
-        - telephone
-        - email
-        - modePaiement
-      properties:
-        parrainId:
-          type: integer
-          description: Identifiant du membre parrain (ancienneté > 90 jours obligatoire)
-          example: 42
-        nom:
-          type: string
-          description: Nom de famille du candidat
-          example: "Rakoto"
-        prenoms:
-          type: string
-          description: Prénoms du candidat
-          example: "Jean Pierre"
-        dateNaissance:
-          type: string
-          format: date
-          description: Date de naissance (format ISO 8601)
-          example: "1990-05-15"
-        genre:
-          type: string
-          enum: [ M, F, AUTRE ]
-          description: Genre du candidat
-          example: "M"
-        adresse:
-          type: string
-          description: Adresse complète du candidat
-          example: "Lot II A 34, Antananarivo"
-        metier:
-          type: string
-          description: Métier exercé par le candidat
-          example: "Agriculteur"
-        telephone:
-          type: string
-          description: Numéro de téléphone du candidat
-          example: "+261 34 00 000 00"
-        email:
-          type: string
-          format: email
-          description: Adresse email du candidat
-          example: "jean.rakoto@example.com"
-        modePaiement:
-          type: string
-          enum: [ MOBILE_MONEY, VIREMENT_BANCAIRE ]
-          description: Mode de paiement des 50 000 MGA de frais d'adhésion
-          example: "MOBILE_MONEY"
-
-    Membre:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Identifiant unique du membre
-        collectiviteId:
-          type: integer
-          description: Identifiant de la collectivité rejointe
-        nom:
-          type: string
-        prenoms:
-          type: string
-        dateAdhesion:
-          type: string
-          format: date-time
-          description: Date et heure d'admission officielle
-        statut:
-          type: string
-          enum: [ ACTIF, DEMISSIONNE, TRANSFERE ]
-          description: Statut actuel du membre dans la collectivité
-
-    Erreur:
-      type: object
-      properties:
-        code:
-          type: string
-          description: Code d'erreur métier
-        message:
-          type: string
-          description: Description lisible de l'erreur
+              $ref: '#/components/schemas/MembreAdmission'
+      responses:
+        '201':
+          description: Membre admis avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membre'
+        '400':
+          description: Données invalides ou champs obligatoires manquants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '402':
+          description: Frais d'adhésion non réglés ou mode de paiement invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Parrain invalide — ancienneté inférieure à 90 jours
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Collectivité introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '409':
+          description: Le membre est déjà inscrit dans cette collectivité
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
 
   /cotisations:
     post:
@@ -289,11 +175,14 @@ components:
     get:
       tags: [ E - Activités ]
       summary: Lister les activités
+      responses:
+        '200':
+          description: Liste des activités
 
   /presences:
     post:
       tags: [ F - Assiduité ]
-      summary: Enregistrer la présence d’un membre (Fonctionnalité F)
+      summary: Enregistrer la présence d'un membre (Fonctionnalité F)
       operationId: enregistrerPresence
       requestBody:
         required: true
@@ -308,7 +197,7 @@ components:
   /collectivites/{collectiviteId}/statistiques:
     get:
       tags: [ G - Statistiques ]
-      summary: Statistiques détaillées d’une collectivité (Fonctionnalité G)
+      summary: Statistiques détaillées d'une collectivité (Fonctionnalité G)
       parameters:
         - name: collectiviteId
           in: path
@@ -361,6 +250,7 @@ components:
 
 components:
   schemas:
+
     Collectivite:
       type: object
       properties:
@@ -390,56 +280,70 @@ components:
     Membre:
       type: object
       properties:
-        id_membre:
+        id:
+          type: integer
+        collectiviteId:
           type: integer
         nom:
           type: string
-        prenom:
+        prenoms:
           type: string
-        date_naissance:
+        dateAdhesion:
           type: string
-          format: date
-        genre:
+          format: date-time
+        statut:
           type: string
-          enum: [ Masculin, Féminin ]
-        adresse:
-          type: string
-        email:
-          type: string
-        telephone:
-          type: string
-        date_adhesion:
-          type: string
-          format: date
-        est_demission:
-          type: boolean
-        metier:
-          type: string
+          enum: [ ACTIF, DEMISSIONNE, TRANSFERE ]
 
     MembreAdmission:
       type: object
-      required: [ nom, prenom, date_naissance, genre, adresse, email, telephone, parrain_id, collectivite_id ]
+      required:
+        - parrainId
+        - nom
+        - prenoms
+        - dateNaissance
+        - genre
+        - adresse
+        - metier
+        - telephone
+        - email
+        - modePaiement
       properties:
+        parrainId:
+          type: integer
+          description: Identifiant du membre parrain (ancienneté > 90 jours)
         nom:
           type: string
-        prenom:
+        prenoms:
           type: string
-        date_naissance:
+        dateNaissance:
           type: string
           format: date
         genre:
           type: string
-          enum: [ Masculin, Féminin ]
+          enum: [ M, F, AUTRE ]
         adresse:
           type: string
-        email:
+        metier:
           type: string
         telephone:
           type: string
-        parrain_id:
-          type: integer
-        collectivite_id:
-          type: integer
+        email:
+          type: string
+          format: email
+        modePaiement:
+          type: string
+          enum: [ MOBILE_MONEY, VIREMENT_BANCAIRE ]
+
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code d'erreur métier
+        message:
+          type: string
+          description: Description lisible de l'erreur
 
     Cotisation:
       type: object
@@ -544,19 +448,19 @@ components:
         owner_type:
           type: string
           enum: [ collectivite, federation ]
-          owner_id:
-            type: integer
-          titre:
-            type: string
-          type_activite:
-            type: string
-          date:
-            type: string
-            format: date-time
-          presence_obligatoire:
-            type: boolean
-          description:
-            type: string
+        owner_id:
+          type: integer
+        titre:
+          type: string
+        type_activite:
+          type: string
+        date:
+          type: string
+          format: date-time
+        presence_obligatoire:
+          type: boolean
+        description:
+          type: string
 
     PresenceEnregistrement:
       type: object
@@ -611,17 +515,11 @@ components:
                 type: integer
               collectivityName:
                 type: string
-
               attendanceRate:
                 type: number
                 format: float
-                example: 0.85
-
               upToDateMembersPercentage:
                 type: number
                 format: float
-                example: 0.70
-
               newMembersCount:
                 type: integer
-                example: 15
