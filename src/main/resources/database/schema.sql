@@ -1,218 +1,209 @@
--- ============================================================
---  SCHÉMA OPTIMISÉ EN 12 TABLES - PostgreSQL
---  Fédération de collectivités agricoles - Madagascar
--- ============================================================
 
--- Types ENUM PostgreSQL (déclarés en amont)
-CREATE TYPE genre_type       AS ENUM ('Féminin', 'Masculin');
-CREATE TYPE type_compte_type AS ENUM ('Caisse', 'Bancaire', 'Mobile Money');
-CREATE TYPE nom_banque_type  AS ENUM ('BRED','MCB','BMOI','BOA','BGFI','AFG','ACCÈS BANQUE','BAOBAB','SIPEM');
-CREATE TYPE mobile_money_type AS ENUM ('Orange Money','Mvola','Airtel Money');
-CREATE TYPE libelle_poste_type AS ENUM (
-    'Président',
-    'Président adjoint',
-    'Trésorier',
-    'Secrétaire',
-    'Membre confirmé',
-    'Membre junior'
+
+CREATE TYPE gender_type        AS ENUM ('Female', 'Male');
+CREATE TYPE account_type_type  AS ENUM ('Cash', 'Bank', 'Mobile Money');
+CREATE TYPE bank_name_type     AS ENUM ('BRED','MCB','BMOI','BOA','BGFI','AFG','ACCES BANQUE','BAOBAB','SIPEM');
+CREATE TYPE mobile_money_type  AS ENUM ('Orange Money','Mvola','Airtel Money');
+CREATE TYPE position_label_type AS ENUM (
+    'President',
+    'Vice President',
+    'Treasurer',
+    'Secretary',
+    'Confirmed Member',
+    'Junior Member'
     );
-CREATE TYPE type_cotisation_type AS ENUM ('Périodique', 'Ponctuelle');
-CREATE TYPE periodicite_type     AS ENUM ('Mensuelle', 'Annuelle');
-CREATE TYPE mode_paiement_type   AS ENUM ('Espèces', 'Virement bancaire', 'Mobile Money');
-CREATE TYPE type_activite_type   AS ENUM (
-    'Assemblée générale mensuelle',
-    'Formation obligatoire juniors',
-    'Activité exceptionnelle',
-    'Activité fédération'
+CREATE TYPE contribution_type_type AS ENUM ('Periodic', 'One-time');
+CREATE TYPE frequency_type         AS ENUM ('Monthly', 'Annual');
+CREATE TYPE payment_method_type    AS ENUM ('Cash', 'Bank Transfer', 'Mobile Money');
+CREATE TYPE activity_type_type     AS ENUM (
+    'Monthly General Assembly',
+    'Mandatory Junior Training',
+    'Exceptional Activity',
+    'Federation Activity'
     );
-CREATE TYPE cible_membres_type AS ENUM ('Tous', 'Juniors uniquement', 'Confirmés uniquement');
+CREATE TYPE target_members_type AS ENUM ('All', 'Juniors Only', 'Confirmed Only');
 
--- ============================================================
 
--- 1. SPECIALITE_AGRICOLE
-CREATE TABLE specialite_agricole (
-                                     id_specialite   SERIAL PRIMARY KEY,
-                                     nom             VARCHAR(100) NOT NULL,
-                                     filiere         VARCHAR(100)
+
+-- 1. AGRICULTURAL_SPECIALTY
+CREATE TABLE agricultural_specialty (
+                                        id_specialty    SERIAL PRIMARY KEY,
+                                        name            VARCHAR(100) NOT NULL,
+                                        sector          VARCHAR(100)
 );
 
--- 2. METIER_AGRICOLE
-CREATE TABLE metier_agricole (
-                                 id_metier   SERIAL PRIMARY KEY,
-                                 libelle     VARCHAR(100) NOT NULL
+-- 2. AGRICULTURAL_TRADE
+CREATE TABLE agricultural_trade (
+                                    id_trade    SERIAL PRIMARY KEY,
+                                    label       VARCHAR(100) NOT NULL
 );
 
--- 3. BRANCHE_PROVINCIALE
-CREATE TABLE branche_provinciale (
-                                     id_branche      SERIAL PRIMARY KEY,
-                                     province        VARCHAR(100) NOT NULL,
-                                     ville_chef_lieu VARCHAR(100) NOT NULL,
-                                     adresse         VARCHAR(200)
+-- 3. PROVINCIAL_BRANCH
+CREATE TABLE provincial_branch (
+                                   id_branch           SERIAL PRIMARY KEY,
+                                   province            VARCHAR(100) NOT NULL,
+                                   capital_city        VARCHAR(100) NOT NULL,
+                                   address             VARCHAR(200)
 );
 
 -- 4. FEDERATION
---    id_president ajouté après création de membre
 CREATE TABLE federation (
                             id_federation       SERIAL PRIMARY KEY,
-                            nom                 VARCHAR(100) NOT NULL,
-                            adresse_siege       VARCHAR(200),
+                            name                VARCHAR(100) NOT NULL,
+                            headquarters        VARCHAR(200),
                             email               VARCHAR(100),
-                            telephone           VARCHAR(20),
+                            phone               VARCHAR(20),
                             id_president        INT,
-                            annee_debut_mandat  INT,
-                            annee_fin_mandat    INT
+                            mandate_start_year  INT,
+                            mandate_end_year    INT
 );
 
--- 5. COLLECTIF
---    id_president ajouté après création de membre
-CREATE TABLE collectif (
-                           id_collectif        SERIAL PRIMARY KEY,
-                           id_federation       INT NOT NULL,
-                           id_specialite       INT,
-                           id_branche          INT,
-                           nom                 VARCHAR(100) NOT NULL UNIQUE,
-                           lieu_exercice       VARCHAR(100) NOT NULL,
-                           telephone           VARCHAR(20),
-                           date_creation       DATE NOT NULL,
-                           id_president        INT,
-                           CONSTRAINT fk_collectif_federation  FOREIGN KEY (id_federation) REFERENCES federation(id_federation),
-                           CONSTRAINT fk_collectif_specialite  FOREIGN KEY (id_specialite) REFERENCES specialite_agricole(id_specialite),
-                           CONSTRAINT fk_collectif_branche     FOREIGN KEY (id_branche)    REFERENCES branche_provinciale(id_branche)
+-- 5. COLLECTIVE
+CREATE TABLE collective (
+                            id_collective       SERIAL PRIMARY KEY,
+                            id_federation       INT NOT NULL,
+                            id_specialty        INT,
+                            id_branch           INT,
+                            name                VARCHAR(100) NOT NULL UNIQUE,
+                            location            VARCHAR(100) NOT NULL,
+                            phone               VARCHAR(20),
+                            creation_date       DATE NOT NULL,
+                            id_president        INT,
+                            CONSTRAINT fk_collective_federation FOREIGN KEY (id_federation) REFERENCES federation(id_federation),
+                            CONSTRAINT fk_collective_specialty  FOREIGN KEY (id_specialty)  REFERENCES agricultural_specialty(id_specialty),
+                            CONSTRAINT fk_collective_branch     FOREIGN KEY (id_branch)     REFERENCES provincial_branch(id_branch)
 );
 
--- 6. MEMBRE
-CREATE TABLE membre (
-                        id_membre           SERIAL PRIMARY KEY,
-                        id_collectif        INT NOT NULL,
-                        id_metier           INT,
-                        nom                 VARCHAR(100) NOT NULL,
-                        prenom              VARCHAR(100) NOT NULL,
-                        date_naissance      DATE,
-                        genre               genre_type NOT NULL,
-                        adresse             VARCHAR(200),
-                        telephone           VARCHAR(20),
+-- 6. MEMBER
+CREATE TABLE member (
+                        id_member           SERIAL PRIMARY KEY,
+                        id_collective       INT NOT NULL,
+                        id_trade            INT,
+                        last_name           VARCHAR(100) NOT NULL,
+                        first_name          VARCHAR(100) NOT NULL,
+                        birth_date          DATE,
+                        gender              gender_type NOT NULL,
+                        address             VARCHAR(200),
+                        phone               VARCHAR(20),
                         email               VARCHAR(100),
-                        date_adhesion       DATE NOT NULL,
-                        est_demissionne     BOOLEAN DEFAULT FALSE,
-                        CONSTRAINT fk_membre_collectif FOREIGN KEY (id_collectif) REFERENCES collectif(id_collectif),
-                        CONSTRAINT fk_membre_metier    FOREIGN KEY (id_metier)    REFERENCES metier_agricole(id_metier)
+                        join_date           DATE NOT NULL,
+                        is_resigned         BOOLEAN DEFAULT FALSE,
+                        CONSTRAINT fk_member_collective FOREIGN KEY (id_collective) REFERENCES collective(id_collective),
+                        CONSTRAINT fk_member_trade      FOREIGN KEY (id_trade)      REFERENCES agricultural_trade(id_trade)
 );
 
--- Clés étrangères auto-référencées (après création de membre)
 ALTER TABLE federation
-    ADD CONSTRAINT fk_federation_president FOREIGN KEY (id_president) REFERENCES membre(id_membre);
+    ADD CONSTRAINT fk_federation_president FOREIGN KEY (id_president) REFERENCES member(id_member);
 
-ALTER TABLE collectif
-    ADD CONSTRAINT fk_collectif_president FOREIGN KEY (id_president) REFERENCES membre(id_membre);
+ALTER TABLE collective
+    ADD CONSTRAINT fk_collective_president FOREIGN KEY (id_president) REFERENCES member(id_member);
 
--- 7. POSTE_MANDAT
-CREATE TABLE poste_mandat (
-                              id_poste_mandat     SERIAL PRIMARY KEY,
-                              id_membre           INT NOT NULL,
-                              id_collectif        INT,
-                              id_federation       INT,
-                              libelle_poste       libelle_poste_type NOT NULL,
-                              est_unique          BOOLEAN NOT NULL DEFAULT TRUE,
-                              est_electif         BOOLEAN NOT NULL DEFAULT TRUE,
-                              annee_civile        INT NOT NULL,
-                              date_debut          DATE NOT NULL,
-                              date_fin            DATE,
-                              nb_mandats_cumules  INT DEFAULT 1,
-                              CONSTRAINT fk_poste_membre     FOREIGN KEY (id_membre)     REFERENCES membre(id_membre),
-                              CONSTRAINT fk_poste_collectif  FOREIGN KEY (id_collectif)  REFERENCES collectif(id_collectif),
-                              CONSTRAINT fk_poste_federation FOREIGN KEY (id_federation) REFERENCES federation(id_federation),
-    -- Un poste unique ne peut être occupé que par un seul membre par an dans un collectif
-                              CONSTRAINT uk_poste_unique UNIQUE (id_collectif, libelle_poste, annee_civile)
+-- 7. POSITION_MANDATE
+CREATE TABLE position_mandate (
+                                  id_position_mandate     SERIAL PRIMARY KEY,
+                                  id_member               INT NOT NULL,
+                                  id_collective           INT,
+                                  id_federation           INT,
+                                  position_label          position_label_type NOT NULL,
+                                  is_unique               BOOLEAN NOT NULL DEFAULT TRUE,
+                                  is_elective             BOOLEAN NOT NULL DEFAULT TRUE,
+                                  calendar_year           INT NOT NULL,
+                                  start_date              DATE NOT NULL,
+                                  end_date                DATE,
+                                  cumulated_mandates      INT DEFAULT 1,
+                                  CONSTRAINT fk_position_member     FOREIGN KEY (id_member)     REFERENCES member(id_member),
+                                  CONSTRAINT fk_position_collective FOREIGN KEY (id_collective) REFERENCES collective(id_collective),
+                                  CONSTRAINT fk_position_federation FOREIGN KEY (id_federation) REFERENCES federation(id_federation),
+
+                                  CONSTRAINT uk_unique_position UNIQUE (id_collective, position_label, calendar_year)
 );
 
--- 8. COMPTE
-CREATE TABLE compte (
-                        id_compte               SERIAL PRIMARY KEY,
-                        id_collectif            INT,
-                        id_federation           INT,
-                        type_compte             type_compte_type NOT NULL,
-                        titulaire_compte        VARCHAR(100),
-                        nom_banque              nom_banque_type,
-                        service_mob_money       mobile_money_type,
-                        numero_compte_banque    VARCHAR(23),
-                        numero_telephone        VARCHAR(20),
-                        solde                   NUMERIC(15,2) DEFAULT 0.00,
-                        CONSTRAINT fk_compte_collectif  FOREIGN KEY (id_collectif)  REFERENCES collectif(id_collectif),
-                        CONSTRAINT fk_compte_federation FOREIGN KEY (id_federation) REFERENCES federation(id_federation)
+-- 8. ACCOUNT
+CREATE TABLE account (
+                         id_account              SERIAL PRIMARY KEY,
+                         id_collective           INT,
+                         id_federation           INT,
+                         account_type            account_type_type NOT NULL,
+                         account_holder          VARCHAR(100),
+                         bank_name               bank_name_type,
+                         mobile_money_service    mobile_money_type,
+                         bank_account_number     VARCHAR(23),
+                         phone_number            VARCHAR(20),
+                         balance                 NUMERIC(15,2) DEFAULT 0.00,
+                         CONSTRAINT fk_account_collective  FOREIGN KEY (id_collective)  REFERENCES collective(id_collective),
+                         CONSTRAINT fk_account_federation  FOREIGN KEY (id_federation)  REFERENCES federation(id_federation)
 );
 
--- 9. COTISATION
-CREATE TABLE cotisation (
-                            id_cotisation       SERIAL PRIMARY KEY,
-                            id_membre           INT NOT NULL,
-                            id_collectif        INT NOT NULL,
-                            type_cotisation     type_cotisation_type NOT NULL,
-                            periodicite         periodicite_type,
-                            montant             NUMERIC(15,2) NOT NULL,
-                            date_echeance       DATE NOT NULL,
-                            est_payee           BOOLEAN DEFAULT FALSE,
-                            CONSTRAINT fk_cotisation_membre    FOREIGN KEY (id_membre)    REFERENCES membre(id_membre),
-                            CONSTRAINT fk_cotisation_collectif FOREIGN KEY (id_collectif) REFERENCES collectif(id_collectif)
+-- 9. CONTRIBUTION
+CREATE TABLE contribution (
+                              id_contribution     SERIAL PRIMARY KEY,
+                              id_member           INT NOT NULL,
+                              id_collective       INT NOT NULL,
+                              contribution_type   contribution_type_type NOT NULL,
+                              frequency           frequency_type,
+                              amount              NUMERIC(15,2) NOT NULL,
+                              due_date            DATE NOT NULL,
+                              is_paid             BOOLEAN DEFAULT FALSE,
+                              CONSTRAINT fk_contribution_member     FOREIGN KEY (id_member)     REFERENCES member(id_member),
+                              CONSTRAINT fk_contribution_collective FOREIGN KEY (id_collective) REFERENCES collective(id_collective)
 );
 
--- 10. ENCAISSEMENT
-CREATE TABLE encaissement (
-                              id_encaissement             SERIAL PRIMARY KEY,
-                              id_cotisation               INT NOT NULL,
-                              id_compte                   INT NOT NULL,
-                              montant                     NUMERIC(15,2) NOT NULL,
-                              date_encaissement           DATE NOT NULL,
-                              mode_paiement               mode_paiement_type NOT NULL,
-                              part_versement_federation   NUMERIC(15,2) DEFAULT 0.00,
-                              CONSTRAINT fk_encaissement_cotisation FOREIGN KEY (id_cotisation) REFERENCES cotisation(id_cotisation),
-                              CONSTRAINT fk_encaissement_compte     FOREIGN KEY (id_compte)     REFERENCES compte(id_compte)
+-- 10. COLLECTION
+CREATE TABLE collection (
+                            id_collection               SERIAL PRIMARY KEY,
+                            id_contribution             INT NOT NULL,
+                            id_account                  INT NOT NULL,
+                            amount                      NUMERIC(15,2) NOT NULL,
+                            collection_date             DATE NOT NULL,
+                            payment_method              payment_method_type NOT NULL,
+                            federation_share            NUMERIC(15,2) DEFAULT 0.00,
+                            CONSTRAINT fk_collection_contribution FOREIGN KEY (id_contribution) REFERENCES contribution(id_contribution),
+                            CONSTRAINT fk_collection_account      FOREIGN KEY (id_account)      REFERENCES account(id_account)
 );
 
--- 11. ACTIVITE
-CREATE TABLE activite (
-                          id_activite             SERIAL PRIMARY KEY,
-                          id_collectif            INT,
+-- 11. ACTIVITY
+CREATE TABLE activity (
+                          id_activity             SERIAL PRIMARY KEY,
+                          id_collective           INT,
                           id_federation           INT,
-                          titre                   VARCHAR(200) NOT NULL,
-                          type_activite           type_activite_type NOT NULL,
-                          date_activite           DATE NOT NULL,
-                          presence_obligatoire    BOOLEAN DEFAULT TRUE,
-                          cible_membres           cible_membres_type DEFAULT 'Tous',
-                          est_federation          BOOLEAN DEFAULT FALSE,
-                          CONSTRAINT fk_activite_collectif  FOREIGN KEY (id_collectif)  REFERENCES collectif(id_collectif),
-                          CONSTRAINT fk_activite_federation FOREIGN KEY (id_federation) REFERENCES federation(id_federation)
+                          title                   VARCHAR(200) NOT NULL,
+                          activity_type           activity_type_type NOT NULL,
+                          activity_date           DATE NOT NULL,
+                          attendance_required     BOOLEAN DEFAULT TRUE,
+                          target_members          target_members_type DEFAULT 'All',
+                          is_federation           BOOLEAN DEFAULT FALSE,
+                          CONSTRAINT fk_activity_collective  FOREIGN KEY (id_collective)  REFERENCES collective(id_collective),
+                          CONSTRAINT fk_activity_federation  FOREIGN KEY (id_federation)  REFERENCES federation(id_federation)
 );
 
--- 12. PRESENCE
-CREATE TABLE presence (
-                          id_presence             SERIAL PRIMARY KEY,
-                          id_activite             INT NOT NULL,
-                          id_membre               INT NOT NULL,
-                          id_collectif_membre     INT NOT NULL,
-                          est_present             BOOLEAN DEFAULT FALSE,
-                          est_excuse              BOOLEAN DEFAULT FALSE,
-                          motif_absence           VARCHAR(300),
-                          mois_concerne           DATE,
-                          taux_assiduite_global   NUMERIC(5,2),
-                          nb_membres_actifs       INT,
-                          date_rapport            DATE,
-                          CONSTRAINT fk_presence_activite  FOREIGN KEY (id_activite)         REFERENCES activite(id_activite),
-                          CONSTRAINT fk_presence_membre    FOREIGN KEY (id_membre)           REFERENCES membre(id_membre),
-                          CONSTRAINT fk_presence_collectif FOREIGN KEY (id_collectif_membre) REFERENCES collectif(id_collectif)
+-- 12. ATTENDANCE
+CREATE TABLE attendance (
+                            id_attendance           SERIAL PRIMARY KEY,
+                            id_activity             INT NOT NULL,
+                            id_member               INT NOT NULL,
+                            id_member_collective    INT NOT NULL,
+                            is_present              BOOLEAN DEFAULT FALSE,
+                            is_excused              BOOLEAN DEFAULT FALSE,
+                            absence_reason          VARCHAR(300),
+                            month_concerned         DATE,
+                            overall_attendance_rate NUMERIC(5,2),
+                            active_members_count    INT,
+                            report_date             DATE,
+                            CONSTRAINT fk_attendance_activity   FOREIGN KEY (id_activity)          REFERENCES activity(id_activity),
+                            CONSTRAINT fk_attendance_member     FOREIGN KEY (id_member)            REFERENCES member(id_member),
+                            CONSTRAINT fk_attendance_collective FOREIGN KEY (id_member_collective) REFERENCES collective(id_collective)
 );
 
--- ============================================================
---  INDEX
--- ============================================================
-CREATE INDEX idx_membre_collectif       ON membre(id_collectif);
-CREATE INDEX idx_membre_metier          ON membre(id_metier);
-CREATE INDEX idx_collectif_specialite   ON collectif(id_specialite);
-CREATE INDEX idx_collectif_branche      ON collectif(id_branche);
-CREATE INDEX idx_poste_membre           ON poste_mandat(id_membre);
-CREATE INDEX idx_poste_collectif        ON poste_mandat(id_collectif);
-CREATE INDEX idx_cotisation_membre      ON cotisation(id_membre);
-CREATE INDEX idx_encaissement_compte    ON encaissement(id_compte);
-CREATE INDEX idx_presence_activite      ON presence(id_activite);
-CREATE INDEX idx_presence_membre        ON presence(id_membre);
-CREATE INDEX idx_activite_collectif     ON activite(id_collectif);
-CREATE INDEX idx_compte_collectif       ON compte(id_collectif);
+
+CREATE INDEX idx_member_collective         ON member(id_collective);
+CREATE INDEX idx_member_trade              ON member(id_trade);
+CREATE INDEX idx_collective_specialty      ON collective(id_specialty);
+CREATE INDEX idx_collective_branch         ON collective(id_branch);
+CREATE INDEX idx_position_member           ON position_mandate(id_member);
+CREATE INDEX idx_position_collective       ON position_mandate(id_collective);
+CREATE INDEX idx_contribution_member       ON contribution(id_member);
+CREATE INDEX idx_collection_account        ON collection(id_account);
+CREATE INDEX idx_attendance_activity       ON attendance(id_activity);
+CREATE INDEX idx_attendance_member         ON attendance(id_member);
+CREATE INDEX idx_activity_collective       ON activity(id_collective);
+CREATE INDEX idx_account_collective        ON account(id_collective);
