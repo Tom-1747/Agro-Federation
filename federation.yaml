@@ -182,6 +182,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/RapportStatistique'
 
+  /federation/statistics:
+    get:
+      summary: Obtenir les statistiques globales de la fédération
+      tags:
+        - Federation Statistics
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Statistiques récupérées
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FederationStats'
+
 components:
   schemas:
     Collectivite:
@@ -421,3 +445,30 @@ components:
                 type: number
               montant_impaye:
                 type: number
+
+    FederationStats:
+      type: object
+      properties:
+        collectivities:
+          type: array
+          items:
+            type: object
+            properties:
+              collectivityId:
+                type: integer
+              collectivityName:
+                type: string
+
+              attendanceRate:
+                type: number
+                format: float
+                example: 0.85
+
+              upToDateMembersPercentage:
+                type: number
+                format: float
+                example: 0.70
+
+              newMembersCount:
+                type: integer
+                example: 15
