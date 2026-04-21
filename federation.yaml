@@ -44,31 +44,184 @@ paths:
                 items:
                   $ref: '#/components/schemas/Collectivite'
 
-  /collectivites/{collectiviteId}/membres:
-    post:
-      tags: [ B - Membres ]
-      summary: Admettre un nouveau membre dans une collectivité (Fonctionnalité B)
-      description: Nécessite parrainage par membre confirmé (>90 jours) + paiement des 50 000 MGA.
-      operationId: admettreMembre
-      parameters:
-        - name: collectiviteId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
+/collectivites/{collectiviteId}/membres:
+  post:
+    tags: [ B - Membres ]
+    summary: Admettre un nouveau membre dans une collectivité
+    description: >
+      Permet d'admettre un nouveau membre dans une collectivité agricole.
+      Conditions requises :
+        - Être parrainé par un membre confirmé dont l'ancienneté dépasse 90 jours.
+        - Fournir les informations personnelles complètes (nom, prénoms, date de naissance, genre, adresse, métier, téléphone, email).
+        - Régler un frais d'adhésion de 50 000 MGA par mobile money ou virement bancaire.
+      Il est également possible de changer de collectivité ou de démissionner.
+    operationId: admettreMembre
+    parameters:
+      - name: collectiviteId
+        in: path
         required: true
+        schema:
+          type: integer
+        description: Identifiant unique de la collectivité agricole
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MembreAdmission'
+          example:
+            parrainId: 42
+            nom: "Rakoto"
+            prenoms: "Jean Pierre"
+            dateNaissance: "1990-05-15"
+            genre: "M"
+            adresse: "Lot II A 34, Antananarivo"
+            metier: "Agriculteur"
+            telephone: "+261 34 00 000 00"
+            email: "jean.rakoto@example.com"
+            modePaiement: "MOBILE_MONEY"
+    responses:
+      '201':
+        description: Membre admis avec succès
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MembreAdmission'
-      responses:
-        '201':
-          description: Membre admis
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Membre'
+              $ref: '#/components/schemas/Membre'
+      '400':
+        description: Données invalides ou incomplètes
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erreur'
+            example:
+              code: "DONNEES_INVALIDES"
+              message: "Tous les champs obligatoires doivent être renseignés."
+      '402':
+        description: Frais d'adhésion non réglés ou mode de paiement invalide
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erreur'
+            example:
+              code: "PAIEMENT_REQUIS"
+              message: "Le frais d'adhésion de 50 000 MGA doit être réglé par mobile money ou virement bancaire."
+      '403':
+        description: Parrain invalide — ancienneté insuffisante (moins de 90 jours)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erreur'
+            example:
+              code: "PARRAIN_INVALIDE"
+              message: "Le parrain désigné doit avoir une ancienneté supérieure à 90 jours."
+      '404':
+        description: Collectivité introuvable
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erreur'
+      '409':
+        description: Le membre est déjà inscrit dans cette collectivité
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erreur'
+            example:
+              code: "MEMBRE_EXISTANT"
+              message: "Cet utilisateur est déjà membre de cette collectivité."
+
+components:
+  schemas:
+    MembreAdmission:
+      type: object
+      required:
+        - parrainId
+        - nom
+        - prenoms
+        - dateNaissance
+        - genre
+        - adresse
+        - metier
+        - telephone
+        - email
+        - modePaiement
+      properties:
+        parrainId:
+          type: integer
+          description: Identifiant du membre parrain (ancienneté > 90 jours obligatoire)
+          example: 42
+        nom:
+          type: string
+          description: Nom de famille du candidat
+          example: "Rakoto"
+        prenoms:
+          type: string
+          description: Prénoms du candidat
+          example: "Jean Pierre"
+        dateNaissance:
+          type: string
+          format: date
+          description: Date de naissance (format ISO 8601)
+          example: "1990-05-15"
+        genre:
+          type: string
+          enum: [ M, F, AUTRE ]
+          description: Genre du candidat
+          example: "M"
+        adresse:
+          type: string
+          description: Adresse complète du candidat
+          example: "Lot II A 34, Antananarivo"
+        metier:
+          type: string
+          description: Métier exercé par le candidat
+          example: "Agriculteur"
+        telephone:
+          type: string
+          description: Numéro de téléphone du candidat
+          example: "+261 34 00 000 00"
+        email:
+          type: string
+          format: email
+          description: Adresse email du candidat
+          example: "jean.rakoto@example.com"
+        modePaiement:
+          type: string
+          enum: [ MOBILE_MONEY, VIREMENT_BANCAIRE ]
+          description: Mode de paiement des 50 000 MGA de frais d'adhésion
+          example: "MOBILE_MONEY"
+
+    Membre:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifiant unique du membre
+        collectiviteId:
+          type: integer
+          description: Identifiant de la collectivité rejointe
+        nom:
+          type: string
+        prenoms:
+          type: string
+        dateAdhesion:
+          type: string
+          format: date-time
+          description: Date et heure d'admission officielle
+        statut:
+          type: string
+          enum: [ ACTIF, DEMISSIONNE, TRANSFERE ]
+          description: Statut actuel du membre dans la collectivité
+
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code d'erreur métier
+        message:
+          type: string
+          description: Description lisible de l'erreur
 
   /cotisations:
     post:
