@@ -1,4 +1,4 @@
-package dto.response;
+package com.example.agricultureFederation.dto.response;
 
 public class ApiResponse<T> {
 

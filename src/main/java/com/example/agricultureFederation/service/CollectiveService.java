@@ -1,10 +1,9 @@
-package service;
+package com.example.agricultureFederation.service;
 
-import dto.request.CreateCollectiveRequest;
-import dto.response.CollectiveResponse;
-import entity.Collective;
-import repository.CollectiveRepository;
-
+import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
+import com.example.agricultureFederation.dto.response.CollectiveResponse;
+import com.example.agricultureFederation.entity.Collective;
+import com.example.agricultureFederation.repository.CollectiveRepository;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Year;

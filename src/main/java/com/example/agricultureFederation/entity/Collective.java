@@ -1,4 +1,4 @@
-package entity;
+package com.example.agricultureFederation.entity;
 
 import java.time.LocalDate;
 

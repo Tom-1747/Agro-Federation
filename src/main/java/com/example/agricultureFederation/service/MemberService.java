@@ -1,11 +1,10 @@
-package service;
+package com.example.agricultureFederation.service;
 
-import dto.request.CreateMemberRequest;
-import dto.request.SponsorRequest;
-import dto.response.MemberResponse;
-import entity.Member;
-import repository.MemberRepository;
-
+import com.example.agricultureFederation.dto.request.CreateMemberRequest;
+import com.example.agricultureFederation.dto.request.SponsorRequest;
+import com.example.agricultureFederation.dto.response.MemberResponse;
+import com.example.agricultureFederation.entity.Member;
+import com.example.agricultureFederation.repository.MemberRepository;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;

@@ -1,8 +1,12 @@
-package repository;
+package com.example.agricultureFederation.repository;
 
-import entity.Collective;
+import com.example.agricultureFederation.entity.Collective;
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CollectiveRepository {
 

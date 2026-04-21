@@ -1,11 +1,14 @@
-package repository;
+package com.example.agricultureFederation.repository;
 
-import entity.Member;
+import com.example.agricultureFederation.entity.Member;
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 public class MemberRepository {
 
     private final DataSource dataSource;

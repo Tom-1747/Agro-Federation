@@ -1,12 +1,11 @@
-package dto.request;
+package com.example.agricultureFederation.dto.response;
 
 import java.time.LocalDate;
-import java.util.List;
 
-public class CreateMemberRequest {
+public class MemberResponse {
 
+    private int memberId;
     private int collectiveId;
-    private Integer jobId;
     private String lastName;
     private String firstName;
     private LocalDate birthDate;
@@ -14,15 +13,13 @@ public class CreateMemberRequest {
     private String address;
     private String phone;
     private String email;
-    private List<SponsorRequest> sponsors;
-    private double membershipFee;
-    private double annualContribution;
+    private LocalDate membershipDate;
+
+    public int getMemberId() { return memberId; }
+    public void setMemberId(int memberId) { this.memberId = memberId; }
 
     public int getCollectiveId() { return collectiveId; }
     public void setCollectiveId(int collectiveId) { this.collectiveId = collectiveId; }
-
-    public Integer getJobId() { return jobId; }
-    public void setJobId(Integer jobId) { this.jobId = jobId; }
 
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
@@ -45,12 +42,6 @@ public class CreateMemberRequest {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public List<SponsorRequest> getSponsors() { return sponsors; }
-    public void setSponsors(List<SponsorRequest> sponsors) { this.sponsors = sponsors; }
-
-    public double getMembershipFee() { return membershipFee; }
-    public void setMembershipFee(double membershipFee) { this.membershipFee = membershipFee; }
-
-    public double getAnnualContribution() { return annualContribution; }
-    public void setAnnualContribution(double annualContribution) { this.annualContribution = annualContribution; }
+    public LocalDate getMembershipDate() { return membershipDate; }
+    public void setMembershipDate(LocalDate membershipDate) { this.membershipDate = membershipDate; }
 }

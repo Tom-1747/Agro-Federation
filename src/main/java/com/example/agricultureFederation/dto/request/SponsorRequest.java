@@ -1,4 +1,4 @@
-package dto.request;
+package com.example.agricultureFederation.dto.request;
 
 public class SponsorRequest {
 
