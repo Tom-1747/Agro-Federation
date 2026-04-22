@@ -1,248 +1,228 @@
 openapi: 3.1.0
+
 info:
-  title: API federation de collectivite agricole
-  description: Spécification OpenAPI pour la fédération nationale de collectivités agricoles.
-    Couvre les fonctionnalités A à G du TD PROG3.
+  title: Agricultural Collectivity Federation API
+  description: OpenAPI specification for the National Federation of Agricultural Collectivities.
   version: 1.0.0
 
 servers:
   - url: http://localhost:8080/api/v1
-    description: Serveur de développement local
+    description: Local development server
+
+tags:
+  - name: Collectivities
+  - name: Members
+  - name: Contributions
+  - name: Treasury
+  - name: Activities
+  - name: Attendance
+  - name: Statistics
+  - name: Federation Statistics
 
 paths:
-  /collectivites:
+
+  /collectivities:
     post:
-      tags: [A - Collectivités]
-      summary: Ouvrir une nouvelle collectivité (Fonctionnalité A)
-      description: Crée une collectivité uniquement si les conditions (≥10 membres avec ≥6 mois d'ancienneté, postes occupés, autorisation fédération) sont remplies.
-      operationId: ouvrirCollectivite
+      tags: [Collectivities]
+      summary: Open a new collectivity
+      operationId: openCollectivity
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CollectiviteCreation'
+              $ref: '#/components/schemas/CollectivityCreation'
       responses:
-        '201':
-          description: Collectivité créée avec succès
+        "201":
+          description: Collectivity created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collectivite'
-        '400':
-          description: Conditions d'ouverture non remplies
+                $ref: '#/components/schemas/Collectivity'
+        "400":
+          description: Invalid request
 
     get:
-      tags: [A - Collectivités]
-      summary: Lister toutes les collectivités
+      tags: [Collectivities]
+      summary: List all collectivities
       responses:
-        '200':
-          description: Liste des collectivités
+        "200":
+          description: List of collectivities
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Collectivite'
+                  $ref: '#/components/schemas/Collectivity'
 
-  /collectivites/{collectiviteId}/membres:
-    post:
-      tags: [ B - Membres ]
-      summary: Admettre un nouveau membre dans une collectivité (Fonctionnalité B)
-      description: >
-        Permet d'admettre un nouveau membre dans une collectivité agricole.
-        Conditions requises :
-          - Être parrainé par un membre confirmé dont l'ancienneté dépasse 90 jours.
-          - Fournir les informations personnelles : nom, prénoms, date de naissance,
-            genre, adresse, métier, téléphone et email.
-          - Régler un frais d'adhésion de 50 000 MGA par mobile money ou virement bancaire.
-        Un membre peut changer de collectivité ou démissionner à tout moment.
-      operationId: admettreMembre
+  /collectivities/{collectivityId}:
+    patch:
+      tags: [Collectivities]
+      summary: Assign number and name to a collectivity
       parameters:
-        - name: collectiviteId
+        - name: collectivityId
           in: path
           required: true
           schema:
-            type: integer
-          description: Identifiant unique de la collectivité agricole
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MembreAdmission'
+              $ref: '#/components/schemas/AssignCollectivityIdentity'
       responses:
-        '201':
-          description: Membre admis avec succès
+        "200":
+          description: Updated collectivity
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Membre'
-        '400':
-          description: Données invalides ou champs obligatoires manquants
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erreur'
-        '402':
-          description: Frais d'adhésion non réglés ou mode de paiement invalide
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erreur'
-        '403':
-          description: Parrain invalide — ancienneté inférieure à 90 jours
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erreur'
-        '404':
-          description: Collectivité introuvable
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erreur'
-        '409':
-          description: Le membre est déjà inscrit dans cette collectivité
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erreur'
+                $ref: '#/components/schemas/Collectivity'
+        "400":
+          description: Name or number already exists
+        "404":
+          description: Collectivity not found
 
-  /cotisations:
+  /collectivities/{collectivityId}/members:
     post:
-      tags: [ C - Cotisations ]
-      summary: Enregistrer une cotisation (Fonctionnalité C)
-      operationId: creerCotisation
+      tags: [Members]
+      summary: Admit a new member
+      parameters:
+        - name: collectivityId
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CotisationCreation'
+              $ref: '#/components/schemas/MemberAdmission'
       responses:
-        '201':
-          description: Cotisation créée
+        "201":
+          description: Member created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cotisation'
+                $ref: '#/components/schemas/Member'
 
-  /encaissements:
+  /contributions:
     post:
-      tags: [ C - Cotisations ]
-      summary: Enregistrer un encaissement (Fonctionnalité C)
-      operationId: enregistrerEncaissement
+      tags: [Contributions]
+      summary: Create a contribution
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EncaissementCreation'
+              $ref: '#/components/schemas/ContributionCreation'
       responses:
-        '201':
-          description: Encaissement enregistré avec succès
+        "201":
+          description: Contribution created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contribution'
 
-  /comptes:
+  /collections:
+    post:
+      tags: [Contributions]
+      summary: Register a collection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionCreation'
+      responses:
+        "201":
+          description: Collection registered
+
+  /accounts:
     get:
-      tags: [ D - Trésorerie ]
-      summary: Lister tous les comptes (collectivités + fédération)
+      tags: [Treasury]
+      summary: List accounts
       responses:
-        '200':
-          description: Liste des comptes
+        "200":
+          description: Accounts list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Compte'
+                  $ref: '#/components/schemas/Account'
 
-  /activites:
+  /activities:
     post:
-      tags: [ E - Activités ]
-      summary: Créer une activité (obligatoire ou exceptionnelle) - Fonctionnalité E
-      operationId: creerActivite
+      tags: [Activities]
+      summary: Create activity
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActiviteCreation'
+              $ref: '#/components/schemas/ActivityCreation'
       responses:
-        '201':
-          description: Activité créée
+        "201":
+          description: Activity created
 
     get:
-      tags: [ E - Activités ]
-      summary: Lister les activités
+      tags: [Activities]
+      summary: List activities
       responses:
-        '200':
-          description: Liste des activités
+        "200":
+          description: Activities list
 
-  /presences:
+  /attendance:
     post:
-      tags: [ F - Assiduité ]
-      summary: Enregistrer la présence d'un membre (Fonctionnalité F)
-      operationId: enregistrerPresence
+      tags: [Attendance]
+      summary: Register attendance
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PresenceEnregistrement'
+              $ref: '#/components/schemas/AttendanceRegistration'
       responses:
-        '201':
-          description: Présence enregistrée
+        "201":
+          description: Attendance registered
 
-  /collectivites/{collectiviteId}/statistiques:
+  /collectivities/{collectivityId}/statistics:
     get:
-      tags: [ G - Statistiques ]
-      summary: Statistiques détaillées d'une collectivité (Fonctionnalité G)
+      tags: [Statistics]
+      summary: Collectivity statistics
       parameters:
-        - name: collectiviteId
+        - name: collectivityId
           in: path
           required: true
           schema:
-            type: integer
-        - name: mois
+            type: string
+        - name: month
           in: query
           required: true
           schema:
             type: integer
-            minimum: 1
-            maximum: 12
-        - name: annee
+        - name: year
           in: query
           required: true
           schema:
             type: integer
       responses:
-        '200':
-          description: Rapport statistique complet
+        "200":
+          description: Statistics report
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RapportStatistique'
+                $ref: '#/components/schemas/StatisticalReport'
 
   /federation/statistics:
     get:
-      summary: Obtenir les statistiques globales de la fédération
-      tags:
-        - Federation Statistics
-      parameters:
-        - name: startDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          schema:
-            type: string
-            format: date
+      tags: [Federation Statistics]
+      summary: Global federation statistics
       responses:
-        '200':
-          description: Statistiques récupérées
+        "200":
+          description: Federation stats
           content:
             application/json:
               schema:
@@ -251,257 +231,197 @@ paths:
 components:
   schemas:
 
-    Collectivite:
+    Collectivity:
       type: object
       properties:
-        id_collectivite:
+        id:
+          type: string
+        number:
+          type: string
+        name:
+          type: string
+        city:
+          type: string
+        specialtyId:
           type: integer
-        nom:
-          type: string
-        ville:
-          type: string
-        date_creation:
-          type: string
-          format: date
-        specialite_id:
-          type: integer
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
 
-    CollectiviteCreation:
+    CollectivityCreation:
       type: object
-      required: [ nom, ville, specialite_id ]
+      required: [name, city, specialty_id]
       properties:
-        nom:
+        name:
           type: string
-        ville:
+        city:
           type: string
-        specialite_id:
+        specialty_id:
           type: integer
 
-    Membre:
+    Member:
       type: object
       properties:
         id:
           type: integer
-        collectiviteId:
-          type: integer
-        nom:
+        collectivityId:
           type: string
-        prenoms:
+        lastName:
           type: string
-        dateAdhesion:
+        firstNames:
+          type: string
+        membershipDate:
           type: string
           format: date-time
-        statut:
+        status:
           type: string
-          enum: [ ACTIF, DEMISSIONNE, TRANSFERE ]
+          enum: [ACTIVE, RESIGNED, TRANSFERRED]
 
-    MembreAdmission:
+    MemberAdmission:
       type: object
       required:
-        - parrainId
-        - nom
-        - prenoms
-        - dateNaissance
-        - genre
-        - adresse
-        - metier
-        - telephone
+        - sponsorId
+        - lastName
+        - firstNames
+        - birthDate
+        - gender
+        - address
+        - occupation
+        - phoneNumber
         - email
-        - modePaiement
+        - paymentMethod
       properties:
-        parrainId:
+        sponsorId:
           type: integer
-          description: Identifiant du membre parrain (ancienneté > 90 jours)
-        nom:
+        lastName:
           type: string
-        prenoms:
+        firstNames:
           type: string
-        dateNaissance:
+        birthDate:
           type: string
           format: date
-        genre:
+        gender:
           type: string
-          enum: [ M, F, AUTRE ]
-        adresse:
+          enum: [M, F, OTHER]
+        address:
           type: string
-        metier:
+        occupation:
           type: string
-        telephone:
+        phoneNumber:
           type: string
         email:
           type: string
-          format: email
-        modePaiement:
+        paymentMethod:
           type: string
-          enum: [ MOBILE_MONEY, VIREMENT_BANCAIRE ]
+          enum: [MOBILE_MONEY, BANK_TRANSFER]
 
-    Erreur:
+    Contribution:
       type: object
       properties:
-        code:
-          type: string
-          description: Code d'erreur métier
-        message:
-          type: string
-          description: Description lisible de l'erreur
-
-    Cotisation:
-      type: object
-      properties:
-        id_cotisation:
+        contribution_id:
           type: integer
-        membre_id:
+        member_id:
           type: integer
-        collectivite_id:
+        collectivity_id:
           type: integer
-        type_cotisation:
+        contribution_type:
           type: string
-          enum: [ mensuelle, annuelle, ponctuelle ]
-        montant:
+        amount:
           type: number
-          format: decimal
-        date_echeance:
+        due_date:
           type: string
           format: date
 
-    CotisationCreation:
+    ContributionCreation:
       type: object
-      required: [ membre_id, collectivite_id, type_cotisation, montant ]
+      required: [member_id, collectivity_id, contribution_type, amount]
       properties:
-        membre_id:
+        member_id:
           type: integer
-        collectivite_id:
+        collectivity_id:
           type: integer
-        type_cotisation:
+        contribution_type:
           type: string
-          enum: [ mensuelle, annuelle, ponctuelle ]
-        montant:
+        amount:
           type: number
-          format: decimal
 
-    EncaissementCreation:
+    CollectionCreation:
       type: object
-      required: [ cotisation_id, montant, date_encaissement, mode_paiement, compte_id ]
+      required: [contribution_id, amount, collection_date, payment_method, account_id]
       properties:
-        cotisation_id:
+        contribution_id:
           type: integer
-        montant:
+        amount:
           type: number
-        date_encaissement:
+        collection_date:
           type: string
           format: date-time
-        mode_paiement:
+        payment_method:
           type: string
-          enum: [ espece, virement_bancaire, mobile_money ]
-        compte_id:
+        account_id:
           type: integer
 
-    Compte:
+    Account:
       type: object
       properties:
-        id_compte:
+        account_id:
           type: integer
         owner_type:
           type: string
-          enum: [ collectivite, federation ]
         owner_id:
           type: integer
-        type_compte:
+        account_type:
           type: string
-          enum: [ caisse, bancaire, mobile_money ]
-        titulaire:
-          type: string
-        banque_service:
-          type: string
-        numero_compte_ou_telephone:
-          type: string
-        solde:
+        balance:
           type: number
-          format: decimal
 
-    Activite:
+    ActivityCreation:
       type: object
+      required: [owner_type, owner_id, title, date]
       properties:
-        id_activite:
-          type: integer
         owner_type:
           type: string
-          enum: [ collectivite, federation ]
         owner_id:
           type: integer
-        titre:
+        title:
           type: string
-        type_activite:
+        activity_type:
           type: string
         date:
           type: string
           format: date-time
-        presence_obligatoire:
+        mandatory_attendance:
           type: boolean
         description:
           type: string
 
-    ActiviteCreation:
+    AttendanceRegistration:
       type: object
-      required: [ owner_type, owner_id, titre, date ]
+      required: [activity_id, member_id, is_present]
       properties:
-        owner_type:
-          type: string
-          enum: [ collectivite, federation ]
-        owner_id:
+        activity_id:
           type: integer
-        titre:
-          type: string
-        type_activite:
-          type: string
-        date:
-          type: string
-          format: date-time
-        presence_obligatoire:
+        member_id:
+          type: integer
+        is_present:
           type: boolean
-        description:
+        absence_reason:
           type: string
 
-    PresenceEnregistrement:
+    StatisticalReport:
       type: object
-      required: [ activite_id, membre_id, est_present ]
       properties:
-        activite_id:
-          type: integer
-        membre_id:
-          type: integer
-        est_present:
-          type: boolean
-        motif_absence:
+        collectivity_id:
           type: string
-
-    RapportStatistique:
-      type: object
-      properties:
-        collectivite_id:
+        month:
           type: integer
-        mois:
+        year:
           type: integer
-        annee:
-          type: integer
-        taux_assiduite_globale:
+        global_attendance_rate:
           type: number
-          format: float
-        nb_membres_actifs:
+        active_members_count:
           type: integer
-        statistiques_par_membre:
-          type: array
-          items:
-            type: object
-            properties:
-              membre_id:
-                type: integer
-              taux_assiduite:
-                type: number
-              montant_encaisse:
-                type: number
-              montant_impaye:
-                type: number
 
     FederationStats:
       type: object
@@ -512,14 +432,19 @@ components:
             type: object
             properties:
               collectivityId:
-                type: integer
+                type: string
               collectivityName:
                 type: string
               attendanceRate:
                 type: number
-                format: float
-              upToDateMembersPercentage:
-                type: number
-                format: float
               newMembersCount:
                 type: integer
+
+    AssignCollectivityIdentity:
+      type: object
+      required: [number, name]
+      properties:
+        number:
+          type: string
+        name:
+          type: string
