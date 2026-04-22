@@ -12,8 +12,8 @@ public class Federation {
     private String phone;
     private Integer mandateStartYear;
     private Integer mandateEndYear;
-    private Member president;  // Référence à l'objet Member complet
-    private Integer presidentId; // Alternative : seulement l'ID
+    private Member president;
+    private Integer presidentId;
 
     public Federation() {}
 
@@ -29,7 +29,7 @@ public class Federation {
         this.mandateEndYear = mandateEndYear;
         this.president = president;
         if (president != null) {
-            this.presidentId = president.getIdMember();
+            this.presidentId = president.getMemberId();
         }
     }
 
@@ -59,7 +59,7 @@ public class Federation {
     public void setPresident(Member president) {
         this.president = president;
         if (president != null) {
-            this.presidentId = president.getIdMember();
+            this.presidentId = president.getMemberId();
         }
     }
 
