@@ -1,14 +1,10 @@
-package com.example.agricultureFederation.entity;
+package com.example.agricultureFederation.dto.request;
 
-<<<<<<< HEAD
-public class Member {
-}
-=======
 import java.time.LocalDate;
+import java.util.List;
 
-public class Member {
+public class CreateMemberRequest {
 
-    private int memberId;
     private int collectiveId;
     private Integer jobId;
     private String lastName;
@@ -18,29 +14,9 @@ public class Member {
     private String address;
     private String phone;
     private String email;
-    private LocalDate membershipDate;
-    private boolean resigned;
-
-    public Member() {}
-
-    public Member(int collectiveId, Integer jobId, String lastName, String firstName,
-                  LocalDate birthDate, String gender, String address,
-                  String phone, String email, LocalDate membershipDate) {
-        this.collectiveId = collectiveId;
-        this.jobId = jobId;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.birthDate = birthDate;
-        this.gender = gender;
-        this.address = address;
-        this.phone = phone;
-        this.email = email;
-        this.membershipDate = membershipDate;
-        this.resigned = false;
-    }
-
-    public int getMemberId() { return memberId; }
-    public void setMemberId(int memberId) { this.memberId = memberId; }
+    private List<SponsorRequest> sponsors;
+    private double membershipFee;
+    private double annualContribution;
 
     public int getCollectiveId() { return collectiveId; }
     public void setCollectiveId(int collectiveId) { this.collectiveId = collectiveId; }
@@ -69,10 +45,12 @@ public class Member {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public LocalDate getMembershipDate() { return membershipDate; }
-    public void setMembershipDate(LocalDate membershipDate) { this.membershipDate = membershipDate; }
+    public List<SponsorRequest> getSponsors() { return sponsors; }
+    public void setSponsors(List<SponsorRequest> sponsors) { this.sponsors = sponsors; }
 
-    public boolean isResigned() { return resigned; }
-    public void setResigned(boolean resigned) { this.resigned = resigned; }
+    public double getMembershipFee() { return membershipFee; }
+    public void setMembershipFee(double membershipFee) { this.membershipFee = membershipFee; }
+
+    public double getAnnualContribution() { return annualContribution; }
+    public void setAnnualContribution(double annualContribution) { this.annualContribution = annualContribution; }
 }
->>>>>>> toms
