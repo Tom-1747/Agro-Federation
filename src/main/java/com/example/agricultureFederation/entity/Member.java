@@ -1,9 +1,5 @@
 package com.example.agricultureFederation.entity;
 
-<<<<<<< HEAD
-public class Member {
-}
-=======
 import java.time.LocalDate;
 
 public class Member {
@@ -75,4 +71,3 @@ public class Member {
     public boolean isResigned() { return resigned; }
     public void setResigned(boolean resigned) { this.resigned = resigned; }
 }
->>>>>>> toms
