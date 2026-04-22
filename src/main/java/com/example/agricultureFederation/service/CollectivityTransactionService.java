@@ -1,0 +1,86 @@
+package com.example.agricultureFederation.service;
+
+import com.example.agricultureFederation.dto.response.CollectivityTransactionResponse;
+import com.example.agricultureFederation.dto.response.FinancialAccountResponse;
+import com.example.agricultureFederation.dto.response.MemberResponse;
+import com.example.agricultureFederation.entity.CollectivityTransaction;
+import com.example.agricultureFederation.entity.FinancialAccount;
+import com.example.agricultureFederation.entity.Member;
+import com.example.agricultureFederation.repository.CollectiveRepository;
+import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
+import com.example.agricultureFederation.repository.FinancialAccountRepository;
+import com.example.agricultureFederation.repository.MemberRepository;
+
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CollectivityTransactionService {
+
+    private final CollectivityTransactionRepository transactionRepository;
+    private final CollectiveRepository collectiveRepository;
+    private final MemberRepository memberRepository;
+    private final FinancialAccountRepository financialAccountRepository;
+
+    public CollectivityTransactionService(CollectivityTransactionRepository transactionRepository,
+                                          CollectiveRepository collectiveRepository,
+                                          MemberRepository memberRepository,
+                                          FinancialAccountRepository financialAccountRepository) {
+        this.transactionRepository = transactionRepository;
+        this.collectiveRepository = collectiveRepository;
+        this.memberRepository = memberRepository;
+        this.financialAccountRepository = financialAccountRepository;
+    }
+
+    public List<CollectivityTransactionResponse> getTransactions(
+            String collectiveId, LocalDate from, LocalDate to) throws SQLException {
+
+        int id = Integer.parseInt(collectiveId);
+        if (collectiveRepository.findById(id) == null) {
+            throw new IllegalArgumentException("Collectivity not found: " + collectiveId);
+        }
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("'from' date must be before 'to' date.");
+        }
+
+        List<CollectivityTransaction> transactions =
+                transactionRepository.findByCollectiveIdAndPeriod(id, from, to);
+
+        List<CollectivityTransactionResponse> responses = new ArrayList<>();
+        for (CollectivityTransaction t : transactions) {
+            Member member = memberRepository.findById(t.getMemberId());
+            FinancialAccount account = financialAccountRepository.findById(t.getAccountId());
+            responses.add(toResponse(t, member, account));
+        }
+        return responses;
+    }
+
+    private CollectivityTransactionResponse toResponse(CollectivityTransaction t,
+                                                       Member member,
+                                                       FinancialAccount account) {
+        CollectivityTransactionResponse r = new CollectivityTransactionResponse();
+        r.setId(String.valueOf(t.getTransactionId()));
+        r.setCreationDate(t.getCreationDate());
+        r.setAmount(t.getAmount());
+        r.setPaymentMode(t.getPaymentMode());
+
+        if (account != null) {
+            FinancialAccountResponse accountResponse = new FinancialAccountResponse();
+            accountResponse.setId(String.valueOf(account.getAccountId()));
+            accountResponse.setType(account.getType());
+            accountResponse.setAmount(account.getAmount());
+            r.setAccountCredited(accountResponse);
+        }
+
+        if (member != null) {
+            MemberResponse memberResponse = new MemberResponse();
+            memberResponse.setId(String.valueOf(member.getMemberId()));
+            memberResponse.setFirstName(member.getFirstName());
+            memberResponse.setLastName(member.getLastName());
+            r.setMemberDebited(memberResponse);
+        }
+
+        return r;
+    }
+}

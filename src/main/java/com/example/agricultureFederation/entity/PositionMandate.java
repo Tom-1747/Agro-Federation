@@ -1,7 +1,7 @@
 package com.example.agricultureFederation.entity;
 
 
-import com.example.agricultureFederation.entity.enums.PositionLabelType
+import com.example.agricultureFederation.entity.enums.PositionLabelType;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -43,8 +43,8 @@ public class PositionMandate {
         this.endDate = endDate;
         this.cumulatedMandates = cumulatedMandates != null ? cumulatedMandates : 1;
 
-        if (member != null) this.memberId = member.getIdMember();
-        if (collective != null) this.collectiveId = collective.getIdCollective();
+        if (member != null) this.memberId = member.getMemberId();
+        if (collective != null) this.collectiveId = collective.getCollectiveId();
         if (federation != null) this.federationId = federation.getIdFederation();
     }
 
@@ -55,7 +55,7 @@ public class PositionMandate {
     public Member getMember() { return member; }
     public void setMember(Member member) {
         this.member = member;
-        if (member != null) this.memberId = member.getIdMember();
+        if (member != null) this.memberId = member.getMemberId();
     }
 
     public Integer getMemberId() { return memberId; }
@@ -64,7 +64,7 @@ public class PositionMandate {
     public Collective getCollective() { return collective; }
     public void setCollective(Collective collective) {
         this.collective = collective;
-        if (collective != null) this.collectiveId = collective.getIdCollective();
+        if (collective != null) this.collectiveId = collective.getCollectiveId();
     }
 
     public Integer getCollectiveId() { return collectiveId; }
