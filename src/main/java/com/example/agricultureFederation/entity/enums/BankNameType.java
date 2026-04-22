@@ -1,4 +1,5 @@
 package com.example.agricultureFederation.entity.enums;
 
-public class BankNameType {
+public enum BankNameType {
+    BRED, MCB, BMOI, BOA, BGFI, AFG, ACCES_BANQUE, BAOBAB, SIPEM
 }

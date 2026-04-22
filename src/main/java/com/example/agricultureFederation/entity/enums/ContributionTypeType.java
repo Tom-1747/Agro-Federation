@@ -1,4 +1,5 @@
 package com.example.agricultureFederation.entity.enums;
 
-public class ContributionTypeType {
+public enum ContributionTypeType {
+    Periodic, One_time
 }
