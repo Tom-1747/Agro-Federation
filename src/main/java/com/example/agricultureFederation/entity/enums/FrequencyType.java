@@ -1,4 +1,5 @@
 package com.example.agricultureFederation.entity.enums;
 
-public class FrequencyType {
+public enum FrequencyType {
+    Monthly, Annual
 }

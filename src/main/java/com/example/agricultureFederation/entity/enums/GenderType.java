@@ -1,4 +1,5 @@
 package com.example.agricultureFederation.entity.enums;
 
-public class GenderType {
+public enum GenderType {
+    Female, Male
 }
