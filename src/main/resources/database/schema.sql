@@ -207,3 +207,7 @@ CREATE INDEX idx_attendance_activity       ON attendance(id_activity);
 CREATE INDEX idx_attendance_member         ON attendance(id_member);
 CREATE INDEX idx_activity_collective       ON activity(id_collective);
 CREATE INDEX idx_account_collective        ON account(id_collective);
+
+
+alter table collection rename to membershipFees;
+alter table membershipFees rename column collection_date to membershipFees_date;
