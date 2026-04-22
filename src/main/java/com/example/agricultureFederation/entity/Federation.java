@@ -1,10 +1,9 @@
 package com.example.agricultureFederation.entity;
 
-
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class Federation {
+
     private Integer idFederation;
     private String name;
     private String headquarters;
@@ -12,14 +11,14 @@ public class Federation {
     private String phone;
     private Integer mandateStartYear;
     private Integer mandateEndYear;
-    private Member president;  // Référence à l'objet Member complet
-    private Integer presidentId; // Alternative : seulement l'ID
+    private Integer presidentId;
 
     public Federation() {}
 
     public Federation(Integer idFederation, String name, String headquarters,
-                      String email, String phone, Integer mandateStartYear,
-                      Integer mandateEndYear, Member president) {
+                      String email, String phone,
+                      Integer mandateStartYear, Integer mandateEndYear,
+                      Integer presidentId) {
         this.idFederation = idFederation;
         this.name = name;
         this.headquarters = headquarters;
@@ -27,13 +26,10 @@ public class Federation {
         this.phone = phone;
         this.mandateStartYear = mandateStartYear;
         this.mandateEndYear = mandateEndYear;
-        this.president = president;
-        if (president != null) {
-            this.presidentId = president.getIdMember();
-        }
+        this.presidentId = presidentId;
     }
 
-    // Getters et Setters
+    // Getters & Setters
     public Integer getIdFederation() { return idFederation; }
     public void setIdFederation(Integer idFederation) { this.idFederation = idFederation; }
 
@@ -54,14 +50,6 @@ public class Federation {
 
     public Integer getMandateEndYear() { return mandateEndYear; }
     public void setMandateEndYear(Integer mandateEndYear) { this.mandateEndYear = mandateEndYear; }
-
-    public Member getPresident() { return president; }
-    public void setPresident(Member president) {
-        this.president = president;
-        if (president != null) {
-            this.presidentId = president.getIdMember();
-        }
-    }
 
     public Integer getPresidentId() { return presidentId; }
     public void setPresidentId(Integer presidentId) { this.presidentId = presidentId; }
@@ -87,6 +75,7 @@ public class Federation {
                 ", headquarters='" + headquarters + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
+                ", presidentId=" + presidentId +
                 '}';
     }
 }
