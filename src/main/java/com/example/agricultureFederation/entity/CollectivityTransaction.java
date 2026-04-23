@@ -64,4 +64,6 @@ public class CollectivityTransaction {
                 ", creationDate=" + creationDate +
                 '}';
     }
+
+    public void setContributionId(int idContribution) {    }
 }

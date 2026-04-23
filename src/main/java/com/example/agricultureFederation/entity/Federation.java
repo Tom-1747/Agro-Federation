@@ -1,6 +1,5 @@
 package com.example.agricultureFederation.entity;
 
-
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -29,11 +28,28 @@ public class Federation {
         this.mandateEndYear = mandateEndYear;
         this.president = president;
         if (president != null) {
-            this.presidentId = president.getMemberId();  // ← À vérifier selon votre classe Member
+            this.presidentId = president.getMemberId();
         }
     }
 
-    // Getters et Setters
+    public Federation(Integer idFederation, String name, String headquarters,
+                      String email, String phone) {
+        this.idFederation = idFederation;
+        this.name = name;
+        this.headquarters = headquarters;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    public static Federation create(String name, String headquarters, String email, String phone) {
+        Federation federation = new Federation();
+        federation.setName(name);
+        federation.setHeadquarters(headquarters);
+        federation.setEmail(email);
+        federation.setPhone(phone);
+        return federation;
+    }
+
     public Integer getIdFederation() { return idFederation; }
     public void setIdFederation(Integer idFederation) { this.idFederation = idFederation; }
 
@@ -59,12 +75,21 @@ public class Federation {
     public void setPresident(Member president) {
         this.president = president;
         if (president != null) {
-            this.presidentId = president.getMemberId();  // ← À vérifier
+            this.presidentId = president.getMemberId();
         }
     }
 
     public Integer getPresidentId() { return presidentId; }
     public void setPresidentId(Integer presidentId) { this.presidentId = presidentId; }
+
+    public boolean isMandateActive() {
+        if (mandateStartYear == null) return false;
+        int currentYear = LocalDate.now().getYear();
+        if (mandateEndYear != null) {
+            return currentYear >= mandateStartYear && currentYear <= mandateEndYear;
+        }
+        return currentYear >= mandateStartYear;
+    }
 
     @Override
     public boolean equals(Object o) {

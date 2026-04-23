@@ -1,6 +1,5 @@
 package com.example.agricultureFederation.entity;
 
-
 import com.example.agricultureFederation.entity.enums.PositionLabelType;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -27,6 +26,21 @@ public class PositionMandate {
         this.cumulatedMandates = 1;
     }
 
+    public PositionMandate(Integer memberId, Integer collectiveId, Integer federationId,
+                           PositionLabelType positionLabel, Integer calendarYear,
+                           LocalDate startDate, LocalDate endDate) {
+        this.memberId = memberId;
+        this.collectiveId = collectiveId;
+        this.federationId = federationId;
+        this.positionLabel = positionLabel;
+        this.calendarYear = calendarYear;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isUnique = true;
+        this.isElective = true;
+        this.cumulatedMandates = 1;
+    }
+
     public PositionMandate(Integer idPositionMandate, Member member, Collective collective,
                            Federation federation, PositionLabelType positionLabel, Boolean isUnique,
                            Boolean isElective, Integer calendarYear, LocalDate startDate,
@@ -48,7 +62,6 @@ public class PositionMandate {
         if (federation != null) this.federationId = federation.getIdFederation();
     }
 
-    // Getters et Setters
     public Integer getIdPositionMandate() { return idPositionMandate; }
     public void setIdPositionMandate(Integer idPositionMandate) { this.idPositionMandate = idPositionMandate; }
 
@@ -99,6 +112,45 @@ public class PositionMandate {
 
     public Integer getCumulatedMandates() { return cumulatedMandates; }
     public void setCumulatedMandates(Integer cumulatedMandates) { this.cumulatedMandates = cumulatedMandates; }
+
+    public boolean isActive() {
+        LocalDate now = LocalDate.now();
+        if (startDate != null && startDate.isAfter(now)) return false;
+        if (endDate != null && endDate.isBefore(now)) return false;
+        return true;
+    }
+
+    public boolean isCollectiveMandate() {
+        return collectiveId != null && federationId == null;
+    }
+
+    public boolean isFederationMandate() {
+        return federationId != null && collectiveId == null;
+    }
+
+    public boolean isPresident() {
+        return positionLabel == PositionLabelType.President;
+    }
+
+    public boolean isVicePresident() {
+        return positionLabel == PositionLabelType.Vice_President;
+    }
+
+    public boolean isTreasurer() {
+        return positionLabel == PositionLabelType.Treasurer;
+    }
+
+    public boolean isSecretary() {
+        return positionLabel == PositionLabelType.Secretary;
+    }
+
+    public boolean isConfirmedMember() {
+        return positionLabel == PositionLabelType.Confirmed_Member;
+    }
+
+    public boolean isRequiredPosition() {
+        return isPresident() || isVicePresident() || isTreasurer() || isSecretary();
+    }
 
     @Override
     public boolean equals(Object o) {
