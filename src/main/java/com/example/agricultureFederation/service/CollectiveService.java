@@ -2,9 +2,9 @@ package com.example.agricultureFederation.service;
 
 import com.example.agricultureFederation.dto.request.AssignCollectivityIdentityRequest;
 import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
-import com.example.agricultureFederation.dto.request.CreateCollectivityRequest;
+import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
 import com.example.agricultureFederation.dto.response.CollectiveResponse;
-import com.example.agricultureFederation.dto.response.CollectivityResponse;
+import com.example.agricultureFederation.dto.response.CollectiveResponse;
 import com.example.agricultureFederation.dto.response.CollectivityStructureResponse;
 import com.example.agricultureFederation.dto.response.MemberResponse;
 import com.example.agricultureFederation.entity.Collective;
