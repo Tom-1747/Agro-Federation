@@ -1,13 +1,14 @@
-package com.example.agricultureFederation.entity;
+package com.example.agricultureFederation.dto.response;
 
 import com.example.agricultureFederation.entity.enums.ActivityTypeType;
 import com.example.agricultureFederation.entity.enums.TargetMembersType;
 
 import java.time.LocalDate;
 
-public class Activity {
 
-    private Integer idActivity;
+public class ActivityResponse {
+
+    private Integer id;
     private Integer collectiveId;
     private Integer federationId;
     private String title;
@@ -17,28 +18,8 @@ public class Activity {
     private TargetMembersType targetMembers;
     private Boolean isFederation;
 
-    public Activity() {
-        this.attendanceRequired = true;
-        this.targetMembers = TargetMembersType.All;
-        this.isFederation = false;
-    }
-
-    public Activity(Integer collectiveId, Integer federationId, String title,
-                    ActivityTypeType activityType, LocalDate activityDate,
-                    Boolean attendanceRequired, TargetMembersType targetMembers,
-                    Boolean isFederation) {
-        this.collectiveId = collectiveId;
-        this.federationId = federationId;
-        this.title = title;
-        this.activityType = activityType;
-        this.activityDate = activityDate;
-        this.attendanceRequired = attendanceRequired != null ? attendanceRequired : true;
-        this.targetMembers = targetMembers != null ? targetMembers : TargetMembersType.All;
-        this.isFederation = isFederation != null ? isFederation : false;
-    }
-
-    public Integer getIdActivity() { return idActivity; }
-    public void setIdActivity(Integer idActivity) { this.idActivity = idActivity; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public Integer getCollectiveId() { return collectiveId; }
     public void setCollectiveId(Integer collectiveId) { this.collectiveId = collectiveId; }
@@ -63,14 +44,4 @@ public class Activity {
 
     public Boolean getIsFederation() { return isFederation; }
     public void setIsFederation(Boolean isFederation) { this.isFederation = isFederation; }
-
-    @Override
-    public String toString() {
-        return "Activity{" +
-                "idActivity=" + idActivity +
-                ", title='" + title + '\'' +
-                ", activityType=" + activityType +
-                ", activityDate=" + activityDate +
-                '}';
-    }
 }

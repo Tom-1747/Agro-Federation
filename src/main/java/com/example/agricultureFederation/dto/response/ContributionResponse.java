@@ -1,4 +1,4 @@
-package com.example.agricultureFederation.entity;
+package com.example.agricultureFederation.dto.response;
 
 import com.example.agricultureFederation.entity.enums.ContributionTypeType;
 import com.example.agricultureFederation.entity.enums.FrequencyType;
@@ -7,9 +7,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-public class Contribution {
+public class ContributionResponse {
 
-    private Integer idContribution;
+    private Integer id;
     private Integer memberId;
     private Integer collectiveId;
     private ContributionTypeType contributionType;
@@ -18,24 +18,8 @@ public class Contribution {
     private LocalDate dueDate;
     private Boolean isPaid;
 
-    public Contribution() {
-        this.isPaid = false;
-    }
-
-    public Contribution(Integer memberId, Integer collectiveId,
-                        ContributionTypeType contributionType, FrequencyType frequency,
-                        BigDecimal amount, LocalDate dueDate) {
-        this.memberId = memberId;
-        this.collectiveId = collectiveId;
-        this.contributionType = contributionType;
-        this.frequency = frequency;
-        this.amount = amount;
-        this.dueDate = dueDate;
-        this.isPaid = false;
-    }
-
-    public Integer getIdContribution() { return idContribution; }
-    public void setIdContribution(Integer idContribution) { this.idContribution = idContribution; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public Integer getMemberId() { return memberId; }
     public void setMemberId(Integer memberId) { this.memberId = memberId; }
@@ -57,16 +41,4 @@ public class Contribution {
 
     public Boolean getIsPaid() { return isPaid; }
     public void setIsPaid(Boolean isPaid) { this.isPaid = isPaid; }
-
-    @Override
-    public String toString() {
-        return "Contribution{" +
-                "idContribution=" + idContribution +
-                ", memberId=" + memberId +
-                ", contributionType=" + contributionType +
-                ", amount=" + amount +
-                ", dueDate=" + dueDate +
-                ", isPaid=" + isPaid +
-                '}';
-    }
 }

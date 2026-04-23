@@ -1,213 +1,287 @@
 
+-- ════════════════════════════════════════════════════════════
+-- 1. COLLECTIVE
+-- ════════════════════════════════════════════════════════════
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+-- 1.1 Insérer un nouveau collectif
+INSERT INTO collective
+(id_federation, id_specialty, id_branch, name, location, phone, creation_date)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+RETURNING id_collective;
 
-CREATE TYPE gender_type        AS ENUM ('Female', 'Male');
-CREATE TYPE account_type_type  AS ENUM ('Cash', 'Bank', 'Mobile Money');
-CREATE TYPE bank_name_type     AS ENUM ('BRED','MCB','BMOI','BOA','BGFI','AFG','ACCES BANQUE','BAOBAB','SIPEM');
-CREATE TYPE mobile_money_type  AS ENUM ('Orange Money','Mvola','Airtel Money');
-CREATE TYPE position_label_type AS ENUM (
-    'President',
-    'Vice President',
-    'Treasurer',
-    'Secretary',
-    'Confirmed Member',
-    'Junior Member'
+-- 1.2 Mettre à jour le nom d'un collectif
+UPDATE collective
+SET name = ?
+WHERE id_collective = ?;
+
+-- 1.3 Trouver un collectif par ID
+SELECT *
+FROM collective
+WHERE id_collective = ?;
+
+-- 1.4 Lister tous les collectifs
+SELECT *
+FROM collective
+ORDER BY id_collective;
+
+-- 1.5 Compter les membres actifs d'un collectif
+SELECT COUNT(*)
+FROM member
+WHERE id_collective = ?
+  AND is_resigned = FALSE;
+
+-- 1.6 Compter les membres avec au moins 6 mois d'ancienneté
+SELECT COUNT(*)
+FROM member
+WHERE id_collective = ?
+  AND is_resigned = FALSE
+  AND join_date <= CURRENT_DATE - INTERVAL '6 months';
+
+-- 1.7 Vérifier que les 4 postes obligatoires sont pourvus pour une année
+SELECT COUNT(DISTINCT position_label)
+FROM position_mandate
+WHERE id_collective = ?
+  AND calendar_year = ?
+  AND position_label IN (
+                         'President',
+                         'Vice President',
+                         'Treasurer',
+                         'Secretary'
     );
-CREATE TYPE contribution_type_type AS ENUM ('Periodic', 'One-time');
-CREATE TYPE frequency_type         AS ENUM ('Monthly', 'Annual');
-CREATE TYPE payment_method_type    AS ENUM ('Cash', 'Bank Transfer', 'Mobile Money');
-CREATE TYPE activity_type_type     AS ENUM (
-    'Monthly General Assembly',
-    'Mandatory Junior Training',
-    'Exceptional Activity',
-    'Federation Activity'
+-- Retourne 4 si tous les postes sont pourvus
+
+-- 1.8 Vérifier l'existence d'un collectif par nom
+SELECT COUNT(*)
+FROM collective
+WHERE name = ?;
+
+
+-- ════════════════════════════════════════════════════════════
+-- 2. MEMBER
+-- ════════════════════════════════════════════════════════════
+
+-- 2.1 Insérer un nouveau membre
+INSERT INTO member
+(id_collective, id_trade, last_name, first_name,
+ birth_date, gender, address, phone, email, join_date, is_resigned)
+VALUES (?, ?, ?, ?, ?, ?::gender_type, ?, ?, ?, ?, FALSE)
+RETURNING id_member;
+
+-- 2.2 Trouver un membre par ID
+SELECT *
+FROM member
+WHERE id_member = ?;
+
+-- 2.3 Lister les membres actifs d'un collectif
+SELECT *
+FROM member
+WHERE id_collective = ?
+  AND is_resigned = FALSE
+ORDER BY id_member;
+
+-- 2.4 Trouver plusieurs membres par liste d'IDs
+-- (les '?' sont générés dynamiquement en Java selon le nombre d'IDs)
+SELECT *
+FROM member
+WHERE id_member IN (?, ?, ...)
+  AND is_resigned = FALSE;
+
+-- 2.5 Vérifier si un membre est un Membre Confirmé
+SELECT COUNT(*)
+FROM position_mandate
+WHERE id_member = ?
+  AND position_label = 'Confirmed Member';
+-- Retourne > 0 si confirmé
+
+-- 2.6 Vérifier l'ancienneté minimale d'un membre (en jours)
+SELECT COUNT(*)
+FROM member
+WHERE id_member = ?
+  AND is_resigned = FALSE
+  AND join_date <= CURRENT_DATE - (? * INTERVAL '1 day');
+-- Retourne 1 si l'ancienneté est suffisante
+
+
+-- ════════════════════════════════════════════════════════════
+-- 3. ACCOUNT (comptes financiers)
+-- ════════════════════════════════════════════════════════════
+
+-- 3.1 Trouver un compte par ID
+SELECT *
+FROM account
+WHERE id_account = ?;
+
+-- 3.2 Lister les comptes d'un collectif
+SELECT *
+FROM account
+WHERE id_collective = ?
+ORDER BY id_account;
+
+-- 3.3 Mettre à jour le solde d'un compte
+UPDATE account
+SET balance = ?
+WHERE id_account = ?;
+
+-- 3.4 Calculer le solde cumulé d'un compte à une date donnée
+--     (somme de tous les encaissements jusqu'à cette date)
+SELECT COALESCE(SUM(amount), 0)
+FROM membershipfees
+WHERE id_account = ?
+  AND membershipfees_date <= ?;
+
+
+-- ════════════════════════════════════════════════════════════
+-- 4. CONTRIBUTION (définitions de cotisations)
+-- ════════════════════════════════════════════════════════════
+
+-- 4.1 Créer une définition de cotisation pour un collectif
+INSERT INTO contribution
+(id_member, id_collective, contribution_type, frequency, amount, due_date, is_paid)
+VALUES (?, ?, ?::contribution_type_type, ?::frequency_type, ?, ?, FALSE)
+RETURNING id_contribution;
+-- Note : id_member est le collectiveId en attendant l'assignation membre
+
+-- 4.2 Lister les cotisations d'un collectif
+SELECT *
+FROM contribution
+WHERE id_collective = ?
+ORDER BY id_contribution;
+
+-- 4.3 Trouver une cotisation par ID
+SELECT *
+FROM contribution
+WHERE id_contribution = ?;
+
+
+-- ════════════════════════════════════════════════════════════
+-- 5. MEMBERSHIPFEES (paiements effectués = ancienne table collection)
+-- ════════════════════════════════════════════════════════════
+
+-- 5.1 Enregistrer un paiement de cotisation
+INSERT INTO membershipfees
+(id_contribution, id_account, amount, membershipfees_date, payment_method)
+VALUES (?, ?, ?, ?, ?::payment_method_type)
+RETURNING id_membershipfees;
+
+-- 5.2 Lister les paiements d'un membre (via jointure contribution)
+SELECT mf.*, c.id_member
+FROM membershipfees mf
+         JOIN contribution c ON mf.id_contribution = c.id_contribution
+WHERE c.id_member = ?
+ORDER BY mf.membershipfees_date DESC;
+
+-- 5.3 Lister les transactions d'un collectif sur une période
+SELECT
+    mf.id_membershipfees,
+    mf.id_contribution,
+    mf.id_account,
+    mf.amount,
+    mf.membershipfees_date,
+    mf.payment_method,
+    c.id_member,
+    c.id_collective
+FROM membershipfees mf
+         JOIN contribution c ON mf.id_contribution = c.id_contribution
+WHERE c.id_collective = ?
+  AND mf.membershipfees_date BETWEEN ? AND ?
+ORDER BY mf.membershipfees_date DESC;
+
+
+-- ════════════════════════════════════════════════════════════
+-- 6. POSITION_MANDATE
+-- ════════════════════════════════════════════════════════════
+
+-- 6.1 Vérifier que les postes obligatoires sont pourvus (voir 1.7 ci-dessus)
+--     Requête identique, rappelée ici pour contexte
+SELECT COUNT(DISTINCT position_label)
+FROM position_mandate
+WHERE id_collective = ?
+  AND calendar_year = ?
+  AND position_label IN (
+                         'President',
+                         'Vice President',
+                         'Treasurer',
+                         'Secretary'
     );
-CREATE TYPE target_members_type AS ENUM ('All', 'Juniors Only', 'Confirmed Only');
+
+-- 6.2 Vérifier si un membre détient un mandat actif
+SELECT COUNT(*)
+FROM position_mandate
+WHERE id_member = ?
+  AND position_label = 'Confirmed Member';
 
 
+-- ════════════════════════════════════════════════════════════
+-- 7. VUES UTILES (recommandées à ajouter au schema)
+-- ════════════════════════════════════════════════════════════
 
--- 1. AGRICULTURAL_SPECIALTY
-CREATE TABLE agricultural_specialty (
-                                        id_specialty    SERIAL PRIMARY KEY,
-                                        name            VARCHAR(100) NOT NULL,
-                                        sector          VARCHAR(100)
-);
+-- Vue : résumé financier par collectif
+CREATE OR REPLACE VIEW v_account_balance_by_collective AS
+SELECT
+    a.id_collective,
+    a.id_account,
+    a.account_type,
+    a.account_holder,
+    a.balance,
+    COALESCE(SUM(mf.amount), 0) AS total_collected
+FROM account a
+         LEFT JOIN membershipfees mf ON mf.id_account = a.id_account
+GROUP BY a.id_collective, a.id_account, a.account_type, a.account_holder, a.balance;
 
--- 2. AGRICULTURAL_TRADE
-CREATE TABLE agricultural_trade (
-                                    id_trade    SERIAL PRIMARY KEY,
-                                    label       VARCHAR(100) NOT NULL
-);
+-- Vue : paiements membres enrichis
+CREATE OR REPLACE VIEW v_member_payments AS
+SELECT
+    mf.id_membershipfees,
+    mf.id_contribution,
+    mf.id_account,
+    mf.amount,
+    mf.membershipfees_date,
+    mf.payment_method,
+    mf.federation_share,
+    c.id_member,
+    c.id_collective,
+    c.contribution_type,
+    c.frequency,
+    m.last_name,
+    m.first_name
+FROM membershipfees mf
+         JOIN contribution c ON mf.id_contribution = c.id_contribution
+         JOIN member       m ON c.id_member        = m.id_member;
 
--- 3. PROVINCIAL_BRANCH
-CREATE TABLE provincial_branch (
-                                   id_branch           SERIAL PRIMARY KEY,
-                                   province            VARCHAR(100) NOT NULL,
-                                   capital_city        VARCHAR(100) NOT NULL,
-                                   address             VARCHAR(200)
-);
+-- Vue : membres avec leur poste actuel
+CREATE OR REPLACE VIEW v_member_positions AS
+SELECT
+    m.id_member,
+    m.id_collective,
+    m.last_name,
+    m.first_name,
+    m.join_date,
+    m.is_resigned,
+    pm.position_label,
+    pm.calendar_year,
+    pm.start_date,
+    pm.end_date
+FROM member m
+         LEFT JOIN position_mandate pm ON pm.id_member = m.id_member
+WHERE m.is_resigned = FALSE;
 
--- 4. FEDERATION
-CREATE TABLE federation (
-                            id_federation       SERIAL PRIMARY KEY,
-                            name                VARCHAR(100) NOT NULL,
-                            headquarters        VARCHAR(200),
-                            email               VARCHAR(100),
-                            phone               VARCHAR(20),
-                            id_president        INT,
-                            mandate_start_year  INT,
-                            mandate_end_year    INT
-);
-
--- 5. COLLECTIVE
-CREATE TABLE collective (
-                            id_collective       SERIAL PRIMARY KEY,
-                            id_federation       INT NOT NULL,
-                            id_specialty        INT,
-                            id_branch           INT,
-                            name                VARCHAR(100) NOT NULL UNIQUE,
-                            location            VARCHAR(100) NOT NULL,
-                            phone               VARCHAR(20),
-                            creation_date       DATE NOT NULL,
-                            id_president        INT,
-                            CONSTRAINT fk_collective_federation FOREIGN KEY (id_federation) REFERENCES federation(id_federation),
-                            CONSTRAINT fk_collective_specialty  FOREIGN KEY (id_specialty)  REFERENCES agricultural_specialty(id_specialty),
-                            CONSTRAINT fk_collective_branch     FOREIGN KEY (id_branch)     REFERENCES provincial_branch(id_branch)
-);
-
--- 6. MEMBER
-CREATE TABLE member (
-                        id_member           SERIAL PRIMARY KEY,
-                        id_collective       INT NOT NULL,
-                        id_trade            INT,
-                        last_name           VARCHAR(100) NOT NULL,
-                        first_name          VARCHAR(100) NOT NULL,
-                        birth_date          DATE,
-                        gender              gender_type NOT NULL,
-                        address             VARCHAR(200),
-                        phone               VARCHAR(20),
-                        email               VARCHAR(100),
-                        join_date           DATE NOT NULL,
-                        is_resigned         BOOLEAN DEFAULT FALSE,
-                        CONSTRAINT fk_member_collective FOREIGN KEY (id_collective) REFERENCES collective(id_collective),
-                        CONSTRAINT fk_member_trade      FOREIGN KEY (id_trade)      REFERENCES agricultural_trade(id_trade)
-);
-
-ALTER TABLE federation
-    ADD CONSTRAINT fk_federation_president FOREIGN KEY (id_president) REFERENCES member(id_member);
-
-ALTER TABLE collective
-    ADD CONSTRAINT fk_collective_president FOREIGN KEY (id_president) REFERENCES member(id_member);
-
--- 7. POSITION_MANDATE
-CREATE TABLE position_mandate (
-                                  id_position_mandate     SERIAL PRIMARY KEY,
-                                  id_member               INT NOT NULL,
-                                  id_collective           INT,
-                                  id_federation           INT,
-                                  position_label          position_label_type NOT NULL,
-                                  is_unique               BOOLEAN NOT NULL DEFAULT TRUE,
-                                  is_elective             BOOLEAN NOT NULL DEFAULT TRUE,
-                                  calendar_year           INT NOT NULL,
-                                  start_date              DATE NOT NULL,
-                                  end_date                DATE,
-                                  cumulated_mandates      INT DEFAULT 1,
-                                  CONSTRAINT fk_position_member     FOREIGN KEY (id_member)     REFERENCES member(id_member),
-                                  CONSTRAINT fk_position_collective FOREIGN KEY (id_collective) REFERENCES collective(id_collective),
-                                  CONSTRAINT fk_position_federation FOREIGN KEY (id_federation) REFERENCES federation(id_federation),
-
-                                  CONSTRAINT uk_unique_position UNIQUE (id_collective, position_label, calendar_year)
-);
-
--- 8. ACCOUNT
-CREATE TABLE account (
-                         id_account              SERIAL PRIMARY KEY,
-                         id_collective           INT,
-                         id_federation           INT,
-                         account_type            account_type_type NOT NULL,
-                         account_holder          VARCHAR(100),
-                         bank_name               bank_name_type,
-                         mobile_money_service    mobile_money_type,
-                         bank_account_number     VARCHAR(23),
-                         phone_number            VARCHAR(20),
-                         balance                 NUMERIC(15,2) DEFAULT 0.00,
-                         CONSTRAINT fk_account_collective  FOREIGN KEY (id_collective)  REFERENCES collective(id_collective),
-                         CONSTRAINT fk_account_federation  FOREIGN KEY (id_federation)  REFERENCES federation(id_federation)
-);
-
--- 9. CONTRIBUTION
-CREATE TABLE contribution (
-                              id_contribution     SERIAL PRIMARY KEY,
-                              id_member           INT NOT NULL,
-                              id_collective       INT NOT NULL,
-                              contribution_type   contribution_type_type NOT NULL,
-                              frequency           frequency_type,
-                              amount              NUMERIC(15,2) NOT NULL,
-                              due_date            DATE NOT NULL,
-                              is_paid             BOOLEAN DEFAULT FALSE,
-                              CONSTRAINT fk_contribution_member     FOREIGN KEY (id_member)     REFERENCES member(id_member),
-                              CONSTRAINT fk_contribution_collective FOREIGN KEY (id_collective) REFERENCES collective(id_collective)
-);
-
--- 10. COLLECTION
-CREATE TABLE collection (
-                            id_collection               SERIAL PRIMARY KEY,
-                            id_contribution             INT NOT NULL,
-                            id_account                  INT NOT NULL,
-                            amount                      NUMERIC(15,2) NOT NULL,
-                            collection_date             DATE NOT NULL,
-                            payment_method              payment_method_type NOT NULL,
-                            federation_share            NUMERIC(15,2) DEFAULT 0.00,
-                            CONSTRAINT fk_collection_contribution FOREIGN KEY (id_contribution) REFERENCES contribution(id_contribution),
-                            CONSTRAINT fk_collection_account      FOREIGN KEY (id_account)      REFERENCES account(id_account)
-);
-
--- 11. ACTIVITY
-CREATE TABLE activity (
-                          id_activity             SERIAL PRIMARY KEY,
-                          id_collective           INT,
-                          id_federation           INT,
-                          title                   VARCHAR(200) NOT NULL,
-                          activity_type           activity_type_type NOT NULL,
-                          activity_date           DATE NOT NULL,
-                          attendance_required     BOOLEAN DEFAULT TRUE,
-                          target_members          target_members_type DEFAULT 'All',
-                          is_federation           BOOLEAN DEFAULT FALSE,
-                          CONSTRAINT fk_activity_collective  FOREIGN KEY (id_collective)  REFERENCES collective(id_collective),
-                          CONSTRAINT fk_activity_federation  FOREIGN KEY (id_federation)  REFERENCES federation(id_federation)
-);
-
--- 12. ATTENDANCE
-CREATE TABLE attendance (
-                            id_attendance           SERIAL PRIMARY KEY,
-                            id_activity             INT NOT NULL,
-                            id_member               INT NOT NULL,
-                            id_member_collective    INT NOT NULL,
-                            is_present              BOOLEAN DEFAULT FALSE,
-                            is_excused              BOOLEAN DEFAULT FALSE,
-                            absence_reason          VARCHAR(300),
-                            month_concerned         DATE,
-                            overall_attendance_rate NUMERIC(5,2),
-                            active_members_count    INT,
-                            report_date             DATE,
-                            CONSTRAINT fk_attendance_activity   FOREIGN KEY (id_activity)          REFERENCES activity(id_activity),
-                            CONSTRAINT fk_attendance_member     FOREIGN KEY (id_member)            REFERENCES member(id_member),
-                            CONSTRAINT fk_attendance_collective FOREIGN KEY (id_member_collective) REFERENCES collective(id_collective)
-);
-
-
-CREATE INDEX idx_member_collective         ON member(id_collective);
-CREATE INDEX idx_member_trade              ON member(id_trade);
-CREATE INDEX idx_collective_specialty      ON collective(id_specialty);
-CREATE INDEX idx_collective_branch         ON collective(id_branch);
-CREATE INDEX idx_position_member           ON position_mandate(id_member);
-CREATE INDEX idx_position_collective       ON position_mandate(id_collective);
-CREATE INDEX idx_contribution_member       ON contribution(id_member);
-CREATE INDEX idx_collection_account        ON collection(id_account);
-CREATE INDEX idx_attendance_activity       ON attendance(id_activity);
-CREATE INDEX idx_attendance_member         ON attendance(id_member);
-CREATE INDEX idx_activity_collective       ON activity(id_collective);
-CREATE INDEX idx_account_collective        ON account(id_collective);
-
-
-alter table collection rename to membershipFees;
-alter table membershipFees rename column collection_date to membershipFees_date;
+-- Vue : taux de présence par activité
+CREATE OR REPLACE VIEW v_attendance_summary AS
+SELECT
+    a.id_activity,
+    a.title,
+    a.activity_date,
+    a.activity_type,
+    a.id_collective,
+    COUNT(att.id_member)                                   AS total_expected,
+    SUM(CASE WHEN att.is_present THEN 1 ELSE 0 END)       AS total_present,
+    SUM(CASE WHEN att.is_excused THEN 1 ELSE 0 END)       AS total_excused,
+    ROUND(
+            100.0 * SUM(CASE WHEN att.is_present THEN 1 ELSE 0 END)
+                / NULLIF(COUNT(att.id_member), 0),
+            2
+    )                                                      AS attendance_rate_pct
+FROM activity a
+         LEFT JOIN attendance att ON att.id_activity = a.id_activity
+GROUP BY a.id_activity, a.title, a.activity_date, a.activity_type, a.id_collective;
