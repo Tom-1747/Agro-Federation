@@ -1,12 +1,14 @@
 package com.example.agricultureFederation.repository;
 
 import com.example.agricultureFederation.entity.MemberPayment;
+import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class MemberPaymentRepository {
 
@@ -18,35 +20,43 @@ public class MemberPaymentRepository {
 
     public MemberPayment save(MemberPayment payment) throws SQLException {
         String sql = """
-            INSERT INTO "membershipfees"
-                (id_contribution, id_account, amount, membershipFees_date, payment_method)
+            INSERT INTO membershipfees
+                (id_contribution, id_account, amount, membershipfees_date, payment_method)
             VALUES (?, ?, ?, ?, ?::payment_method_type)
             RETURNING id_membershipfees
             """;
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, payment.getMembershipFeeId());  // id_contribution
+            stmt.setInt(1, payment.getContributionId());
             stmt.setInt(2, payment.getAccountId());
-            stmt.setDouble(3, payment.getAmount());
-            stmt.setDate(4, Date.valueOf(payment.getCreationDate()));
-
-            stmt.setString(5, mapPaymentMode(payment.getPaymentMode()));
+            stmt.setBigDecimal(3, payment.getAmount());
+            stmt.setDate(4, Date.valueOf(payment.getPaymentDate()));
+            stmt.setString(5, mapPaymentMethod(payment.getPaymentMethod()));
 
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) payment.setPaymentId(rs.getInt("id_collection"));
+            if (rs.next()) {
+                payment.setPaymentId(rs.getInt("id_membershipfees"));
+            }
             return payment;
         }
     }
 
-
     public List<MemberPayment> findByMemberId(int memberId) throws SQLException {
-
         String sql = """
-            SELECT mf.*, c.id_member FROM "membershipfees" mf
+            SELECT 
+                mf.id_membershipfees,
+                mf.id_contribution,
+                mf.id_account,
+                mf.amount,
+                mf.membershipfees_date,
+                mf.payment_method,
+                c.id_member,
+                c.id_collective
+            FROM membershipfees mf
             JOIN contribution c ON mf.id_contribution = c.id_contribution
             WHERE c.id_member = ?
-            ORDER BY mf.membershipFees_date DESC
+            ORDER BY mf.membershipfees_date DESC
             """;
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -54,41 +64,176 @@ public class MemberPaymentRepository {
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
             List<MemberPayment> list = new ArrayList<>();
-            while (rs.next()) list.add(mapRow(rs));
+            while (rs.next()) {
+                list.add(mapRowWithMember(rs));
+            }
             return list;
         }
     }
 
-
-    private MemberPayment mapRow(ResultSet rs) throws SQLException {
-        MemberPayment p = new MemberPayment();
-        p.setPaymentId(rs.getInt("id_collection"));
-        p.setMembershipFeeId(rs.getInt("id_contribution"));
-        p.setAccountId(rs.getInt("id_account"));
-        p.setAmount(rs.getInt("amount"));
-        p.setPaymentMode(reverseMapPaymentMode(rs.getString("payment_method")));
-        p.setCreationDate(rs.getDate("membershipFees_date").toLocalDate());
-        return p;
+    public List<MemberPayment> findByCollectiveId(int collectiveId) throws SQLException {
+        String sql = """
+            SELECT 
+                mf.id_membershipfees,
+                mf.id_contribution,
+                mf.id_account,
+                mf.amount,
+                mf.membershipfees_date,
+                mf.payment_method,
+                c.id_member,
+                c.id_collective
+            FROM membershipfees mf
+            JOIN contribution c ON mf.id_contribution = c.id_contribution
+            WHERE c.id_collective = ?
+            ORDER BY mf.membershipfees_date DESC
+            """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, collectiveId);
+            ResultSet rs = stmt.executeQuery();
+            List<MemberPayment> list = new ArrayList<>();
+            while (rs.next()) {
+                list.add(mapRowWithMember(rs));
+            }
+            return list;
+        }
     }
 
+    public List<MemberPayment> findByContributionId(int contributionId) throws SQLException {
+        String sql = """
+            SELECT 
+                id_membershipfees,
+                id_contribution,
+                id_account,
+                amount,
+                membershipfees_date,
+                payment_method
+            FROM membershipfees
+            WHERE id_contribution = ?
+            ORDER BY membershipfees_date DESC
+            """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, contributionId);
+            ResultSet rs = stmt.executeQuery();
+            List<MemberPayment> list = new ArrayList<>();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+            return list;
+        }
+    }
 
-    private String mapPaymentMode(String mode) {
-        if (mode == null) return "Cash";
-        return switch (mode.toUpperCase()) {
-            case "CASH"          -> "Cash";
-            case "BANK_TRANSFER" -> "Bank Transfer";
-            case "MOBILE_MONEY", "MOBILE_BANKING" -> "Mobile Money";
-            default -> "Cash";
+    public List<MemberPayment> findByAccountId(int accountId) throws SQLException {
+        String sql = """
+            SELECT 
+                id_membershipfees,
+                id_contribution,
+                id_account,
+                amount,
+                membershipfees_date,
+                payment_method
+            FROM membershipfees
+            WHERE id_account = ?
+            ORDER BY membershipfees_date DESC
+            """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, accountId);
+            ResultSet rs = stmt.executeQuery();
+            List<MemberPayment> list = new ArrayList<>();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+            return list;
+        }
+    }
+
+    public MemberPayment findById(int paymentId) throws SQLException {
+        String sql = """
+            SELECT 
+                id_membershipfees,
+                id_contribution,
+                id_account,
+                amount,
+                membershipfees_date,
+                payment_method
+            FROM membershipfees
+            WHERE id_membershipfees = ?
+            """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, paymentId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return mapRow(rs);
+            }
+            return null;
+        }
+    }
+
+    public BigDecimal getTotalPaidByMember(int memberId) throws SQLException {
+        String sql = """
+            SELECT COALESCE(SUM(mf.amount), 0)
+            FROM membershipfees mf
+            JOIN contribution c ON mf.id_contribution = c.id_contribution
+            WHERE c.id_member = ?
+            """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, memberId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getBigDecimal(1);
+            }
+            return BigDecimal.ZERO;
+        }
+    }
+
+    public boolean deleteById(int paymentId) throws SQLException {
+        String sql = "DELETE FROM membershipfees WHERE id_membershipfees = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, paymentId);
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        }
+    }
+
+    private MemberPayment mapRow(ResultSet rs) throws SQLException {
+        MemberPayment payment = new MemberPayment();
+        payment.setPaymentId(rs.getInt("id_membershipfees"));
+        payment.setContributionId(rs.getInt("id_contribution"));
+        payment.setAccountId(rs.getInt("id_account"));
+        payment.setAmount(rs.getBigDecimal("amount"));
+        payment.setPaymentMethod(reverseMapPaymentMethod(rs.getString("payment_method")));
+        payment.setPaymentDate(rs.getDate("membershipfees_date").toLocalDate());
+        return payment;
+    }
+
+    private MemberPayment mapRowWithMember(ResultSet rs) throws SQLException {
+        MemberPayment payment = mapRow(rs);
+        payment.setMemberId(rs.getInt("id_member"));
+        payment.setCollectiveId(rs.getInt("id_collective"));
+        return payment;
+    }
+
+    private String mapPaymentMethod(PaymentMethodType method) {
+        if (method == null) return "Cash";
+        return switch (method) {
+            case CASH -> "Cash";
+            case BANK_TRANSFER -> "Bank Transfer";
+            case MOBILE_MONEY -> "Mobile Money";
         };
     }
 
-    private String reverseMapPaymentMode(String dbValue) {
+    private PaymentMethodType reverseMapPaymentMethod(String dbValue) {
         if (dbValue == null) return null;
         return switch (dbValue) {
-            case "Cash"          -> "CASH";
-            case "Bank Transfer" -> "BANK_TRANSFER";
-            case "Mobile Money"  -> "MOBILE_MONEY";
-            default -> dbValue;
+            case "Cash" -> PaymentMethodType.CASH;
+            case "Bank Transfer" -> PaymentMethodType.BANK_TRANSFER;
+            case "Mobile Money" -> PaymentMethodType.MOBILE_MONEY;
+            default -> null;
         };
     }
 }

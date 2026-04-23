@@ -3,7 +3,6 @@ package com.example.agricultureFederation.service;
 import com.example.agricultureFederation.dto.response.AccountResponse;
 import com.example.agricultureFederation.dto.response.CollectivityTransactionResponse;
 import com.example.agricultureFederation.dto.response.MemberResponse;
-import com.example.agricultureFederation.entity.CollectivityTransaction;
 import com.example.agricultureFederation.entity.FinancialAccount;
 import com.example.agricultureFederation.entity.Member;
 import com.example.agricultureFederation.entity.enums.AccountTypeType;
@@ -11,7 +10,6 @@ import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.CollectiveRepository;
 import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
-import com.example.agricultureFederation.repository.FinancialAccountRepository;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;

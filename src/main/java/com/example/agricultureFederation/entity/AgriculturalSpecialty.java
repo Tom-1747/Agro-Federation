@@ -1,14 +1,17 @@
 package com.example.agricultureFederation.entity;
 
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class AgriculturalSpecialty {
-    private Integer idSpecialty;
-    private String name;
-    private String sector;
+    private Integer idSpecialty;    // maps to id_specialty
+    private String name;            // maps to name
+    private String sector;          // maps to sector
+    private String description;     // Optional: additional field if needed
+    private LocalDateTime createdAt; // Optional: for tracking
+    private LocalDateTime updatedAt; // Optional: for tracking
 
     public AgriculturalSpecialty() {}
 
@@ -18,15 +21,64 @@ public class AgriculturalSpecialty {
         this.sector = sector;
     }
 
+    /**
+     * Factory method for creating a new specialty
+     */
+    public static AgriculturalSpecialty create(String name, String sector) {
+        AgriculturalSpecialty specialty = new AgriculturalSpecialty();
+        specialty.setName(name);
+        specialty.setSector(sector);
+        return specialty;
+    }
+
     // Getters et Setters
-    public Integer getIdSpecialty() { return idSpecialty; }
-    public void setIdSpecialty(Integer idSpecialty) { this.idSpecialty = idSpecialty; }
+    public Integer getIdSpecialty() {
+        return idSpecialty;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setIdSpecialty(Integer idSpecialty) {
+        this.idSpecialty = idSpecialty;
+    }
 
-    public String getSector() { return sector; }
-    public void setSector(String sector) { this.sector = sector; }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {

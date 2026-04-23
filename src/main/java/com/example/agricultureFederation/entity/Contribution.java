@@ -6,7 +6,6 @@ import com.example.agricultureFederation.entity.enums.FrequencyType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
 public class Contribution {
 
     private Integer idContribution;
@@ -26,6 +25,17 @@ public class Contribution {
                         ContributionTypeType contributionType, FrequencyType frequency,
                         BigDecimal amount, LocalDate dueDate) {
         this.memberId = memberId;
+        this.collectiveId = collectiveId;
+        this.contributionType = contributionType;
+        this.frequency = frequency;
+        this.amount = amount;
+        this.dueDate = dueDate;
+        this.isPaid = false;
+    }
+
+    public Contribution(Integer collectiveId, ContributionTypeType contributionType,
+                        FrequencyType frequency, BigDecimal amount, LocalDate dueDate) {
+        this.memberId = collectiveId;
         this.collectiveId = collectiveId;
         this.contributionType = contributionType;
         this.frequency = frequency;
@@ -58,12 +68,20 @@ public class Contribution {
     public Boolean getIsPaid() { return isPaid; }
     public void setIsPaid(Boolean isPaid) { this.isPaid = isPaid; }
 
+    public boolean isOverdue() {
+        if (isPaid) return false;
+        if (dueDate == null) return false;
+        return LocalDate.now().isAfter(dueDate);
+    }
+
     @Override
     public String toString() {
         return "Contribution{" +
                 "idContribution=" + idContribution +
                 ", memberId=" + memberId +
+                ", collectiveId=" + collectiveId +
                 ", contributionType=" + contributionType +
+                ", frequency=" + frequency +
                 ", amount=" + amount +
                 ", dueDate=" + dueDate +
                 ", isPaid=" + isPaid +

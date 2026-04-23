@@ -1,6 +1,7 @@
 package com.example.agricultureFederation.entity;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 public class Member {
 
@@ -70,4 +71,55 @@ public class Member {
 
     public boolean isResigned() { return resigned; }
     public void setResigned(boolean resigned) { this.resigned = resigned; }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getFullNameLastNameFirst() {
+        return lastName + " " + firstName;
+    }
+
+    public int getAge() {
+        if (birthDate == null) return 0;
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
+
+    public long getSeniorityInDays() {
+        if (membershipDate == null) return 0;
+        return Period.between(membershipDate, LocalDate.now()).getDays();
+    }
+
+    public long getSeniorityInMonths() {
+        if (membershipDate == null) return 0;
+        return Period.between(membershipDate, LocalDate.now()).toTotalMonths();
+    }
+
+    public boolean hasMinSeniority(int days) {
+        if (resigned) return false;
+        if (membershipDate == null) return false;
+        return !membershipDate.isAfter(LocalDate.now().minusDays(days));
+    }
+
+    public boolean hasMinSeniorityMonths(int months) {
+        if (resigned) return false;
+        if (membershipDate == null) return false;
+        return !membershipDate.isAfter(LocalDate.now().minusMonths(months));
+    }
+
+    public boolean isActive() {
+        return !resigned;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "memberId=" + memberId +
+                ", collectiveId=" + collectiveId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", membershipDate=" + membershipDate +
+                ", resigned=" + resigned +
+                '}';
+    }
 }

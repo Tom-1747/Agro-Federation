@@ -15,8 +15,12 @@ public class FinancialAccountRepository {
         this.dataSource = dataSource;
     }
 
+    /**
+     * 3.1 Trouver un compte par ID
+     * SELECT * FROM account WHERE id_account = ?
+     */
     public FinancialAccount findById(int accountId) throws SQLException {
-        String sql = "SELECT * FROM compte WHERE id_compte = ?";
+        String sql = "SELECT * FROM account WHERE id_account = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
@@ -26,33 +30,50 @@ public class FinancialAccountRepository {
         }
     }
 
+    /**
+     * 3.2 Lister les comptes d'un collectif
+     * SELECT * FROM account WHERE id_collective = ? ORDER BY id_account
+     */
     public List<FinancialAccount> findByCollectiveId(int collectiveId) throws SQLException {
-        String sql = "SELECT * FROM compte WHERE id_collectif = ?";
+        String sql = "SELECT * FROM account WHERE id_collective = ? ORDER BY id_account";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);
             ResultSet rs = stmt.executeQuery();
             List<FinancialAccount> accounts = new ArrayList<>();
-            while (rs.next()) accounts.add(mapRow(rs));
+            while (rs.next()) {
+                accounts.add(mapRow(rs));
+            }
             return accounts;
         }
     }
 
+    /**
+     * 3.4 Calculer le solde cumulé d'un compte à une date donnée
+     * SELECT COALESCE(SUM(amount), 0) FROM membershipfees
+     * WHERE id_account = ? AND membershipfees_date <= ?
+     */
     public double getBalanceAt(int accountId, LocalDate at) throws SQLException {
-        String sql = "SELECT COALESCE(SUM(montant), 0) FROM encaissement " +
-                "WHERE id_compte = ? AND date_encaissement <= ?";
+        String sql = "SELECT COALESCE(SUM(amount), 0) FROM membershipfees " +
+                "WHERE id_account = ? AND membershipfees_date <= ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
             stmt.setDate(2, Date.valueOf(at));
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) return rs.getDouble(1);
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
             return 0;
         }
     }
 
+    /**
+     * 3.3 Mettre à jour le solde d'un compte
+     * UPDATE account SET balance = ? WHERE id_account = ?
+     */
     public void updateBalance(int accountId, double newBalance) throws SQLException {
-        String sql = "UPDATE compte SET solde = ? WHERE id_compte = ?";
+        String sql = "UPDATE account SET balance = ? WHERE id_account = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDouble(1, newBalance);
@@ -61,16 +82,55 @@ public class FinancialAccountRepository {
         }
     }
 
+    /**
+     * Create a new account for a collective
+     */
+    public FinancialAccount save(FinancialAccount account) throws SQLException {
+        String sql = """
+            INSERT INTO account 
+                (id_collective, account_type, account_holder, balance)
+            VALUES (?, ?::account_type_type, ?, ?)
+            RETURNING id_account
+            """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, account.getCollectiveId());
+            stmt.setString(2, account.getType());
+            stmt.setString(3, account.getHolderName());
+            stmt.setDouble(4, account.getAmount());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                account.setAccountId(rs.getInt("id_account"));
+            }
+            return account;
+        }
+    }
+
+    /**
+     * Get total collected amount for an account (all time)
+     */
+    public double getTotalCollected(int accountId) throws SQLException {
+        String sql = "SELECT COALESCE(SUM(amount), 0) FROM membershipfees WHERE id_account = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, accountId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+            return 0;
+        }
+    }
+
     private FinancialAccount mapRow(ResultSet rs) throws SQLException {
         FinancialAccount account = new FinancialAccount();
-        account.setAccountId(rs.getInt("id_compte"));
-        account.setCollectiveId(rs.getInt("id_collectif"));
-        account.setType(rs.getString("type_compte"));
-        account.setHolderName(rs.getString("titulaire_compte"));
-        account.setBankName(rs.getString("nom_banque"));
-        account.setMobileBankingService(rs.getString("service_mob_money"));
-        account.setMobileNumber(rs.getString("numero_telephone"));
-        account.setAmount(rs.getDouble("solde"));
+        account.setAccountId(rs.getInt("id_account"));           // English: id_account
+        account.setCollectiveId(rs.getInt("id_collective"));     // English: id_collective
+        account.setType(rs.getString("account_type"));           // English: account_type
+        account.setHolderName(rs.getString("account_holder"));   // English: account_holder
+        account.setAmount(rs.getDouble("balance"));              // English: balance
+        // Note: Your schema doesn't have bank_name, service_mob_money, or numero_telephone in account table
+        // You may need to add these columns to your schema or remove them from FinancialAccount entity
         return account;
     }
 }

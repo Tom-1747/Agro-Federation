@@ -1,6 +1,5 @@
 package com.example.agricultureFederation.entity;
 
-
 import java.util.Objects;
 
 public class ProvincialBranch {
@@ -8,6 +7,8 @@ public class ProvincialBranch {
     private String province;
     private String capitalCity;
     private String address;
+    private String phone;
+    private String email;
 
     public ProvincialBranch() {}
 
@@ -18,7 +19,16 @@ public class ProvincialBranch {
         this.address = address;
     }
 
-    // Getters et Setters
+    public ProvincialBranch(String province, String capitalCity, String address) {
+        this.province = province;
+        this.capitalCity = capitalCity;
+        this.address = address;
+    }
+
+    public static ProvincialBranch create(String province, String capitalCity, String address) {
+        return new ProvincialBranch(province, capitalCity, address);
+    }
+
     public Integer getIdBranch() { return idBranch; }
     public void setIdBranch(Integer idBranch) { this.idBranch = idBranch; }
 
@@ -30,6 +40,12 @@ public class ProvincialBranch {
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     @Override
     public boolean equals(Object o) {
@@ -50,7 +66,6 @@ public class ProvincialBranch {
                 "idBranch=" + idBranch +
                 ", province='" + province + '\'' +
                 ", capitalCity='" + capitalCity + '\'' +
-                ", address='" + address + '\'' +
                 '}';
     }
 }

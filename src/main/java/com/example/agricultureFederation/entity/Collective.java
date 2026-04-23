@@ -1,11 +1,12 @@
 package com.example.agricultureFederation.entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Collective {
-    private int collectiveId;
-    private int federationId;
-    private Integer specialityId;
+    private Integer collectiveId;
+    private Integer federationId;
+    private Integer specialtyId;
     private Integer branchId;
     private String name;
     private String location;
@@ -15,40 +16,56 @@ public class Collective {
 
     public Collective() {}
 
-    public Collective(int collectiveId, int federationId, Integer specialityId, String name, String location, String phone, LocalDate creationDate) {
-        this.collectiveId = collectiveId;
+    public Collective(Integer federationId, Integer specialtyId, Integer branchId,
+                      String name, String location, String phone, LocalDate creationDate) {
         this.federationId = federationId;
-        this.specialityId = specialityId;
+        this.specialtyId = specialtyId;
         this.branchId = branchId;
         this.name = name;
         this.location = location;
         this.phone = phone;
         this.creationDate = creationDate;
-        this.presidentId = presidentId;
     }
 
-    public int getCollectiveId() {
+    public Collective(Integer collectiveId, Integer federationId, Integer specialtyId,
+                      Integer branchId, String name, String location, String phone, LocalDate creationDate) {
+        this.collectiveId = collectiveId;
+        this.federationId = federationId;
+        this.specialtyId = specialtyId;
+        this.branchId = branchId;
+        this.name = name;
+        this.location = location;
+        this.phone = phone;
+        this.creationDate = creationDate;
+    }
+
+    public static Collective create(Integer federationId, Integer specialtyId, Integer branchId,
+                                    String name, String location, String phone) {
+        return new Collective(federationId, specialtyId, branchId, name, location, phone, LocalDate.now());
+    }
+
+    public Integer getCollectiveId() {
         return collectiveId;
     }
 
-    public void setCollectiveId(int collectiveId) {
+    public void setCollectiveId(Integer collectiveId) {
         this.collectiveId = collectiveId;
     }
 
-    public int getFederationId() {
+    public Integer getFederationId() {
         return federationId;
     }
 
-    public void setFederationId(int federationId) {
+    public void setFederationId(Integer federationId) {
         this.federationId = federationId;
     }
 
-    public Integer getSpecialityId() {
-        return specialityId;
+    public Integer getSpecialtyId() {
+        return specialtyId;
     }
 
-    public void setSpecialityId(Integer specialityId) {
-        this.specialityId = specialityId;
+    public void setSpecialtyId(Integer specialtyId) {
+        this.specialtyId = specialtyId;
     }
 
     public Integer getBranchId() {
@@ -97,5 +114,36 @@ public class Collective {
 
     public void setPresidentId(Integer presidentId) {
         this.presidentId = presidentId;
+    }
+
+    public boolean hasPresident() {
+        return presidentId != null && presidentId > 0;
+    }
+
+    public boolean isNew() {
+        return collectiveId == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Collective that = (Collective) o;
+        return Objects.equals(collectiveId, that.collectiveId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(collectiveId);
+    }
+
+    @Override
+    public String toString() {
+        return "Collective{" +
+                "collectiveId=" + collectiveId +
+                ", name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", creationDate=" + creationDate +
+                '}';
     }
 }

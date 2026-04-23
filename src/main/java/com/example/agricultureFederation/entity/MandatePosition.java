@@ -8,23 +8,61 @@ public class MandatePosition {
     private Integer collectiveId;
     private Integer federationId;
     private String positionLabel;
-    private int civilYear;
+    private int calendarYear;
     private LocalDate startDate;
     private LocalDate endDate;
     private int cumulatedMandates;
 
     public MandatePosition() {}
 
-    public MandatePosition(int mandatePositionId, int memberId, Integer collectiveId, Integer federationId, String positionLabel, int civilYear, LocalDate startDate, LocalDate endDate, int cumulatedMandates) {
+    public MandatePosition(int memberId, Integer collectiveId, Integer federationId,
+                           String positionLabel, int calendarYear, LocalDate startDate, LocalDate endDate) {
+        this.memberId = memberId;
+        this.collectiveId = collectiveId;
+        this.federationId = federationId;
+        this.positionLabel = positionLabel;
+        this.calendarYear = calendarYear;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.cumulatedMandates = 0;
+    }
+
+    public MandatePosition(int mandatePositionId, int memberId, Integer collectiveId,
+                           Integer federationId, String positionLabel, int calendarYear,
+                           LocalDate startDate, LocalDate endDate, int cumulatedMandates) {
         this.mandatePositionId = mandatePositionId;
         this.memberId = memberId;
         this.collectiveId = collectiveId;
         this.federationId = federationId;
         this.positionLabel = positionLabel;
-        this.civilYear = civilYear;
+        this.calendarYear = calendarYear;
         this.startDate = startDate;
         this.endDate = endDate;
         this.cumulatedMandates = cumulatedMandates;
+    }
+
+    public static MandatePosition collectiveMandate(int memberId, int collectiveId,
+                                                    String positionLabel, int calendarYear) {
+        MandatePosition mandate = new MandatePosition();
+        mandate.setMemberId(memberId);
+        mandate.setCollectiveId(collectiveId);
+        mandate.setPositionLabel(positionLabel);
+        mandate.setCalendarYear(calendarYear);
+        mandate.setStartDate(LocalDate.of(calendarYear, 1, 1));
+        mandate.setEndDate(LocalDate.of(calendarYear, 12, 31));
+        return mandate;
+    }
+
+    public static MandatePosition federationMandate(int memberId, int federationId,
+                                                    String positionLabel, int calendarYear) {
+        MandatePosition mandate = new MandatePosition();
+        mandate.setMemberId(memberId);
+        mandate.setFederationId(federationId);
+        mandate.setPositionLabel(positionLabel);
+        mandate.setCalendarYear(calendarYear);
+        mandate.setStartDate(LocalDate.of(calendarYear, 1, 1));
+        mandate.setEndDate(LocalDate.of(calendarYear, 12, 31));
+        return mandate;
     }
 
     public int getMandatePositionId() {
@@ -67,12 +105,12 @@ public class MandatePosition {
         this.positionLabel = positionLabel;
     }
 
-    public int getCivilYear() {
-        return civilYear;
+    public int getCalendarYear() {
+        return calendarYear;
     }
 
-    public void setCivilYear(int civilYear) {
-        this.civilYear = civilYear;
+    public void setCalendarYear(int calendarYear) {
+        this.calendarYear = calendarYear;
     }
 
     public LocalDate getStartDate() {
@@ -97,5 +135,46 @@ public class MandatePosition {
 
     public void setCumulatedMandates(int cumulatedMandates) {
         this.cumulatedMandates = cumulatedMandates;
+    }
+
+    public boolean isActive() {
+        LocalDate now = LocalDate.now();
+        if (startDate != null && startDate.isAfter(now)) return false;
+        if (endDate != null && endDate.isBefore(now)) return false;
+        return true;
+    }
+
+    public boolean isPresident() {
+        return "President".equalsIgnoreCase(positionLabel);
+    }
+
+    public boolean isVicePresident() {
+        return "Vice President".equalsIgnoreCase(positionLabel);
+    }
+
+    public boolean isTreasurer() {
+        return "Treasurer".equalsIgnoreCase(positionLabel);
+    }
+
+    public boolean isSecretary() {
+        return "Secretary".equalsIgnoreCase(positionLabel);
+    }
+
+    public boolean isConfirmedMember() {
+        return "Confirmed Member".equalsIgnoreCase(positionLabel);
+    }
+
+    public boolean isRequiredPosition() {
+        return isPresident() || isVicePresident() || isTreasurer() || isSecretary();
+    }
+
+    @Override
+    public String toString() {
+        return "MandatePosition{" +
+                "mandatePositionId=" + mandatePositionId +
+                ", memberId=" + memberId +
+                ", positionLabel='" + positionLabel + '\'' +
+                ", calendarYear=" + calendarYear +
+                '}';
     }
 }

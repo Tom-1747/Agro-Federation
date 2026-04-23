@@ -3,18 +3,15 @@ package com.example.agricultureFederation.service;
 import com.example.agricultureFederation.dto.request.CreateMemberPaymentRequest;
 import com.example.agricultureFederation.dto.response.AccountResponse;
 import com.example.agricultureFederation.dto.response.MemberPaymentResponse;
-import com.example.agricultureFederation.entity.CollectivityTransaction;
 import com.example.agricultureFederation.entity.FinancialAccount;
 import com.example.agricultureFederation.entity.MemberPayment;
 import com.example.agricultureFederation.entity.MembershipFee;
 import com.example.agricultureFederation.entity.enums.AccountTypeType;
 import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
-import com.example.agricultureFederation.repository.FinancialAccountRepository;
 import com.example.agricultureFederation.repository.MemberPaymentRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
 import com.example.agricultureFederation.repository.MembershipFeeRepository;
-import com.example.agricultureFederation.repository.FinancialAccountRepository;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
