@@ -1,16 +1,19 @@
 package com.example.agricultureFederation.service;
 
+import com.example.agricultureFederation.dto.response.AccountResponse;
 import com.example.agricultureFederation.dto.response.CollectivityTransactionResponse;
-import com.example.agricultureFederation.dto.response.FinancialAccountResponse;
 import com.example.agricultureFederation.dto.response.MemberResponse;
 import com.example.agricultureFederation.entity.CollectivityTransaction;
 import com.example.agricultureFederation.entity.FinancialAccount;
 import com.example.agricultureFederation.entity.Member;
+import com.example.agricultureFederation.entity.enums.AccountTypeType;
+import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.CollectiveRepository;
 import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
 import com.example.agricultureFederation.repository.FinancialAccountRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -62,20 +65,23 @@ public class CollectivityTransactionService {
         CollectivityTransactionResponse r = new CollectivityTransactionResponse();
         r.setId(String.valueOf(t.getTransactionId()));
         r.setCreationDate(t.getCreationDate());
-        r.setAmount(t.getAmount());
-        r.setPaymentMode(t.getPaymentMode());
+        // double DB → BigDecimal pour la réponse
+        r.setAmount(BigDecimal.valueOf(t.getAmount()));
+        // String DB → PaymentMethodType enum pour la réponse
+        try { r.setPaymentMode(PaymentMethodType.valueOf(t.getPaymentMode())); } catch (Exception ignored) {}
 
         if (account != null) {
-            FinancialAccountResponse accountResponse = new FinancialAccountResponse();
+            AccountResponse accountResponse = new AccountResponse();
             accountResponse.setId(String.valueOf(account.getAccountId()));
-            accountResponse.setType(account.getType());
-            accountResponse.setAmount(account.getAmount());
+            try { accountResponse.setType(AccountTypeType.valueOf(account.getType())); } catch (Exception ignored) {}
+            accountResponse.setAmount(BigDecimal.valueOf(account.getAmount()));
             r.setAccountCredited(accountResponse);
         }
 
         if (member != null) {
             MemberResponse memberResponse = new MemberResponse();
-            memberResponse.setId(String.valueOf(member.getMemberId()));
+            // MemberResponse.memberId est int, pas String — on utilise setMemberId
+            memberResponse.setMemberId(member.getMemberId());
             memberResponse.setFirstName(member.getFirstName());
             memberResponse.setLastName(member.getLastName());
             r.setMemberDebited(memberResponse);

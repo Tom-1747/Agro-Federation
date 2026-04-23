@@ -15,33 +15,83 @@ public class MemberResponse {
     private String email;
     private LocalDate membershipDate;
 
-    public int getMemberId() { return memberId; }
-    public void setMemberId(int memberId) { this.memberId = memberId; }
+    public int getMemberId() {
+        return memberId;
+    }
 
-    public int getCollectiveId() { return collectiveId; }
-    public void setCollectiveId(int collectiveId) { this.collectiveId = collectiveId; }
+    public void setMemberId(int memberId) {
+        this.memberId = memberId;
+    }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public int getCollectiveId() {
+        return collectiveId;
+    }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setCollectiveId(int collectiveId) {
+        this.collectiveId = collectiveId;
+    }
 
-    public LocalDate getBirthDate() { return birthDate; }
-    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
+    public String getLastName() {
+        return lastName;
+    }
 
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+    public String getFirstName() {
+        return firstName;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
 
-    public LocalDate getMembershipDate() { return membershipDate; }
-    public void setMembershipDate(LocalDate membershipDate) { this.membershipDate = membershipDate; }
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDate getMembershipDate() {
+        return membershipDate;
+    }
+
+    public void setMembershipDate(LocalDate membershipDate) {
+        this.membershipDate = membershipDate;
+    }
 }

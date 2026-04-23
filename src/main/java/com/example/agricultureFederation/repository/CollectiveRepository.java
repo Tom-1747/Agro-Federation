@@ -1,6 +1,6 @@
 package com.example.agricultureFederation.repository;
-
 import com.example.agricultureFederation.entity.Collective;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Date;
@@ -17,7 +17,7 @@ public class CollectiveRepository {
     }
 
     public Collective save(Collective collective) throws SQLException {
-        String sql = "INSERT INTO collectif (id_federation, id_specialite, id_branche, nom, lieu_exercice, telephone, date_creation) " +
+        String sql = "INSERT INTO collective (id_federation, id_specialite, id_branche, nom, lieu_exercice, telephone, date_creation) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

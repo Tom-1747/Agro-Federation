@@ -3,20 +3,19 @@ package com.example.agricultureFederation.service;
 import com.example.agricultureFederation.dto.request.CreateMembershipFeeRequest;
 import com.example.agricultureFederation.dto.response.MembershipFeeResponse;
 import com.example.agricultureFederation.entity.MembershipFee;
+import com.example.agricultureFederation.entity.enums.FrequencyType;
 import com.example.agricultureFederation.repository.CollectiveRepository;
 import com.example.agricultureFederation.repository.MembershipFeeRepository;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class MembershipFeeService {
 
     private final MembershipFeeRepository membershipFeeRepository;
     private final CollectiveRepository collectiveRepository;
-
-    private static final Set<String> VALID_FREQUENCIES = Set.of("WEEKLY", "MONTHLY", "ANNUALLY", "PUNCTUALLY");
 
     public MembershipFeeService(MembershipFeeRepository membershipFeeRepository,
                                 CollectiveRepository collectiveRepository) {
@@ -45,21 +44,21 @@ public class MembershipFeeService {
         List<MembershipFeeResponse> responses = new ArrayList<>();
         for (CreateMembershipFeeRequest request : requests) {
 
-            // Rule 1 : valid frequency
-            if (!VALID_FREQUENCIES.contains(request.getFrequency())) {
-                throw new IllegalArgumentException("Unrecognized frequency: " + request.getFrequency());
+            // Rule 1 : frequency must not be null
+            if (request.getFrequency() == null) {
+                throw new IllegalArgumentException("Frequency is required.");
             }
 
             // Rule 2 : amount must be positive
-            if (request.getAmount() <= 0) {
+            if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("Amount must be greater than 0.");
             }
 
             MembershipFee fee = new MembershipFee();
             fee.setCollectiveId(id);
             fee.setEligibleFrom(request.getEligibleFrom());
-            fee.setFrequency(request.getFrequency());
-            fee.setAmount(request.getAmount());
+            fee.setFrequency(request.getFrequency().name());   // FrequencyType → String pour la DB
+            fee.setAmount(request.getAmount().doubleValue());  // BigDecimal → double pour la DB
             fee.setLabel(request.getLabel());
             fee.setStatus("ACTIVE");
 
@@ -73,10 +72,11 @@ public class MembershipFeeService {
         MembershipFeeResponse r = new MembershipFeeResponse();
         r.setId(String.valueOf(fee.getMembershipFeeId()));
         r.setEligibleFrom(fee.getEligibleFrom());
-        r.setFrequency(fee.getFrequency());
-        r.setAmount(fee.getAmount());
+        // String DB → FrequencyType enum pour la réponse
+        try { r.setFrequency(FrequencyType.valueOf(fee.getFrequency())); } catch (Exception ignored) {}
+        r.setAmount(fee.getAmount() != 0 ? BigDecimal.valueOf(fee.getAmount()) : null);
         r.setLabel(fee.getLabel());
-        r.setStatus(fee.getStatus());
+        r.setActive("ACTIVE".equals(fee.getStatus()));
         return r;
     }
 }

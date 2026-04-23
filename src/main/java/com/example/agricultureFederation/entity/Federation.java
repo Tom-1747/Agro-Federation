@@ -29,7 +29,7 @@ public class Federation {
         this.mandateEndYear = mandateEndYear;
         this.president = president;
         if (president != null) {
-            this.presidentId = president.getMemberId();
+            this.presidentId = president.getMemberId();  // ← À vérifier selon votre classe Member
         }
     }
 
@@ -59,7 +59,7 @@ public class Federation {
     public void setPresident(Member president) {
         this.president = president;
         if (president != null) {
-            this.presidentId = president.getMemberId();
+            this.presidentId = president.getMemberId();  // ← À vérifier
         }
     }
 

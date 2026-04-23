@@ -4,6 +4,7 @@ import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
 import com.example.agricultureFederation.dto.response.CollectiveResponse;
 import com.example.agricultureFederation.entity.Collective;
 import com.example.agricultureFederation.repository.CollectiveRepository;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Year;
@@ -43,19 +44,15 @@ public class CollectiveService {
         if (request.getLocation() == null || request.getLocation().isBlank()) {
             throw new IllegalArgumentException("Location is required to open a new collective.");
         }
-        if (request.getSpecialityId() == null) {
-            throw new IllegalArgumentException("Agricultural speciality is required to open a new collective.");
-        }
 
-        Collective collective = new Collective(
-                request.getFederationId(),
-                request.getSpecialityId(),
-                request.getBranchId(),
-                request.getName(),
-                request.getLocation(),
-                request.getPhone(),
-                request.getCreationDate() != null ? request.getCreationDate() : LocalDate.now()
-        );
+        Collective collective = new Collective();
+        collective.setFederationId(request.getFederationId());
+        collective.setSpecialityId(request.getSpecialityId());
+        collective.setBranchId(request.getBranchId());
+        collective.setName(request.getName());
+        collective.setLocation(request.getLocation());
+        collective.setPhone(request.getPhone());
+        collective.setCreationDate(request.getCreationDate() != null ? request.getCreationDate() : LocalDate.now());
 
         Collective saved = collectiveRepository.save(collective);
         return toResponse(saved);
