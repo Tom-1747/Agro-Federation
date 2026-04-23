@@ -10,7 +10,12 @@ import com.example.agricultureFederation.entity.MembershipFee;
 import com.example.agricultureFederation.entity.enums.AccountTypeType;
 import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
+<<<<<<< HEAD:src/main/java/com/example/agricultureFederation/service/MemberPaymentService.java
 import com.example.agricultureFederation.repository.MemberPaymentRepository;
+=======
+import com.example.agricultureFederation.repository.FinancialAccountRepository;
+import com.example.agricultureFederation.repository.memberPaymentRepository;
+>>>>>>> 21-april:src/main/java/com/example/agricultureFederation/service/MemberPayementService.java
 import com.example.agricultureFederation.repository.MemberRepository;
 import com.example.agricultureFederation.repository.MembershipFeeRepository;
 import com.example.agricultureFederation.repository.FinancialAccountRepository;
@@ -23,13 +28,13 @@ import java.util.List;
 
 public class MemberPaymentService {
 
-    private final MemberPaymentRepository memberPaymentRepository;
+    private final memberPaymentRepository memberPaymentRepository;
     private final MemberRepository memberRepository;
     private final MembershipFeeRepository membershipFeeRepository;
     private final FinancialAccountRepository financialAccountRepository;
     private final CollectivityTransactionRepository transactionRepository;
 
-    public MemberPaymentService(MemberPaymentRepository memberPaymentRepository,
+    public MemberPaymentService(memberPaymentRepository memberPaymentRepository,
                                 MemberRepository memberRepository,
                                 MembershipFeeRepository membershipFeeRepository,
                                 FinancialAccountRepository financialAccountRepository,

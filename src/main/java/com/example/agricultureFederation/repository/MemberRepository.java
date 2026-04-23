@@ -7,7 +7,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21-april
 public class MemberRepository {
 
     private final DataSource dataSource;
@@ -83,6 +86,18 @@ public class MemberRepository {
             List<Member> list = new ArrayList<>();
             while (rs.next()) list.add(mapRow(rs));
             return list;
+        }
+    }
+
+    public List<Member> findActiveByCollectiveId(int collectiveId) throws SQLException {
+        String sql = "SELECT * FROM membre WHERE id_collectif = ? AND est_demissionne = FALSE";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, collectiveId);
+            ResultSet rs = stmt.executeQuery();
+            List<Member> members = new ArrayList<>();
+            while (rs.next()) members.add(mapRow(rs));
+            return members;
         }
     }
 

@@ -4,9 +4,12 @@ import com.example.agricultureFederation.entity.Collective;
 
 import javax.sql.DataSource;
 import java.sql.*;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 
+=======
+>>>>>>> 21-april
 
 public class CollectiveRepository {
 
@@ -66,6 +69,7 @@ public class CollectiveRepository {
         }
     }
 
+<<<<<<< HEAD
     public List<Collective> findAll() throws SQLException {
         String sql = "SELECT * FROM collective ORDER BY id_collective";
         try (Connection conn = dataSource.getConnection();
@@ -75,6 +79,16 @@ public class CollectiveRepository {
             List<Collective> list = new ArrayList<>();
             while (rs.next()) list.add(mapRow(rs));
             return list;
+=======
+    public Collective findByIdWithMembers(int collectiveId) throws SQLException {
+        String sql = "SELECT * FROM collectif WHERE id_collectif = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, collectiveId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return mapRow(rs);
+            return null;
+>>>>>>> 21-april
         }
     }
 
@@ -122,16 +136,61 @@ public class CollectiveRepository {
         }
     }
 
+    public boolean existsByNumber(String number) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM collectif WHERE numero = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, number);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+            return false;
+        }
+    }
+
+    public boolean existsByName(String name) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM collectif WHERE nom = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+            return false;
+        }
+    }
+
+    public Collective assignIdentity(int collectiveId, String number, String name) throws SQLException {
+        String sql = "UPDATE collectif SET numero = ?, nom = ? WHERE id_collectif = ? RETURNING *";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, number);
+            stmt.setString(2, name);
+            stmt.setInt(3, collectiveId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return mapRow(rs);
+            return null;
+        }
+    }
+
     private Collective mapRow(ResultSet rs) throws SQLException {
         Collective c = new Collective();
         c.setCollectiveId(rs.getInt("id_collective"));
         c.setFederationId(rs.getInt("id_federation"));
+<<<<<<< HEAD
         c.setSpecialityId((Integer) rs.getObject("id_specialty"));
         c.setBranchId((Integer) rs.getObject("id_branch"));
         c.setName(rs.getString("name"));
         c.setLocation(rs.getString("location"));
         c.setPhone(rs.getString("phone"));
         c.setCreationDate(rs.getDate("creation_date").toLocalDate());
+=======
+        c.setSpecialityId((Integer) rs.getObject("id_specialite"));
+        c.setBranchId((Integer) rs.getObject("id_branche"));
+        c.setName(rs.getString("nom"));
+        c.setNumber(rs.getString("numero"));
+        c.setLocation(rs.getString("lieu_exercice"));
+        c.setPhone(rs.getString("telephone"));
+        c.setCreationDate(rs.getDate("date_creation").toLocalDate());
+>>>>>>> 21-april
         c.setPresidentId((Integer) rs.getObject("id_president"));
         return c;
     }
