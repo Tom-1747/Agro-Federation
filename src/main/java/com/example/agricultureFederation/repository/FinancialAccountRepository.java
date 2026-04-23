@@ -7,7 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class FinancialAccountRepository {
 
     private final DataSource dataSource;
@@ -15,7 +14,6 @@ public class FinancialAccountRepository {
     public FinancialAccountRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
 
     public FinancialAccount findById(int accountId) throws SQLException {
         String sql = "SELECT * FROM account WHERE id_account = ?";
@@ -40,6 +38,7 @@ public class FinancialAccountRepository {
             return list;
         }
     }
+
 
     public void updateBalance(int accountId, double newBalance) throws SQLException {
         String sql = "UPDATE account SET balance = ? WHERE id_account = ?";

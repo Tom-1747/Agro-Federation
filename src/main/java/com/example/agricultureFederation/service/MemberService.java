@@ -32,7 +32,7 @@ public class MemberService {
                 .map(SponsorRequest::getMemberId)
                 .collect(Collectors.toList());
 
-        List<Member> sponsorMembers = memberRepository.findSponsorsByIds(sponsorIds);
+        List<Member> sponsorMembers = memberRepository.findByIds(sponsorIds);
 
         for (Member sponsor : sponsorMembers) {
             boolean isConfirmed = memberRepository.isConfirmedMember(sponsor.getMemberId());

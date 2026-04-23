@@ -62,7 +62,7 @@ public class MembershipFeeService {
             fee.setLabel(request.getLabel());
             fee.setStatus("ACTIVE");
 
-            MembershipFee saved = membershipFeeRepository.save(fee);
+            MembershipFee saved = membershipFeeRepository.saveContribution(fee);
             responses.add(toResponse(saved));
         }
         return responses;
