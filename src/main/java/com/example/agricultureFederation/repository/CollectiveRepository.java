@@ -1,15 +1,8 @@
 package com.example.agricultureFederation.repository;
 
 import com.example.agricultureFederation.entity.Collective;
-
 import javax.sql.DataSource;
 import java.sql.*;
-<<<<<<< HEAD
-import java.util.ArrayList;
-import java.util.List;
-
-=======
->>>>>>> 21-april
 
 public class CollectiveRepository {
 
@@ -20,15 +13,10 @@ public class CollectiveRepository {
     }
 
     public Collective save(Collective collective) throws SQLException {
-        String sql = """
-            INSERT INTO collective
-                (id_federation, id_specialty, id_branch, name, location, phone, creation_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            RETURNING id_collective
-            """;
+        String sql = "INSERT INTO collectif (id_federation, id_specialite, id_branche, nom, lieu_exercice, telephone, date_creation) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, collective.getFederationId());
             stmt.setObject(2, collective.getSpecialityId());
             stmt.setObject(3, collective.getBranchId());
@@ -36,32 +24,18 @@ public class CollectiveRepository {
             stmt.setString(5, collective.getLocation());
             stmt.setString(6, collective.getPhone());
             stmt.setDate(7, Date.valueOf(collective.getCreationDate()));
-
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) collective.setCollectiveId(rs.getInt("id_collective"));
+            if (rs.next()) {
+                collective.setCollectiveId(rs.getInt("id_collectif"));
+            }
             return collective;
         }
     }
 
-    public Collective updateInformation(int collectiveId, String name, Integer number) throws SQLException {
-
-        String sql = "UPDATE collective SET name = ? WHERE id_collective = ?";
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, name);
-            stmt.setInt(2, collectiveId);
-            stmt.executeUpdate();
-            return findById(collectiveId);
-        }
-    }
-
-
     public Collective findById(int collectiveId) throws SQLException {
-        String sql = "SELECT * FROM collective WHERE id_collective = ?";
+        String sql = "SELECT * FROM collectif WHERE id_collectif = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, collectiveId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) return mapRow(rs);
@@ -69,17 +43,6 @@ public class CollectiveRepository {
         }
     }
 
-<<<<<<< HEAD
-    public List<Collective> findAll() throws SQLException {
-        String sql = "SELECT * FROM collective ORDER BY id_collective";
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            List<Collective> list = new ArrayList<>();
-            while (rs.next()) list.add(mapRow(rs));
-            return list;
-=======
     public Collective findByIdWithMembers(int collectiveId) throws SQLException {
         String sql = "SELECT * FROM collectif WHERE id_collectif = ?";
         try (Connection conn = dataSource.getConnection();
@@ -88,51 +51,44 @@ public class CollectiveRepository {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) return mapRow(rs);
             return null;
->>>>>>> 21-april
         }
     }
 
     public int countActiveMembers(int collectiveId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM member WHERE id_collective = ? AND is_resigned = FALSE";
+        String sql = "SELECT COUNT(*) FROM membre WHERE id_collectif = ? AND est_demissionne = FALSE";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, collectiveId);
             ResultSet rs = stmt.executeQuery();
-            return rs.next() ? rs.getInt(1) : 0;
+            if (rs.next()) return rs.getInt(1);
+            return 0;
         }
     }
 
     public int countMembersWithSixMonthsSeniority(int collectiveId) throws SQLException {
-        String sql = """
-            SELECT COUNT(*) FROM member
-            WHERE id_collective = ?
-              AND is_resigned = FALSE
-              AND join_date <= CURRENT_DATE - INTERVAL '6 months'
-            """;
+        String sql = "SELECT COUNT(*) FROM membre " +
+                "WHERE id_collectif = ? AND est_demissionne = FALSE " +
+                "AND date_adhesion <= CURRENT_DATE - INTERVAL '6 months'";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, collectiveId);
             ResultSet rs = stmt.executeQuery();
-            return rs.next() ? rs.getInt(1) : 0;
+            if (rs.next()) return rs.getInt(1);
+            return 0;
         }
     }
 
-    public boolean hasAllSpecificPositionsFilled(int collectiveId, int calendarYear) throws SQLException {
-        String sql = """
-            SELECT COUNT(DISTINCT position_label) FROM position_mandate
-            WHERE id_collective = ?
-              AND calendar_year = ?
-              AND position_label IN ('President','Vice President','Treasurer','Secretary')
-            """;
+    public boolean hasAllSpecificPositionsFilled(int collectiveId, int civilYear) throws SQLException {
+        String sql = "SELECT COUNT(DISTINCT libelle_poste) FROM poste_mandat " +
+                "WHERE id_collectif = ? AND annee_civile = ? " +
+                "AND libelle_poste IN ('Président','Président adjoint','Trésorier','Secrétaire')";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, collectiveId);
-            stmt.setInt(2, calendarYear);
+            stmt.setInt(2, civilYear);
             ResultSet rs = stmt.executeQuery();
-            return rs.next() && rs.getInt(1) == 4;
+            if (rs.next()) return rs.getInt(1) == 4;
+            return false;
         }
     }
 
@@ -173,16 +129,8 @@ public class CollectiveRepository {
 
     private Collective mapRow(ResultSet rs) throws SQLException {
         Collective c = new Collective();
-        c.setCollectiveId(rs.getInt("id_collective"));
+        c.setCollectiveId(rs.getInt("id_collectif"));
         c.setFederationId(rs.getInt("id_federation"));
-<<<<<<< HEAD
-        c.setSpecialityId((Integer) rs.getObject("id_specialty"));
-        c.setBranchId((Integer) rs.getObject("id_branch"));
-        c.setName(rs.getString("name"));
-        c.setLocation(rs.getString("location"));
-        c.setPhone(rs.getString("phone"));
-        c.setCreationDate(rs.getDate("creation_date").toLocalDate());
-=======
         c.setSpecialityId((Integer) rs.getObject("id_specialite"));
         c.setBranchId((Integer) rs.getObject("id_branche"));
         c.setName(rs.getString("nom"));
@@ -190,7 +138,6 @@ public class CollectiveRepository {
         c.setLocation(rs.getString("lieu_exercice"));
         c.setPhone(rs.getString("telephone"));
         c.setCreationDate(rs.getDate("date_creation").toLocalDate());
->>>>>>> 21-april
         c.setPresidentId((Integer) rs.getObject("id_president"));
         return c;
     }

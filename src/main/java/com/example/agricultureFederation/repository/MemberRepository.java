@@ -1,16 +1,11 @@
 package com.example.agricultureFederation.repository;
 
 import com.example.agricultureFederation.entity.Member;
-
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 21-april
 public class MemberRepository {
 
     private final DataSource dataSource;
@@ -19,73 +14,37 @@ public class MemberRepository {
         this.dataSource = dataSource;
     }
 
-
     public Member save(Member member) throws SQLException {
-        String sql = """
-            INSERT INTO member
-                (id_collective, id_trade, last_name, first_name,
-                 birth_date, gender, address, phone, email, join_date, is_resigned)
-            VALUES (?, ?, ?, ?, ?, ?::gender_type, ?, ?, ?, ?, FALSE)
-            RETURNING id_member
-            """;
+        String sql = "INSERT INTO membre (id_collectif, id_metier, nom, prenom, date_naissance, genre, adresse, telephone, email, date_adhesion, est_demissionne) " +
+                "VALUES (?, ?, ?, ?, ?, ?::genre_type, ?, ?, ?, ?, FALSE) RETURNING *";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, member.getCollectiveId());
             stmt.setObject(2, member.getJobId());
             stmt.setString(3, member.getLastName());
             stmt.setString(4, member.getFirstName());
-            stmt.setDate(5, member.getBirthDate() != null ? Date.valueOf(member.getBirthDate()) : null);
+            stmt.setDate(5, Date.valueOf(member.getBirthDate()));
             stmt.setString(6, member.getGender());
             stmt.setString(7, member.getAddress());
             stmt.setString(8, member.getPhone());
             stmt.setString(9, member.getEmail());
             stmt.setDate(10, Date.valueOf(member.getMembershipDate()));
-
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) member.setMemberId(rs.getInt("id_member"));
+            if (rs.next()) {
+                member.setMemberId(rs.getInt("id_membre"));
+            }
             return member;
         }
     }
 
-
     public Member findById(int memberId) throws SQLException {
-        String sql = "SELECT * FROM member WHERE id_member = ?";
+        String sql = "SELECT * FROM membre WHERE id_membre = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
-            return rs.next() ? mapRow(rs) : null;
-        }
-    }
-
-    public List<Member> findByCollectiveId(int collectiveId) throws SQLException {
-        String sql = "SELECT * FROM member WHERE id_collective = ? AND is_resigned = FALSE ORDER BY id_member";
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, collectiveId);
-            ResultSet rs = stmt.executeQuery();
-            List<Member> list = new ArrayList<>();
-            while (rs.next()) list.add(mapRow(rs));
-            return list;
-        }
-    }
-
-    public List<Member> findByIds(List<Integer> ids) throws SQLException {
-        if (ids == null || ids.isEmpty()) return new ArrayList<>();
-        String placeholders = "?,".repeat(ids.size());
-        placeholders = placeholders.substring(0, placeholders.length() - 1);
-        String sql = "SELECT * FROM member WHERE id_member IN (" + placeholders + ") AND is_resigned = FALSE";
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            for (int i = 0; i < ids.size(); i++) stmt.setInt(i + 1, ids.get(i));
-            ResultSet rs = stmt.executeQuery();
-            List<Member> list = new ArrayList<>();
-            while (rs.next()) list.add(mapRow(rs));
-            return list;
+            if (rs.next()) return mapRow(rs);
+            return null;
         }
     }
 
@@ -102,51 +61,62 @@ public class MemberRepository {
     }
 
     public boolean isConfirmedMember(int memberId) throws SQLException {
-        String sql = """
-            SELECT COUNT(*) FROM position_mandate
-            WHERE id_member = ?
-              AND position_label = 'Confirmed Member'
-            """;
+        String sql = "SELECT COUNT(*) FROM poste_mandat " +
+                "WHERE id_membre = ? AND libelle_poste = 'Membre confirmé'";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
-            return rs.next() && rs.getInt(1) > 0;
+            if (rs.next()) return rs.getInt(1) > 0;
+            return false;
         }
     }
 
     public boolean hasMinimumSeniority(int memberId, int minimumDays) throws SQLException {
-        String sql = """
-            SELECT COUNT(*) FROM member
-            WHERE id_member = ?
-              AND is_resigned = FALSE
-              AND join_date <= CURRENT_DATE - (? * INTERVAL '1 day')
-            """;
+        String sql = "SELECT COUNT(*) FROM membre " +
+                "WHERE id_membre = ? AND est_demissionne = FALSE " +
+                "AND date_adhesion <= CURRENT_DATE - INTERVAL '" + minimumDays + " days'";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, memberId);
-            stmt.setInt(2, minimumDays);
             ResultSet rs = stmt.executeQuery();
-            return rs.next() && rs.getInt(1) > 0;
+            if (rs.next()) return rs.getInt(1) > 0;
+            return false;
+        }
+    }
+
+    public List<Member> findSponsorsByIds(List<Integer> ids) throws SQLException {
+        String placeholders = ids.stream()
+                .map(id -> "?")
+                .reduce((a, b) -> a + "," + b)
+                .orElse("0");
+        String sql = "SELECT * FROM membre WHERE id_membre IN (" + placeholders + ") AND est_demissionne = FALSE";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (int i = 0; i < ids.size(); i++) {
+                stmt.setInt(i + 1, ids.get(i));
+            }
+            ResultSet rs = stmt.executeQuery();
+            List<Member> members = new ArrayList<>();
+            while (rs.next()) members.add(mapRow(rs));
+            return members;
         }
     }
 
     private Member mapRow(ResultSet rs) throws SQLException {
         Member m = new Member();
-        m.setMemberId(rs.getInt("id_member"));
-        m.setCollectiveId(rs.getInt("id_collective"));
-        m.setJobId((Integer) rs.getObject("id_trade"));
-        m.setLastName(rs.getString("last_name"));
-        m.setFirstName(rs.getString("first_name"));
-        if (rs.getDate("birth_date") != null) m.setBirthDate(rs.getDate("birth_date").toLocalDate());
-        m.setGender(rs.getString("gender"));
-        m.setAddress(rs.getString("address"));
-        m.setPhone(rs.getString("phone"));
+        m.setMemberId(rs.getInt("id_membre"));
+        m.setCollectiveId(rs.getInt("id_collectif"));
+        m.setJobId((Integer) rs.getObject("id_metier"));
+        m.setLastName(rs.getString("nom"));
+        m.setFirstName(rs.getString("prenom"));
+        m.setBirthDate(rs.getDate("date_naissance").toLocalDate());
+        m.setGender(rs.getString("genre"));
+        m.setAddress(rs.getString("adresse"));
+        m.setPhone(rs.getString("telephone"));
         m.setEmail(rs.getString("email"));
-        m.setMembershipDate(rs.getDate("join_date").toLocalDate());
-        m.setResigned(rs.getBoolean("is_resigned"));
+        m.setMembershipDate(rs.getDate("date_adhesion").toLocalDate());
+        m.setResigned(rs.getBoolean("est_demissionne"));
         return m;
     }
 }
