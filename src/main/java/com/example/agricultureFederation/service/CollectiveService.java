@@ -34,22 +34,18 @@ public class CollectiveService {
 
         for (CreateCollectivityRequest request : requests) {
 
-            // Rule 1 : federation approval required
             if (!request.isFederationApproval()) {
                 throw new IllegalStateException("Federation approval is required.");
             }
 
-            // Rule 2 : structure must be provided
             if (request.getStructure() == null) {
                 throw new IllegalStateException("Collectivity structure is required.");
             }
 
-            // Rule 3 : at least 10 members
             if (request.getMembers() == null || request.getMembers().size() < 10) {
                 throw new IllegalStateException("At least 10 members are required.");
             }
 
-            // Rule 4 : at least 5 members with 6 months seniority
             int seniorCount = 0;
             List<Member> memberEntities = new ArrayList<>();
             for (String memberId : request.getMembers()) {
@@ -68,7 +64,6 @@ public class CollectiveService {
                 );
             }
 
-            // Save collective
             Collective collective = new Collective(
                     1,
                     null,
@@ -100,28 +95,23 @@ public class CollectiveService {
 
         int id = Integer.parseInt(collectiveId);
 
-        // Rule 1 : collectivity must exist
         Collective collective = collectiveRepository.findById(id);
         if (collective == null) {
             throw new IllegalArgumentException("Collectivity not found: " + collectiveId);
         }
 
-        // Rule 2 : number must not already be set
         if (collective.getNumber() != null) {
             throw new IllegalStateException("Number has already been assigned and cannot be changed.");
         }
 
-        // Rule 3 : name must not already be set
         if (collective.getName() != null) {
             throw new IllegalStateException("Name has already been assigned and cannot be changed.");
         }
 
-        // Rule 4 : number must be unique
         if (collectiveRepository.existsByNumber(request.getNumber())) {
             throw new IllegalStateException("Number already taken: " + request.getNumber());
         }
 
-        // Rule 5 : name must be unique
         if (collectiveRepository.existsByName(request.getName())) {
             throw new IllegalStateException("Name already taken: " + request.getName());
         }
@@ -140,7 +130,6 @@ public class CollectiveService {
         response.setName(collective.getName());
         response.setNumber(collective.getNumber());
 
-        // Structure
         if (request != null && request.getStructure() != null) {
             CollectivityStructureResponse structure = new CollectivityStructureResponse();
             structure.setPresident(getMemberResponse(request.getStructure().getPresident()));
@@ -150,7 +139,6 @@ public class CollectiveService {
             response.setStructure(structure);
         }
 
-        // Members
         List<MemberResponse> memberResponses = new ArrayList<>();
         for (Member m : members) {
             memberResponses.add(toMemberResponse(m));
