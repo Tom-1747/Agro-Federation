@@ -2,13 +2,10 @@ package com.example.agricultureFederation.repository;
 
 import com.example.agricultureFederation.entity.Member;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 public class MemberRepository {
 
     private final DataSource dataSource;
@@ -48,6 +45,18 @@ public class MemberRepository {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) return mapRow(rs);
             return null;
+        }
+    }
+
+    public List<Member> findActiveByCollectiveId(int collectiveId) throws SQLException {
+        String sql = "SELECT * FROM membre WHERE id_collectif = ? AND est_demissionne = FALSE";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, collectiveId);
+            ResultSet rs = stmt.executeQuery();
+            List<Member> members = new ArrayList<>();
+            while (rs.next()) members.add(mapRow(rs));
+            return members;
         }
     }
 
