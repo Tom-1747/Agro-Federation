@@ -11,6 +11,7 @@ import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.CollectiveRepository;
 import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
+import com.example.agricultureFederation.repository.FinancialAccountRepository;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;

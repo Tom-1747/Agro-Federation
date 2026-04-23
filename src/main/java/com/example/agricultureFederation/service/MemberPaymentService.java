@@ -13,6 +13,7 @@ import com.example.agricultureFederation.repository.CollectivityTransactionRepos
 import com.example.agricultureFederation.repository.MemberPaymentRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
 import com.example.agricultureFederation.repository.MembershipFeeRepository;
+import com.example.agricultureFederation.repository.FinancialAccountRepository;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
