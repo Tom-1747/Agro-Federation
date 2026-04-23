@@ -9,11 +9,7 @@ import com.example.agricultureFederation.entity.MemberPayment;
 import com.example.agricultureFederation.entity.MembershipFee;
 import com.example.agricultureFederation.entity.enums.AccountTypeType;
 import com.example.agricultureFederation.entity.enums.PaymentMethodType;
-import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
-import com.example.agricultureFederation.repository.FinancialAccountRepository;
-import com.example.agricultureFederation.repository.memberPaymentRepository;
-import com.example.agricultureFederation.repository.MemberRepository;
-import com.example.agricultureFederation.repository.MembershipFeeRepository;
+import com.example.agricultureFederation.repository.*;
 import com.example.agricultureFederation.repository.FinancialAccountRepository;
 
 import java.math.BigDecimal;
@@ -77,7 +73,6 @@ public class MemberPaymentService {
             payment.setMembershipFeeId(fee.getMembershipFeeId());
             payment.setAccountId(account.getAccountId());
             payment.setAmount(request.getAmount());
-            // PaymentMethodType enum → String pour la DB
             payment.setPaymentMode(request.getPaymentMode() != null ? request.getPaymentMode().name() : null);
             payment.setCreationDate(LocalDate.now());
 
@@ -88,13 +83,11 @@ public class MemberPaymentService {
                     account.getAmount() + request.getAmount()
             );
 
-            // Auto-create transaction
             CollectivityTransaction transaction = new CollectivityTransaction();
             transaction.setCollectiveId(fee.getCollectiveId());
             transaction.setMemberId(mId);
             transaction.setAccountId(account.getAccountId());
             transaction.setAmount(request.getAmount());
-            // PaymentMethodType enum → String pour la DB
             transaction.setPaymentMode(request.getPaymentMode() != null ? request.getPaymentMode().name() : null);
             transaction.setCreationDate(LocalDate.now());
             transactionRepository.save(transaction);
@@ -109,7 +102,6 @@ public class MemberPaymentService {
         MemberPaymentResponse r = new MemberPaymentResponse();
         r.setId(String.valueOf(payment.getPaymentId()));
         r.setAmount(payment.getAmount());
-        // String DB → PaymentMethodType enum pour la réponse
         try { r.setPaymentMode(PaymentMethodType.valueOf(payment.getPaymentMode())); } catch (Exception ignored) {}
         r.setCreationDate(payment.getCreationDate());
         r.setAccountCredited(toAccountResponse(account));

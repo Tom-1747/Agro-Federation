@@ -10,12 +10,11 @@ public class MemberShipFees {
     private String id;
     private LocalDate creationDate;
     private BigDecimal amount;
-    private PaymentMethodType paymentMode;  // enum PaymentMethodType existant
+    private PaymentMethodType paymentMode;
     private String accountCreditedId;
     private String memberDebitedId;
     private String collectivityId;
 
-    // Objets peuplés par le repository
     private Account accountCredited;
     private Member memberDebited;
 

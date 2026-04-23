@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 public class Account {
 
     private String id;
-    private AccountTypeType accountType;  // Cash, Bank, Mobile_Money — enum existant
+    private AccountTypeType accountType;
     private BigDecimal amount;
     private String holderName;
-    private MobileMoneyType mobileBankingService; // enum existant MobileMoneyType
+    private MobileMoneyType mobileBankingService;
     private Long mobileNumber;
-    private BankNameType bankName;        // enum existant BankNameType
+    private BankNameType bankName;
     private Integer bankCode;
     private Integer bankBranchCode;
     private Integer bankAccountNumber;

@@ -4,6 +4,7 @@ import com.example.agricultureFederation.dto.request.CreateMemberRequest;
 import com.example.agricultureFederation.dto.request.SponsorRequest;
 import com.example.agricultureFederation.dto.response.MemberResponse;
 import com.example.agricultureFederation.entity.Member;
+import com.example.agricultureFederation.repository.CollectiveRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -14,7 +15,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, CollectiveRepository collectiveRepository) {
         this.memberRepository = memberRepository;
     }
 

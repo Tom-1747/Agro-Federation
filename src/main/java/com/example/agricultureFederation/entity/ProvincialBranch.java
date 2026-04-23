@@ -18,7 +18,6 @@ public class ProvincialBranch {
         this.address = address;
     }
 
-    // Getters et Setters
     public Integer getIdBranch() { return idBranch; }
     public void setIdBranch(Integer idBranch) { this.idBranch = idBranch; }
 

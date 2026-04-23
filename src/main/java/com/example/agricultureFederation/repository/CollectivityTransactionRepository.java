@@ -17,7 +17,6 @@ public class CollectivityTransactionRepository {
         this.dataSource = dataSource;
     }
 
-    // ── INSERT (auto-créé lors d'un MemberPayment) ────────────────────────────
 
     public CollectivityTransaction save(CollectivityTransaction transaction) throws SQLException {
         String sql = """
@@ -29,8 +28,7 @@ public class CollectivityTransactionRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // id_contribution est l'ID de la cotisation liée au membre
-            stmt.setInt(1, transaction.getMemberId());   // contribution.id_contribution ≈ memberId ici
+            stmt.setInt(1, transaction.getMemberId());
             stmt.setInt(2, transaction.getAccountId());
             stmt.setDouble(3, transaction.getAmount());
             stmt.setDate(4, Date.valueOf(transaction.getCreationDate()));

@@ -27,8 +27,7 @@ public class MembershipFeeRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // id_member = 0 pour une cotisation collective (pas encore assignée à un membre)
-            stmt.setInt(1, fee.getCollectiveId());   // utilisé comme id_member temporaire
+            stmt.setInt(1, fee.getCollectiveId());
             stmt.setInt(2, fee.getCollectiveId());
             stmt.setString(3, mapFrequencyToContributionType(fee.getFrequency()));
             stmt.setString(4, mapFrequencyType(fee.getFrequency()));
