@@ -13,7 +13,7 @@ public class CollectiveRepository {
     }
 
     public Collective save(Collective collective) throws SQLException {
-        String sql = "INSERT INTO collectif (id_federation, id_specialite, id_branche, nom, lieu_exercice, telephone, date_creation) " +
+        String sql = "INSERT INTO collective (id_federation, id_specialite, id_branche, nom, lieu_exercice, telephone, date_creation) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -55,7 +55,7 @@ public class CollectiveRepository {
     }
 
     public int countActiveMembers(int collectiveId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM membre WHERE id_collectif = ? AND est_demissionne = FALSE";
+        String sql = "SELECT COUNT(*) FROM member WHERE id_collectif = ? AND est_demissionne = FALSE";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);
@@ -66,7 +66,7 @@ public class CollectiveRepository {
     }
 
     public int countMembersWithSixMonthsSeniority(int collectiveId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM membre " +
+        String sql = "SELECT COUNT(*) FROM member " +
                 "WHERE id_collectif = ? AND est_demissionne = FALSE " +
                 "AND date_adhesion <= CURRENT_DATE - INTERVAL '6 months'";
         try (Connection conn = dataSource.getConnection();

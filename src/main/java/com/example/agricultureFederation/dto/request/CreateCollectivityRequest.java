@@ -1,10 +1,9 @@
-package com.example.agricultureFederation.dto.response;
+package com.example.agricultureFederation.dto.request;
 
 import java.time.LocalDate;
 
-public class CollectiveResponse {
+public class CreateCollectivityRequest {
 
-    private int collectiveId;
     private int federationId;
     private Integer specialityId;
     private Integer branchId;
@@ -12,9 +11,6 @@ public class CollectiveResponse {
     private String location;
     private String phone;
     private LocalDate creationDate;
-
-    public int getCollectiveId() { return collectiveId; }
-    public void setCollectiveId(int collectiveId) { this.collectiveId = collectiveId; }
 
     public int getFederationId() { return federationId; }
     public void setFederationId(int federationId) { this.federationId = federationId; }

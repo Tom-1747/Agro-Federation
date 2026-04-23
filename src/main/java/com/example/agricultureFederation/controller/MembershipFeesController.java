@@ -15,7 +15,7 @@ public class MembershipFeesController {
 
     // PUT /collectivities/{id}/informations
     @PutMapping("/collectivities/{id}/informations")
-    public ResponseEntity<ApiResponse<CollectiveResponse>> updateInformation(
+    public ResponseEntity<ApiResponse<CollectivityResponse>> updateInformation(
             @PathVariable String id,
             @RequestBody CollectivityInformationRequest request) {
         // TODO: implémenter via CollectiveService
