@@ -8,14 +8,10 @@ import com.example.agricultureFederation.dto.response.MemberResponse;
 import com.example.agricultureFederation.entity.Collective;
 import com.example.agricultureFederation.entity.Member;
 import com.example.agricultureFederation.repository.CollectiveRepository;
-<<<<<<< HEAD
-=======
 import com.example.agricultureFederation.repository.MemberRepository;
->>>>>>> 21-april
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,52 +64,14 @@ public class CollectiveService {
             }
 
             Collective collective = new Collective(
-                    1,
-                    null,
-                    null,
-                    null,
-                    request.getLocation(),
-                    null,
-                    LocalDate.now()
+                    1, null, null, null,
+                    request.getLocation(), null, LocalDate.now()
             );
             Collective saved = collectiveRepository.save(collective);
             responses.add(toResponse(saved, memberEntities, request));
         }
 
-<<<<<<< HEAD
-        int seniorMembers = collectiveRepository.countMembersWithSixMonthsSeniority(request.getFederationId());
-        if (seniorMembers < 5) {
-            throw new IllegalStateException(
-                    "At least 5 members must have 6 months seniority in the federation. Current: " + seniorMembers
-            );
-        }
-
-        int currentYear = Year.now().getValue();
-        boolean positionsFilled = collectiveRepository.hasAllSpecificPositionsFilled(request.getFederationId(), currentYear);
-        if (!positionsFilled) {
-            throw new IllegalStateException(
-                    "All specific positions (President, Vice-President, Treasurer, Secretary) must be filled."
-            );
-        }
-
-        if (request.getLocation() == null || request.getLocation().isBlank()) {
-            throw new IllegalArgumentException("Location is required to open a new collective.");
-        }
-
-        Collective collective = new Collective();
-        collective.setFederationId(request.getFederationId());
-        collective.setSpecialityId(request.getSpecialityId());
-        collective.setBranchId(request.getBranchId());
-        collective.setName(request.getName());
-        collective.setLocation(request.getLocation());
-        collective.setPhone(request.getPhone());
-        collective.setCreationDate(request.getCreationDate() != null ? request.getCreationDate() : LocalDate.now());
-
-        Collective saved = collectiveRepository.save(collective);
-        return toResponse(saved);
-=======
         return responses;
->>>>>>> 21-april
     }
 
     public CollectivityResponse getById(String collectiveId) throws SQLException {
@@ -130,7 +88,6 @@ public class CollectiveService {
                                                AssignCollectivityIdentityRequest request) throws SQLException {
 
         int id = Integer.parseInt(collectiveId);
-
         Collective collective = collectiveRepository.findById(id);
         if (collective == null) {
             throw new IllegalArgumentException("Collectivity not found: " + collectiveId);
@@ -183,9 +140,6 @@ public class CollectiveService {
 
         return response;
     }
-<<<<<<< HEAD
-}
-=======
 
     private MemberResponse getMemberResponse(String memberId) throws SQLException {
         if (memberId == null) return null;
@@ -207,4 +161,3 @@ public class CollectiveService {
         return r;
     }
 }
->>>>>>> 21-april
