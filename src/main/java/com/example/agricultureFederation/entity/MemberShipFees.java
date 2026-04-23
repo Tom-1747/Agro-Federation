@@ -5,58 +5,62 @@ import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+
 public class MemberShipFees {
 
-    private String id;
-    private LocalDate creationDate;
+    private Integer idCollection;
+    private Integer contributionId;
+    private Integer accountId;
     private BigDecimal amount;
-    private PaymentMethodType paymentMode;  // enum PaymentMethodType existant
-    private String accountCreditedId;
-    private String memberDebitedId;
-    private String collectivityId;
+    private LocalDate membershipFeesDate;       // renamed column: membershipFees_date
+    private PaymentMethodType paymentMethod;
+    private BigDecimal federationShare;
 
-    // Objets peuplés par le repository
-    private Account accountCredited;
-    private Member memberDebited;
-
-    public MemberShipFees() {}
-
-    public MemberShipFees(String id, LocalDate creationDate, BigDecimal amount,
-                      PaymentMethodType paymentMode, String accountCreditedId,
-                      String memberDebitedId, String collectivityId) {
-        this.id = id;
-        this.creationDate = creationDate;
-        this.amount = amount;
-        this.paymentMode = paymentMode;
-        this.accountCreditedId = accountCreditedId;
-        this.memberDebitedId = memberDebitedId;
-        this.collectivityId = collectivityId;
+    public MemberShipFees() {
+        this.federationShare = BigDecimal.ZERO;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public MemberShipFees(Integer contributionId, Integer accountId, BigDecimal amount,
+                          LocalDate membershipFeesDate, PaymentMethodType paymentMethod,
+                          BigDecimal federationShare) {
+        this.contributionId = contributionId;
+        this.accountId = accountId;
+        this.amount = amount;
+        this.membershipFeesDate = membershipFeesDate;
+        this.paymentMethod = paymentMethod;
+        this.federationShare = federationShare != null ? federationShare : BigDecimal.ZERO;
+    }
 
-    public LocalDate getCreationDate() { return creationDate; }
-    public void setCreationDate(LocalDate creationDate) { this.creationDate = creationDate; }
+    public Integer getIdCollection() { return idCollection; }
+    public void setIdCollection(Integer idCollection) { this.idCollection = idCollection; }
+
+    public Integer getContributionId() { return contributionId; }
+    public void setContributionId(Integer contributionId) { this.contributionId = contributionId; }
+
+    public Integer getAccountId() { return accountId; }
+    public void setAccountId(Integer accountId) { this.accountId = accountId; }
 
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public PaymentMethodType getPaymentMode() { return paymentMode; }
-    public void setPaymentMode(PaymentMethodType paymentMode) { this.paymentMode = paymentMode; }
+    public LocalDate getMembershipFeesDate() { return membershipFeesDate; }
+    public void setMembershipFeesDate(LocalDate membershipFeesDate) { this.membershipFeesDate = membershipFeesDate; }
 
-    public String getAccountCreditedId() { return accountCreditedId; }
-    public void setAccountCreditedId(String accountCreditedId) { this.accountCreditedId = accountCreditedId; }
+    public PaymentMethodType getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(PaymentMethodType paymentMethod) { this.paymentMethod = paymentMethod; }
 
-    public String getMemberDebitedId() { return memberDebitedId; }
-    public void setMemberDebitedId(String memberDebitedId) { this.memberDebitedId = memberDebitedId; }
+    public BigDecimal getFederationShare() { return federationShare; }
+    public void setFederationShare(BigDecimal federationShare) { this.federationShare = federationShare; }
 
-    public String getCollectivityId() { return collectivityId; }
-    public void setCollectivityId(String collectivityId) { this.collectivityId = collectivityId; }
-
-    public Account getAccountCredited() { return accountCredited; }
-    public void setAccountCredited(Account accountCredited) { this.accountCredited = accountCredited; }
-
-    public Member getMemberDebited() { return memberDebited; }
-    public void setMemberDebited(Member memberDebited) { this.memberDebited = memberDebited; }
+    @Override
+    public String toString() {
+        return "MemberShipFees{" +
+                "idCollection=" + idCollection +
+                ", contributionId=" + contributionId +
+                ", accountId=" + accountId +
+                ", amount=" + amount +
+                ", membershipFeesDate=" + membershipFeesDate +
+                ", paymentMethod=" + paymentMethod +
+                '}';
+    }
 }
