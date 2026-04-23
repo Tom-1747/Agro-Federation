@@ -11,7 +11,7 @@ import com.example.agricultureFederation.entity.enums.AccountTypeType;
 import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
 import com.example.agricultureFederation.repository.FinancialAccountRepository;
-import com.example.agricultureFederation.repository.memberPaymentRepository;
+import com.example.agricultureFederation.repository.MemberPaymentRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
 import com.example.agricultureFederation.repository.MembershipFeeRepository;
 import com.example.agricultureFederation.repository.FinancialAccountRepository;
@@ -24,13 +24,13 @@ import java.util.List;
 
 public class MemberPaymentService {
 
-    private final memberPaymentRepository memberPaymentRepository;
+    private final MemberPaymentRepository memberPaymentRepository;
     private final MemberRepository memberRepository;
     private final MembershipFeeRepository membershipFeeRepository;
     private final FinancialAccountRepository financialAccountRepository;
     private final CollectivityTransactionRepository transactionRepository;
 
-    public MemberPaymentService(memberPaymentRepository memberPaymentRepository,
+    public MemberPaymentService(MemberPaymentRepository memberPaymentRepository,
                                 MemberRepository memberRepository,
                                 MembershipFeeRepository membershipFeeRepository,
                                 FinancialAccountRepository financialAccountRepository,
@@ -83,7 +83,7 @@ public class MemberPaymentService {
 
             MemberPayment saved = memberPaymentRepository.save(payment);
 
-            financialAccountRepository.updateBalance(
+            FinancialAccountRepository.updateBalance(
                     account.getAccountId(),
                     account.getAmount() + request.getAmount()
             );
