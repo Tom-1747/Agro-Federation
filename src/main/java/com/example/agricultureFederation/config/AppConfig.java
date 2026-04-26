@@ -33,7 +33,7 @@ public class AppConfig {
 
     @Bean public CollectiveController collectiveController() { return new CollectiveController(collectiveService()); }
     @Bean public MemberController memberController() { return new MemberController(memberService()); }
-    @Bean public MembershipFeeController membershipFeeController() { return new MembershipFeeController(membershipFeeService()); }
+    @Bean public MembershipFeesController membershipFeeController() { return new MembershipFeesController(membershipFeeService()); }
     @Bean public MemberPaymentController memberPaymentController() { return new MemberPaymentController(memberPaymentService()); }
     @Bean public CollectivityTransactionController transactionController() { return new CollectivityTransactionController(transactionService()); }
     @Bean public FinancialAccountController financialAccountController() { return new FinancialAccountController(financialAccountService()); }

@@ -63,9 +63,7 @@ public class CollectivityTransactionService {
         CollectivityTransactionResponse r = new CollectivityTransactionResponse();
         r.setId(String.valueOf(t.getTransactionId()));
         r.setCreationDate(t.getCreationDate());
-        // double DB → BigDecimal pour la réponse
         r.setAmount(BigDecimal.valueOf(t.getAmount()));
-        // String DB → PaymentMethodType enum pour la réponse
         try { r.setPaymentMode(PaymentMethodType.valueOf(t.getPaymentMode())); } catch (Exception ignored) {}
 
         if (account != null) {
@@ -78,7 +76,6 @@ public class CollectivityTransactionService {
 
         if (member != null) {
             MemberResponse memberResponse = new MemberResponse();
-            // MemberResponse.memberId est int, pas String — on utilise setMemberId
             memberResponse.setMemberId(member.getMemberId());
             memberResponse.setFirstName(member.getFirstName());
             memberResponse.setLastName(member.getLastName());

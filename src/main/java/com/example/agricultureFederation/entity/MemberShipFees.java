@@ -7,75 +7,55 @@ import java.time.LocalDate;
 
 public class MemberShipFees {
 
-    private Integer idMembershipFees;
-    private Integer contributionId;
-    private Integer accountId;
+    private String id;
+    private LocalDate creationDate;
     private BigDecimal amount;
-    private LocalDate membershipFeesDate;
-    private PaymentMethodType paymentMethod;
-    private BigDecimal federationShare;
+    private PaymentMethodType paymentMode;
+    private String accountCreditedId;
+    private String memberDebitedId;
+    private String collectivityId;
 
-    public MemberShipFees() {
-        this.federationShare = BigDecimal.ZERO;
-    }
+    private Account accountCredited;
+    private Member memberDebited;
 
-    public MemberShipFees(Integer contributionId, Integer accountId, BigDecimal amount,
-                          LocalDate membershipFeesDate, PaymentMethodType paymentMethod,
-                          BigDecimal federationShare) {
-        this.contributionId = contributionId;
-        this.accountId = accountId;
+    public MemberShipFees() {}
+
+    public MemberShipFees(String id, LocalDate creationDate, BigDecimal amount,
+                      PaymentMethodType paymentMode, String accountCreditedId,
+                      String memberDebitedId, String collectivityId) {
+        this.id = id;
+        this.creationDate = creationDate;
         this.amount = amount;
-        this.membershipFeesDate = membershipFeesDate;
-        this.paymentMethod = paymentMethod;
-        this.federationShare = federationShare != null ? federationShare : BigDecimal.ZERO;
+        this.paymentMode = paymentMode;
+        this.accountCreditedId = accountCreditedId;
+        this.memberDebitedId = memberDebitedId;
+        this.collectivityId = collectivityId;
     }
 
-    public MemberShipFees(Integer contributionId, Integer accountId, BigDecimal amount,
-                          LocalDate membershipFeesDate, PaymentMethodType paymentMethod) {
-        this(contributionId, accountId, amount, membershipFeesDate, paymentMethod, BigDecimal.ZERO);
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public Integer getIdMembershipFees() { return idMembershipFees; }
-    public void setIdMembershipFees(Integer idMembershipFees) { this.idMembershipFees = idMembershipFees; }
-
-    public Integer getContributionId() { return contributionId; }
-    public void setContributionId(Integer contributionId) { this.contributionId = contributionId; }
-
-    public Integer getAccountId() { return accountId; }
-    public void setAccountId(Integer accountId) { this.accountId = accountId; }
+    public LocalDate getCreationDate() { return creationDate; }
+    public void setCreationDate(LocalDate creationDate) { this.creationDate = creationDate; }
 
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public LocalDate getMembershipFeesDate() { return membershipFeesDate; }
-    public void setMembershipFeesDate(LocalDate membershipFeesDate) { this.membershipFeesDate = membershipFeesDate; }
+    public PaymentMethodType getPaymentMode() { return paymentMode; }
+    public void setPaymentMode(PaymentMethodType paymentMode) { this.paymentMode = paymentMode; }
 
-    public PaymentMethodType getPaymentMethod() { return paymentMethod; }
-    public void setPaymentMethod(PaymentMethodType paymentMethod) { this.paymentMethod = paymentMethod; }
+    public String getAccountCreditedId() { return accountCreditedId; }
+    public void setAccountCreditedId(String accountCreditedId) { this.accountCreditedId = accountCreditedId; }
 
-    public void setPaymentMethodFromString(String value) {
-        try { this.paymentMethod = PaymentMethodType.valueOf(value); } catch (Exception ignored) {}
-    }
+    public String getMemberDebitedId() { return memberDebitedId; }
+    public void setMemberDebitedId(String memberDebitedId) { this.memberDebitedId = memberDebitedId; }
 
-    public BigDecimal getFederationShare() { return federationShare; }
-    public void setFederationShare(BigDecimal federationShare) { this.federationShare = federationShare; }
+    public String getCollectivityId() { return collectivityId; }
+    public void setCollectivityId(String collectivityId) { this.collectivityId = collectivityId; }
 
-    public BigDecimal getCollectiveShare() {
-        if (amount != null && federationShare != null) {
-            return amount.subtract(federationShare);
-        }
-        return amount;
-    }
+    public Account getAccountCredited() { return accountCredited; }
+    public void setAccountCredited(Account accountCredited) { this.accountCredited = accountCredited; }
 
-    @Override
-    public String toString() {
-        return "MemberShipFees{" +
-                "idMembershipFees=" + idMembershipFees +
-                ", contributionId=" + contributionId +
-                ", accountId=" + accountId +
-                ", amount=" + amount +
-                ", membershipFeesDate=" + membershipFeesDate +
-                ", paymentMethod=" + paymentMethod +
-                '}';
-    }
+    public Member getMemberDebited() { return memberDebited; }
+    public void setMemberDebited(Member memberDebited) { this.memberDebited = memberDebited; }
 }

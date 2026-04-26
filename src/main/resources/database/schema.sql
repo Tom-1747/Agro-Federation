@@ -285,3 +285,6 @@ SELECT
 FROM activity a
          LEFT JOIN attendance att ON att.id_activity = a.id_activity
 GROUP BY a.id_activity, a.title, a.activity_date, a.activity_type, a.id_collective;
+
+
+

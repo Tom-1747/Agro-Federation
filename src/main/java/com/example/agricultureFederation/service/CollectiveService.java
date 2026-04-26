@@ -1,8 +1,10 @@
 package com.example.agricultureFederation.service;
 
 import com.example.agricultureFederation.dto.request.AssignCollectivityIdentityRequest;
-import com.example.agricultureFederation.dto.request.CreateCollectivityRequest;
-import com.example.agricultureFederation.dto.response.CollectivityResponse;
+import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
+import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
+import com.example.agricultureFederation.dto.response.CollectiveResponse;
+import com.example.agricultureFederation.dto.response.CollectiveResponse;
 import com.example.agricultureFederation.dto.response.CollectivityStructureResponse;
 import com.example.agricultureFederation.dto.response.MemberResponse;
 import com.example.agricultureFederation.entity.Collective;
@@ -26,12 +28,12 @@ public class CollectiveService {
         this.memberRepository = memberRepository;
     }
 
-    public List<CollectivityResponse> createCollectivities(
-            List<CreateCollectivityRequest> requests) throws SQLException {
+    public List<CollectiveResponse> createCollectivities(
+            List<CreateCollectiveRequest> requests) throws SQLException {
 
-        List<CollectivityResponse> responses = new ArrayList<>();
+        List<CollectiveResponse> responses = new ArrayList<>();
 
-        for (CreateCollectivityRequest request : requests) {
+        for (CreateCollectiveRequest request : requests) {
 
             if (!request.isFederationApproval()) {
                 throw new IllegalStateException("Federation approval is required.");
@@ -74,7 +76,7 @@ public class CollectiveService {
         return responses;
     }
 
-    public CollectivityResponse getById(String collectiveId) throws SQLException {
+    public CollectiveResponse getById(String collectiveId) throws SQLException {
         int id = Integer.parseInt(collectiveId);
         Collective collective = collectiveRepository.findById(id);
         if (collective == null) {
@@ -84,7 +86,7 @@ public class CollectiveService {
         return toResponse(collective, members, null);
     }
 
-    public CollectivityResponse assignIdentity(String collectiveId,
+    public CollectiveResponse assignIdentity(String collectiveId,
                                                AssignCollectivityIdentityRequest request) throws SQLException {
 
         int id = Integer.parseInt(collectiveId);
@@ -114,10 +116,10 @@ public class CollectiveService {
         return toResponse(updated, members, null);
     }
 
-    private CollectivityResponse toResponse(Collective collective,
+    private CollectiveResponse toResponse(Collective collective,
                                             List<Member> members,
-                                            CreateCollectivityRequest request) throws SQLException {
-        CollectivityResponse response = new CollectivityResponse();
+                                            CreateCollectiveRequest request) throws SQLException {
+        CollectiveResponse response = new CollectiveResponse();
         response.setId(String.valueOf(collective.getCollectiveId()));
         response.setLocation(collective.getLocation());
         response.setName(collective.getName());
