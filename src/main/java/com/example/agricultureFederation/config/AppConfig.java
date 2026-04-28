@@ -30,11 +30,4 @@ public class AppConfig {
     @Bean public MemberPaymentService memberPaymentService() { return new MemberPaymentService(memberPaymentRepository(), memberRepository(), membershipFeeRepository(), financialAccountRepository(), transactionRepository()); }
     @Bean public CollectivityTransactionService transactionService() { return new CollectivityTransactionService(transactionRepository(), collectiveRepository(), memberRepository(), financialAccountRepository()); }
     @Bean public FinancialAccountService financialAccountService() { return new FinancialAccountService(financialAccountRepository(), collectiveRepository()); }
-
-    @Bean public CollectiveController collectiveController() { return new CollectiveController(collectiveService()); }
-    @Bean public MemberController memberController() { return new MemberController(memberService()); }
-    @Bean public MembershipFeesController membershipFeeController() { return new MembershipFeesController(membershipFeeService()); }
-    @Bean public MemberPaymentController memberPaymentController() { return new MemberPaymentController(memberPaymentService()); }
-    @Bean public CollectivityTransactionController transactionController() { return new CollectivityTransactionController(transactionService()); }
-    @Bean public FinancialAccountController financialAccountController() { return new FinancialAccountController(financialAccountService()); }
 }

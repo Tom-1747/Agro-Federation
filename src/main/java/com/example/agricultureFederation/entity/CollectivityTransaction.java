@@ -75,8 +75,4 @@ public class CollectivityTransaction {
         try { this.paymentMethod = com.example.agricultureFederation.entity.enums.PaymentMethodType.valueOf(mode); } catch (Exception ignored) {}
     }
 
-    public void setAmount(java.math.BigDecimal amount) {
-        this.amount = amount;
-    }
-
 }
