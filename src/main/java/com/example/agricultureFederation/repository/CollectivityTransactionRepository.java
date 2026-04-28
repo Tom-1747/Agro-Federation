@@ -31,7 +31,7 @@ public class CollectivityTransactionRepository {
             // id_contribution est l'ID de la cotisation liée au membre
             stmt.setInt(1, transaction.getMemberId());   // contribution.id_contribution ≈ memberId ici
             stmt.setInt(2, transaction.getAccountId());
-            stmt.setDouble(3, transaction.getAmount());
+            stmt.setBigDecimal(3, transaction.getAmount());
             stmt.setDate(4, Date.valueOf(transaction.getCreationDate()));
             stmt.setString(5, mapPaymentMode(transaction.getPaymentMode()));
 
@@ -81,7 +81,7 @@ public class CollectivityTransactionRepository {
         t.setCollectiveId(rs.getInt("id_collective"));
         t.setMemberId(rs.getInt("id_member"));
         t.setAccountId(rs.getInt("id_account"));
-        t.setAmount(rs.getDouble("amount"));
+        t.setAmount(rs.getBigDecimal("amount"));
         t.setPaymentMode(reverseMapPaymentMode(rs.getString("payment_method")));
         t.setCreationDate(rs.getDate("membershipFees_date").toLocalDate());
         return t;

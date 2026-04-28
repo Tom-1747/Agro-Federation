@@ -128,4 +128,29 @@ public class FinancialAccount {
                 ", balance=" + balance +
                 '}';
     }
+
+    // Alias methods for backward compatibility with services/repositories
+    public String getType() {
+        return accountType != null ? accountType.name() : null;
+    }
+    public void setType(String type) {
+        try { this.accountType = com.example.agricultureFederation.entity.enums.AccountTypeType.valueOf(type); } catch (Exception ignored) {}
+    }
+
+    public String getHolderName() { return accountHolder; }
+    public void setHolderName(String holderName) { this.accountHolder = holderName; }
+
+    public java.math.BigDecimal getAmount() { return balance; }
+    public void setAmount(java.math.BigDecimal amount) { this.balance = amount; }
+    public void setAmount(double amount) { this.balance = java.math.BigDecimal.valueOf(amount); }
+
+    public String getMobileBankingService() {
+        return mobileMoneyService != null ? mobileMoneyService.name() : null;
+    }
+    public String getMobileNumber() { return phoneNumber; }
+
+    public Integer getBankCode() { return null; }
+    public Integer getBankBranchCode() { return null; }
+    public Integer getBankAccountKey() { return null; }
+
 }

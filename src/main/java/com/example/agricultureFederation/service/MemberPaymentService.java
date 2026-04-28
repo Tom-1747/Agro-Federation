@@ -1,13 +1,12 @@
 package com.example.agricultureFederation.service;
 
 import com.example.agricultureFederation.dto.request.CreateMemberPaymentRequest;
-import com.example.agricultureFederation.dto.response.AccountResponse;
 import com.example.agricultureFederation.dto.response.MemberPaymentResponse;
+import com.example.agricultureFederation.dto.response.FinancialAccountResponse;
 import com.example.agricultureFederation.entity.CollectivityTransaction;
 import com.example.agricultureFederation.entity.FinancialAccount;
 import com.example.agricultureFederation.entity.MemberPayment;
 import com.example.agricultureFederation.entity.MembershipFee;
-import com.example.agricultureFederation.entity.enums.AccountTypeType;
 import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.*;
 import com.example.agricultureFederation.repository.FinancialAccountRepository;
@@ -20,13 +19,13 @@ import java.util.List;
 
 public class MemberPaymentService {
 
-    private final memberPaymentRepository memberPaymentRepository;
+    private final MemberPaymentRepository memberPaymentRepository;
     private final MemberRepository memberRepository;
     private final MembershipFeeRepository membershipFeeRepository;
     private final FinancialAccountRepository financialAccountRepository;
     private final CollectivityTransactionRepository transactionRepository;
 
-    public MemberPaymentService(memberPaymentRepository memberPaymentRepository,
+    public MemberPaymentService(MemberPaymentRepository memberPaymentRepository,
                                 MemberRepository memberRepository,
                                 MembershipFeeRepository membershipFeeRepository,
                                 FinancialAccountRepository financialAccountRepository,
@@ -70,18 +69,18 @@ public class MemberPaymentService {
 
             MemberPayment payment = new MemberPayment();
             payment.setMemberId(mId);
-            payment.setMembershipFeeId(fee.getMembershipFeeId());
+            payment.setContributionId(fee.getMembershipFeeId());
             payment.setAccountId(account.getAccountId());
             payment.setAmount(request.getAmount());
             // PaymentMethodType enum → String pour la DB
-            payment.setPaymentMode(request.getPaymentMode() != null ? request.getPaymentMode().name() : null);
-            payment.setCreationDate(LocalDate.now());
+            payment.setPaymentMethod(request.getPaymentMode());
+            payment.setPaymentDate(LocalDate.now());
 
             MemberPayment saved = memberPaymentRepository.save(payment);
 
             financialAccountRepository.updateBalance(
                     account.getAccountId(),
-                    account.getAmount() + request.getAmount()
+                    account.getBalance().add(java.math.BigDecimal.valueOf(request.getAmount())).doubleValue()
             );
 
             // Auto-create transaction
@@ -89,9 +88,9 @@ public class MemberPaymentService {
             transaction.setCollectiveId(fee.getCollectiveId());
             transaction.setMemberId(mId);
             transaction.setAccountId(account.getAccountId());
-            transaction.setAmount(request.getAmount());
+            transaction.setAmount(java.math.BigDecimal.valueOf(request.getAmount()));
             // PaymentMethodType enum → String pour la DB
-            transaction.setPaymentMode(request.getPaymentMode() != null ? request.getPaymentMode().name() : null);
+            transaction.setPaymentMethod(request.getPaymentMode());
             transaction.setCreationDate(LocalDate.now());
             transactionRepository.save(transaction);
 
@@ -106,18 +105,18 @@ public class MemberPaymentService {
         r.setId(String.valueOf(payment.getPaymentId()));
         r.setAmount(payment.getAmount());
         // String DB → PaymentMethodType enum pour la réponse
-        try { r.setPaymentMode(PaymentMethodType.valueOf(payment.getPaymentMode())); } catch (Exception ignored) {}
-        r.setCreationDate(payment.getCreationDate());
+        try { r.setPaymentMethod(payment.getPaymentMethod()); } catch (Exception ignored) {}
+        r.setPaymentDate(payment.getPaymentDate());
         r.setAccountCredited(toAccountResponse(account));
         return r;
     }
 
-    private AccountResponse toAccountResponse(FinancialAccount account) {
-        AccountResponse r = new AccountResponse();
+    private FinancialAccountResponse toAccountResponse(FinancialAccount account) {
+        FinancialAccountResponse r = new FinancialAccountResponse();
         r.setId(String.valueOf(account.getAccountId()));
-        try { r.setType(AccountTypeType.valueOf(account.getType())); } catch (Exception ignored) {}
+        r.setType(account.getType());
         r.setHolderName(account.getHolderName());
-        r.setAmount(BigDecimal.valueOf(account.getAmount()));
+        r.setAmount(account.getBalance());
         return r;
     }
 }

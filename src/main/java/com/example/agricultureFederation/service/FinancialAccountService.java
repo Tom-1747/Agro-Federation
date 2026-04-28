@@ -3,6 +3,7 @@ package com.example.agricultureFederation.service;
 import com.example.agricultureFederation.dto.response.FinancialAccountResponse;
 import com.example.agricultureFederation.entity.FinancialAccount;
 import com.example.agricultureFederation.repository.CollectiveRepository;
+import com.example.agricultureFederation.repository.FinancialAccountRepository;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

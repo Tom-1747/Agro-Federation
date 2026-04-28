@@ -2,8 +2,6 @@ package com.example.agricultureFederation.service;
 
 import com.example.agricultureFederation.dto.request.AssignCollectivityIdentityRequest;
 import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
-import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
-import com.example.agricultureFederation.dto.response.CollectiveResponse;
 import com.example.agricultureFederation.dto.response.CollectiveResponse;
 import com.example.agricultureFederation.dto.response.CollectivityStructureResponse;
 import com.example.agricultureFederation.dto.response.MemberResponse;
@@ -87,7 +85,7 @@ public class CollectiveService {
     }
 
     public CollectiveResponse assignIdentity(String collectiveId,
-                                               AssignCollectivityIdentityRequest request) throws SQLException {
+                                             AssignCollectivityIdentityRequest request) throws SQLException {
 
         int id = Integer.parseInt(collectiveId);
         Collective collective = collectiveRepository.findById(id);
@@ -117,8 +115,8 @@ public class CollectiveService {
     }
 
     private CollectiveResponse toResponse(Collective collective,
-                                            List<Member> members,
-                                            CreateCollectiveRequest request) throws SQLException {
+                                          List<Member> members,
+                                          CreateCollectiveRequest request) throws SQLException {
         CollectiveResponse response = new CollectiveResponse();
         response.setId(String.valueOf(collective.getCollectiveId()));
         response.setLocation(collective.getLocation());

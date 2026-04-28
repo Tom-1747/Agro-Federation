@@ -54,13 +54,13 @@ public class MembershipFeeService {
 
             MembershipFee fee = new MembershipFee();
             fee.setCollectiveId(id);
-            fee.setEligibleFrom(request.getEligibleFrom());
-            fee.setFrequency(request.getFrequency().name());
-            fee.setAmount(request.getAmount().doubleValue());
+            fee.setDueDate(request.getEligibleFrom());
+            fee.setFrequency(request.getFrequency());
+            fee.setAmount(request.getAmount());
             fee.setLabel(request.getLabel());
             fee.setStatus("ACTIVE");
 
-            MembershipFee saved = membershipFeeRepository.saveContribution(fee);
+            MembershipFee saved = membershipFeeRepository.save(fee);
             responses.add(toResponse(saved));
         }
         return responses;
@@ -69,9 +69,9 @@ public class MembershipFeeService {
     private MembershipFeeResponse toResponse(MembershipFee fee) {
         MembershipFeeResponse r = new MembershipFeeResponse();
         r.setId(String.valueOf(fee.getMembershipFeeId()));
-        r.setEligibleFrom(fee.getEligibleFrom());
-        try { r.setFrequency(FrequencyType.valueOf(fee.getFrequency())); } catch (Exception ignored) {}
-        r.setAmount(fee.getAmount() != 0 ? BigDecimal.valueOf(fee.getAmount()) : null);
+        r.setEligibleFrom(fee.getDueDate());
+        r.setFrequency(fee.getFrequency());
+        r.setAmount(fee.getAmount() != null && fee.getAmount().compareTo(java.math.BigDecimal.ZERO) != 0 ? fee.getAmount() : null);
         r.setLabel(fee.getLabel());
         r.setActive("ACTIVE".equals(fee.getStatus()));
         return r;

@@ -146,4 +146,12 @@ public class Collective {
                 ", creationDate=" + creationDate +
                 '}';
     }
+
+    // Alias methods for backward compatibility
+    public Integer getSpecialityId() { return specialtyId; }
+    public void setSpecialityId(Integer specialityId) { this.specialtyId = specialityId; }
+
+    public String getNumber() { return name; }
+    public void setNumber(String number) { this.name = number; }
+
 }

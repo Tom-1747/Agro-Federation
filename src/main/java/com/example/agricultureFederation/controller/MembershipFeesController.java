@@ -13,6 +13,13 @@ import java.util.List;
 @RestController
 public class MembershipFeesController {
 
+    private final com.example.agricultureFederation.service.MembershipFeeService membershipFeeService;
+
+    public MembershipFeesController(com.example.agricultureFederation.service.MembershipFeeService membershipFeeService) {
+        this.membershipFeeService = membershipFeeService;
+    }
+
+
     @PutMapping("/collectivities/{id}/informations")
     public ResponseEntity<ApiResponse<CollectivityResponse>> updateInformation(
             @PathVariable String id,
@@ -48,4 +55,3 @@ public class MembershipFeesController {
         return ResponseEntity.status(201).body(new ApiResponse<>(201, "Payments created", null));
     }
 }
-

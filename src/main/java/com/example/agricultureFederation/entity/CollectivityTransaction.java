@@ -66,4 +66,17 @@ public class CollectivityTransaction {
     }
 
     public void setContributionId(int idContribution) {    }
+
+    // Alias methods for backward compatibility
+    public String getPaymentMode() {
+        return paymentMethod != null ? paymentMethod.name() : null;
+    }
+    public void setPaymentMode(String mode) {
+        try { this.paymentMethod = com.example.agricultureFederation.entity.enums.PaymentMethodType.valueOf(mode); } catch (Exception ignored) {}
+    }
+
+    public void setAmount(java.math.BigDecimal amount) {
+        this.amount = amount;
+    }
+
 }

@@ -94,4 +94,12 @@ public class MemberResponse {
     public void setMembershipDate(LocalDate membershipDate) {
         this.membershipDate = membershipDate;
     }
+
+    // Alias methods for backward compatibility
+    public void setId(String id) { this.memberId = Integer.parseInt(id); }
+    public String getId() { return String.valueOf(this.memberId); }
+
+    public void setPhoneNumber(String phone) { this.phone = phone; }
+    public String getPhoneNumber() { return this.phone; }
+
 }

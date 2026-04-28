@@ -244,19 +244,18 @@ public class MembershipFeeRepository {
     }
 
     private String mapContributionType(ContributionTypeType type) {
-        if (type == null) return "One-time";
+        if (type == null) return "One_time";
         return switch (type) {
-            case ONE_TIME -> "One-time";
-            case PERIODIC -> "Periodic";
+            case One_time -> "One_time";
+            case Periodic -> "Periodic";
         };
     }
 
     private String mapFrequencyType(FrequencyType frequency) {
         if (frequency == null) return null;
         return switch (frequency) {
-            case MONTHLY -> "Monthly";
-            case ANNUAL -> "Annual";
-            case WEEKLY -> "Weekly";
+            case Monthly -> "Monthly";
+            case Annual -> "Annual";
         };
     }
 }

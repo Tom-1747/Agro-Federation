@@ -49,4 +49,34 @@ public class FinancialAccountResponse {
 
     public Integer getFederationId() { return federationId; }
     public void setFederationId(Integer federationId) { this.federationId = federationId; }
+
+    // Alias methods for backward compatibility
+    public void setType(String type) {
+        try { this.accountType = com.example.agricultureFederation.entity.enums.AccountTypeType.valueOf(type); } catch (Exception ignored) {}
+    }
+    public String getType() { return accountType != null ? accountType.name() : null; }
+
+    public void setHolderName(String holderName) { this.accountHolder = holderName; }
+    public String getHolderName() { return accountHolder; }
+
+    public void setAmount(java.math.BigDecimal amount) { this.balance = amount; }
+    public java.math.BigDecimal getAmount() { return balance; }
+
+    public void setBankCode(Integer bankCode) { /* stored in bankAccountNumber */ }
+    public Integer getBankCode() { return null; }
+
+    public void setBankBranchCode(Integer code) { }
+    public Integer getBankBranchCode() { return null; }
+
+    public void setBankAccountKey(Integer key) { }
+    public Integer getBankAccountKey() { return null; }
+
+    public void setMobileBankingService(String service) {
+        try { this.mobileMoneyService = com.example.agricultureFederation.entity.enums.MobileMoneyType.valueOf(service); } catch (Exception ignored) {}
+    }
+    public String getMobileBankingService() { return mobileMoneyService != null ? mobileMoneyService.name() : null; }
+
+    public void setMobileNumber(String number) { this.phoneNumber = number; }
+    public String getMobileNumber() { return phoneNumber; }
+
 }

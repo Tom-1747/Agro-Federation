@@ -3,12 +3,14 @@ package com.example.agricultureFederation.service;
 import com.example.agricultureFederation.dto.response.AccountResponse;
 import com.example.agricultureFederation.dto.response.CollectivityTransactionResponse;
 import com.example.agricultureFederation.dto.response.MemberResponse;
+import com.example.agricultureFederation.entity.CollectivityTransaction;
 import com.example.agricultureFederation.entity.FinancialAccount;
 import com.example.agricultureFederation.entity.Member;
 import com.example.agricultureFederation.entity.enums.AccountTypeType;
 import com.example.agricultureFederation.entity.enums.PaymentMethodType;
 import com.example.agricultureFederation.repository.CollectiveRepository;
 import com.example.agricultureFederation.repository.CollectivityTransactionRepository;
+import com.example.agricultureFederation.repository.FinancialAccountRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
 
 import java.math.BigDecimal;
@@ -63,14 +65,14 @@ public class CollectivityTransactionService {
         CollectivityTransactionResponse r = new CollectivityTransactionResponse();
         r.setId(String.valueOf(t.getTransactionId()));
         r.setCreationDate(t.getCreationDate());
-        r.setAmount(BigDecimal.valueOf(t.getAmount()));
+        r.setAmount(t.getAmount());
         try { r.setPaymentMode(PaymentMethodType.valueOf(t.getPaymentMode())); } catch (Exception ignored) {}
 
         if (account != null) {
             AccountResponse accountResponse = new AccountResponse();
             accountResponse.setId(String.valueOf(account.getAccountId()));
             try { accountResponse.setType(AccountTypeType.valueOf(account.getType())); } catch (Exception ignored) {}
-            accountResponse.setAmount(BigDecimal.valueOf(account.getAmount()));
+            accountResponse.setAmount(account.getAmount());
             r.setAccountCredited(accountResponse);
         }
 

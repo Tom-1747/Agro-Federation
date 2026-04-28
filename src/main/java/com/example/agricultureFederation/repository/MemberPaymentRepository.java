@@ -221,18 +221,18 @@ public class MemberPaymentRepository {
     private String mapPaymentMethod(PaymentMethodType method) {
         if (method == null) return "Cash";
         return switch (method) {
-            case CASH -> "Cash";
-            case BANK_TRANSFER -> "Bank Transfer";
-            case MOBILE_MONEY -> "Mobile Money";
+            case Cash -> "Cash";
+            case Bank_Transfer -> "Bank_Transfer";
+            case Mobile_Money -> "Mobile_Money";
         };
     }
 
     private PaymentMethodType reverseMapPaymentMethod(String dbValue) {
         if (dbValue == null) return null;
         return switch (dbValue) {
-            case "Cash" -> PaymentMethodType.CASH;
-            case "Bank Transfer" -> PaymentMethodType.BANK_TRANSFER;
-            case "Mobile Money" -> PaymentMethodType.MOBILE_MONEY;
+            case "Cash" -> PaymentMethodType.Cash;
+            case "Bank_Transfer" -> PaymentMethodType.Bank_Transfer;
+            case "Mobile_Money" -> PaymentMethodType.Mobile_Money;
             default -> null;
         };
     }

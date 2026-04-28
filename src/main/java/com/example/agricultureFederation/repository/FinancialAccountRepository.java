@@ -97,7 +97,7 @@ public class FinancialAccountRepository {
             stmt.setInt(1, account.getCollectiveId());
             stmt.setString(2, account.getType());
             stmt.setString(3, account.getHolderName());
-            stmt.setDouble(4, account.getAmount());
+            stmt.setBigDecimal(4, account.getAmount());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 account.setAccountId(rs.getInt("id_account"));
