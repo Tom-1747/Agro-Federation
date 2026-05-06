@@ -176,7 +176,6 @@ public class Attendance {
         return Boolean.TRUE.equals(isExcused);
     }
 
-    git
     public boolean isUnexcusedAbsence() {
         return !isPresent() && !isExcused();
     }

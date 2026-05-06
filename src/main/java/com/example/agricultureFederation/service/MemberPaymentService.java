@@ -72,7 +72,7 @@ public class MemberPaymentService {
             payment.setContributionId(fee.getMembershipFeeId());
             payment.setAccountId(account.getAccountId());
             payment.setAmount(request.getAmount());
-            // PaymentMethodType enum → String pour la DB
+
             payment.setPaymentMethod(request.getPaymentMode());
             payment.setPaymentDate(LocalDate.now());
 
@@ -83,13 +83,12 @@ public class MemberPaymentService {
                     account.getBalance().add(java.math.BigDecimal.valueOf(request.getAmount())).doubleValue()
             );
 
-            // Auto-create transaction
             CollectivityTransaction transaction = new CollectivityTransaction();
             transaction.setCollectiveId(fee.getCollectiveId());
             transaction.setMemberId(mId);
             transaction.setAccountId(account.getAccountId());
             transaction.setAmount(java.math.BigDecimal.valueOf(request.getAmount()));
-            // PaymentMethodType enum → String pour la DB
+
             transaction.setPaymentMethod(request.getPaymentMode());
             transaction.setCreationDate(LocalDate.now());
             transactionRepository.save(transaction);

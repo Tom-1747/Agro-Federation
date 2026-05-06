@@ -67,7 +67,6 @@ public class CollectivityTransaction {
 
     public void setContributionId(int idContribution) {    }
 
-    // Alias methods for backward compatibility
     public String getPaymentMode() {
         return paymentMethod != null ? paymentMethod.name() : null;
     }
