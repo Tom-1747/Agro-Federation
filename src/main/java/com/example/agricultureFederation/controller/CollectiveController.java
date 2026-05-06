@@ -2,8 +2,6 @@ package com.example.agricultureFederation.controller;
 
 import com.example.agricultureFederation.dto.request.AssignCollectivityIdentityRequest;
 import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
-import com.example.agricultureFederation.dto.request.CreateCollectiveRequest;
-import com.example.agricultureFederation.dto.response.CollectiveResponse;
 import com.example.agricultureFederation.dto.response.CollectiveResponse;
 import com.example.agricultureFederation.service.CollectiveService;
 import org.springframework.http.HttpStatus;

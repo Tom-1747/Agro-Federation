@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Agro-Federation API",
-    "description": "Collection de tests pour l'API Agro-Federation (Spring Boot)\n\n⚠️ Avant de tester:\n1. Lancer l'app Spring Boot sur localhost:8080\n2. Exécuter schema.sql puis migration_v2_add_is_active.sql sur PostgreSQL\n3. Utiliser les requêtes dans l'ordre (les IDs retournés s'enchaînent)\n\nVariables: baseUrl = http://localhost:8080",
+    "description": "Collection de tests pour l'API Agro-Federation (Spring Boot)\ baseUrl = http://localhost:8080",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
