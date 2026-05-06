@@ -1,405 +1,299 @@
-openapi: 3.1.0
-
-info:
-  title: Agricultural Collectivity Federation API
-  description: |
-    OpenAPI specification for the National Federation of Agricultural Collectivities.
-
-    # Versioning
-    - v0.0.1 : Collectivities & Members creation
-    - v0.0.2 : Collectivity informations
-    - v0.0.3 : Membership fees, transactions, payments
-    - v0.0.4 : Full federation features
-  version: 0.0.4
-
-servers:
-  - url: http://localhost:8080/api/v1
-
-tags:
-  - name: Collectivities
-  - name: Members
-  - name: Contributions
-  - name: Treasury
-  - name: Activities
-  - name: Attendance
-  - name: Statistics
-  - name: Federation Statistics
-
-paths:
-
-  /collectivities:
-    post:
-      tags: [Collectivities]
-      summary: Create one or multiple collectivities
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/CollectivityCreation'
-                - type: array
-                  items:
-                    $ref: '#/components/schemas/CreateCollectivity'
-      responses:
-        "201":
-          description: Created collectivities
-
-    get:
-      tags: [Collectivities]
-      summary: List all collectivities
-      responses:
-        "200":
-          description: List of collectivities
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Collectivity'
-
-  /collectivities/{id}:
-    get:
-      tags: [Collectivities]
-      summary: Get collectivity by ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Collectivity found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Collectivity'
-        404:
-          description: Collectivity not found
-
-  /collectivities/{id}/informations:
-    put:
-      tags: [Collectivities]
-      summary: Update collectivity informations
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CollectivityInformation'
-      responses:
-        200:
-          description: Updated collectivity
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Collectivity'
-
-  /collectivities/{id}/membershipFees:
-    get:
-      tags: [Treasury]
-      summary: Retrieve membership fees
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Membership fees list
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MembershipFee'
-
-    post:
-      tags: [Treasury]
-      summary: Create membership fees
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/CreateMembershipFee'
-      responses:
-        200:
-          description: Created fees
-
-  /collectivities/{id}/transactions:
-    get:
-      tags: [Treasury]
-      summary: Collectivity transactions
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: from
-          required: true
-          schema:
-            type: string
-            format: date
-        - in: query
-          name: to
-          required: true
-          schema:
-            type: string
-            format: date
-      responses:
-        200:
-          description: Transactions list
-
-  /collectivities/{id}/financialAccounts:
-    get:
-      tags: [Treasury]
-      summary: Get financial accounts at a given date
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: at
-          required: true
-          schema:
-            type: string
-            format: date
-      responses:
-        200:
-          description: Financial accounts list
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FinancialAccount'
-
-  /members:
-    post:
-      tags: [Members]
-      summary: Create members (batch)
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/CreateMember'
-      responses:
-        201:
-          description: Members created
-
-  /members/{id}/payments:
-    post:
-      tags: [Treasury]
-      summary: Create member payments
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/CreateMemberPayment'
-      responses:
-        201:
-          description: Payments created
-
-components:
-  schemas:
-
-    Collectivity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        number:
-          type: string
-        city:
-          type: string
-        location:
-          type: string
-        structure:
-          $ref: '#/components/schemas/CollectivityStructure'
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/Member'
-
-    CollectivityCreation:
-      type: object
-      required: [name, city]
-      properties:
-        name:
-          type: string
-        city:
-          type: string
-
-    CreateCollectivity:
-      type: object
-      properties:
-        location:
-          type: string
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/MemberIdentifier'
-        federationApproval:
-          type: boolean
-        structure:
-          $ref: '#/components/schemas/CreateCollectivityStructure'
-
-    CollectivityInformation:
-      type: object
-      properties:
-        name:
-          type: string
-        number:
-          type: string
-
-    Member:
-      type: object
-      properties:
-        id:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        birthDate:
-          type: string
-          format: date
-        gender:
-          $ref: '#/components/schemas/Gender'
-        email:
-          type: string
-
-    CreateMember:
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        collectivityIdentifier:
-          type: string
-        referees:
-          type: array
-          items:
-            $ref: '#/components/schemas/MemberIdentifier'
-
-    MemberIdentifier:
-      type: string
-
-    CreateMembershipFee:
-      type: object
-      properties:
-        amount:
-          type: number
-        frequency:
-          $ref: '#/components/schemas/Frequency'
-
-    MembershipFee:
-      allOf:
-        - $ref: '#/components/schemas/CreateMembershipFee'
-      properties:
-        id:
-          type: string
-
-    CreateMemberPayment:
-      type: object
-      properties:
-        amount:
-          type: number
-        paymentMode:
-          $ref: '#/components/schemas/PaymentMode'
-
-    FinancialAccount:
-      oneOf:
-        - $ref: '#/components/schemas/CashAccount'
-        - $ref: '#/components/schemas/MobileBankingAccount'
-        - $ref: '#/components/schemas/BankAccount'
-
-    CashAccount:
-      type: object
-      properties:
-        id:
-          type: string
-        amount:
-          type: number
-
-    MobileBankingAccount:
-      type: object
-      properties:
-        id:
-          type: string
-        holderName:
-          type: string
-        mobileNumber:
-          type: string
-        amount:
-          type: number
-
-    BankAccount:
-      type: object
-      properties:
-        id:
-          type: string
-        holderName:
-          type: string
-        bankName:
-          type: string
-        amount:
-          type: number
-
-    CollectivityStructure:
-      type: object
-      properties:
-        president:
-          $ref: '#/components/schemas/Member'
-        secretary:
-          $ref: '#/components/schemas/Member'
-
-    CreateCollectivityStructure:
-      type: object
-      properties:
-        president:
-          $ref: '#/components/schemas/MemberIdentifier'
-
-    Gender:
-      type: string
-      enum: [MALE, FEMALE]
-
-    Frequency:
-      type: string
-      enum: [MONTHLY, ANNUALLY]
-
-    PaymentMode:
-      type: string
-      enum: [CASH, MOBILE_BANKING, BANK_TRANSFER]
+{
+  "info": {
+    "name": "Agro-Federation API",
+    "description": "Collection de tests pour l'API Agro-Federation (Spring Boot)\n\n⚠️ Avant de tester:\n1. Lancer l'app Spring Boot sur localhost:8080\n2. Exécuter schema.sql puis migration_v2_add_is_active.sql sur PostgreSQL\n3. Utiliser les requêtes dans l'ordre (les IDs retournés s'enchaînent)\n\nVariables: baseUrl = http://localhost:8080",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "collectiveId", "value": "1", "type": "string" },
+    { "key": "memberId", "value": "1", "type": "string" },
+    { "key": "membershipFeeId", "value": "1", "type": "string" },
+    { "key": "accountId", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "A - Collectivités",
+      "item": [
+        {
+          "name": "POST /collectivities - Créer une collectivité",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/collectivities", "host": ["{{baseUrl}}"], "path": ["collectivities"] },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"federationApproval\": true,\n    \"location\": \"Antananarivo\",\n    \"specialtyId\": 1,\n    \"members\": [\"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\", \"8\", \"9\", \"10\"],\n    \"structure\": {\n      \"president\": \"1\",\n      \"vicePresident\": \"2\",\n      \"treasurer\": \"3\",\n      \"secretary\": \"4\"\n    }\n  }\n]"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /collectivities/{id} - Récupérer une collectivité",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /collectivities/{id}/informations - Assigner numéro et nom (J)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/informations", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}", "informations"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"COLL-001\",\n  \"name\": \"Collectivité Riz du Nord\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "B-2 - Membres",
+      "item": [
+        {
+          "name": "POST /members - Admettre un membre (nouvelles conditions)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/members", "host": ["{{baseUrl}}"], "path": ["members"] },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"collectiveId\": 1,\n    \"jobId\": 1,\n    \"lastName\": \"Rakoto\",\n    \"firstName\": \"Jean\",\n    \"birthDate\": \"1990-05-15\",\n    \"gender\": \"Male\",\n    \"address\": \"123 Rue Principale, Antananarivo\",\n    \"phone\": \"0341234567\",\n    \"email\": \"jean.rakoto@example.com\",\n    \"membershipFee\": 50000,\n    \"annualContribution\": 200000,\n    \"sponsors\": [\n      { \"memberId\": 1, \"relationship\": \"Ami\" },\n      { \"memberId\": 2, \"relationship\": \"Collègue\" }\n    ]\n  }\n]"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "C - Cotisations (Membership Fees)",
+      "item": [
+        {
+          "name": "POST /collectivities/{id}/membershipFees - Créer des cotisations",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/membershipFees", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}", "membershipFees"] },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"label\": \"Cotisation mensuelle 2026\",\n    \"frequency\": \"Monthly\",\n    \"amount\": 10000,\n    \"eligibleFrom\": \"2026-01-01\"\n  },\n  {\n    \"label\": \"Cotisation annuelle 2026\",\n    \"frequency\": \"Annual\",\n    \"amount\": 100000,\n    \"eligibleFrom\": \"2026-01-01\"\n  }\n]"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /collectivities/{id}/membershipFees - Lister les cotisations",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/membershipFees", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}", "membershipFees"] }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /members/{id}/payments - Enregistrer un paiement",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/members/{{memberId}}/payments", "host": ["{{baseUrl}}"], "path": ["members", "{{memberId}}", "payments"] },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"membershipFeeIdentifier\": \"{{membershipFeeId}}\",\n    \"accountCreditedIdentifier\": \"{{accountId}}\",\n    \"amount\": 10000,\n    \"paymentMode\": \"Mobile_Money\"\n  }\n]"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "D - Situation Trésorerie",
+      "item": [
+        {
+          "name": "GET /collectivities/{id}/financialAccounts - Comptes à une date",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/financialAccounts?at=2026-05-06",
+              "host": ["{{baseUrl}}"],
+              "path": ["collectivities", "{{collectiveId}}", "financialAccounts"],
+              "query": [{ "key": "at", "value": "2026-05-06" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /collectivities/{id}/transactions - Transactions par période",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/transactions?from=2026-01-01&to=2026-05-06",
+              "host": ["{{baseUrl}}"],
+              "path": ["collectivities", "{{collectiveId}}", "transactions"],
+              "query": [
+                { "key": "from", "value": "2026-01-01" },
+                { "key": "to", "value": "2026-05-06" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "G - Statistiques d'une collectivité",
+      "item": [
+        {
+          "name": "GET /collectivities/{id}/statistics - Stats membres (encaissement + impayés)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.response.to.have.status(200); });",
+                  "pm.test('Has memberStats array', function() {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('memberStats');",
+                  "  pm.expect(body.memberStats).to.be.an('array');",
+                  "});",
+                  "pm.test('Has collectivityId', function() {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('collectivityId');",
+                  "});",
+                  "pm.test('Each member has totalCollected and potentialUnpaid', function() {",
+                  "  const body = pm.response.json();",
+                  "  body.memberStats.forEach(function(m) {",
+                  "    pm.expect(m).to.have.property('totalCollected');",
+                  "    pm.expect(m).to.have.property('potentialUnpaid');",
+                  "  });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/statistics?from=2026-01-01&to=2026-05-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["collectivities", "{{collectiveId}}", "statistics"],
+              "query": [
+                { "key": "from", "value": "2026-01-01" },
+                { "key": "to", "value": "2026-05-31" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "H - Statistiques fédération",
+      "item": [
+        {
+          "name": "GET /collectivities/statistics - Stats globales par collectivité",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.response.to.have.status(200); });",
+                  "pm.test('Has collectivities array', function() {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('collectivities');",
+                  "  pm.expect(body.collectivities).to.be.an('array');",
+                  "});",
+                  "pm.test('Has from and to dates', function() {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('from');",
+                  "  pm.expect(body).to.have.property('to');",
+                  "});",
+                  "pm.test('Each collectivity has upToDatePercentage and newMembersCount', function() {",
+                  "  const body = pm.response.json();",
+                  "  body.collectivities.forEach(function(c) {",
+                  "    pm.expect(c).to.have.property('upToDatePercentage');",
+                  "    pm.expect(c).to.have.property('newMembersCount');",
+                  "    pm.expect(c).to.have.property('activeMembersCount');",
+                  "  });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/collectivities/statistics?from=2026-01-01&to=2026-05-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["collectivities", "statistics"],
+              "query": [
+                { "key": "from", "value": "2026-01-01" },
+                { "key": "to", "value": "2026-05-31" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tests erreurs - Validation",
+      "item": [
+        {
+          "name": "GET /collectivities/999 - Collectivité inexistante (400/404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 404 or 400', function() {",
+                  "  pm.expect([400, 404]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/collectivities/999", "host": ["{{baseUrl}}"], "path": ["collectivities", "999"] }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /collectivities/{id}/statistics - dates invalides (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 for invalid date range', function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/statistics?from=2026-05-31&to=2026-01-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["collectivities", "{{collectiveId}}", "statistics"],
+              "query": [
+                { "key": "from", "value": "2026-05-31" },
+                { "key": "to", "value": "2026-01-01" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

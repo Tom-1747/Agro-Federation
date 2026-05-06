@@ -320,3 +320,6 @@ FROM activity a
          LEFT JOIN attendance att ON att.id_activity = a.id_activity
 GROUP BY a.id_activity, a.title, a.activity_date, a.activity_type, a.id_collective;
 
+ALTER TABLE contribution ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE;
+
+CREATE INDEX IF NOT EXISTS idx_contribution_is_active ON contribution(is_active);
