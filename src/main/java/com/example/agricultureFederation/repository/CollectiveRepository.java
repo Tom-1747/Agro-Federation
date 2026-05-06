@@ -13,7 +13,7 @@ public class CollectiveRepository {
     }
 
     public Collective save(Collective collective) throws SQLException {
-        String sql = "INSERT INTO collective (id_federation, id_specialite, id_branche, nom, lieu_exercice, telephone, date_creation) " +
+        String sql = "INSERT INTO collective (id_federation, id_specialty, id_branch, name, location, phone, creation_date) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -33,7 +33,7 @@ public class CollectiveRepository {
     }
 
     public Collective findById(int collectiveId) throws SQLException {
-        String sql = "SELECT * FROM collectif WHERE id_collectif = ?";
+        String sql = "SELECT * FROM collective WHERE id_collective = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);
@@ -44,7 +44,7 @@ public class CollectiveRepository {
     }
 
     public Collective findByIdWithMembers(int collectiveId) throws SQLException {
-        String sql = "SELECT * FROM collectif WHERE id_collectif = ?";
+        String sql = "SELECT * FROM collective WHERE id_collective = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);
@@ -55,7 +55,7 @@ public class CollectiveRepository {
     }
 
     public int countActiveMembers(int collectiveId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM member WHERE id_collectif = ? AND est_demissionne = FALSE";
+        String sql = "SELECT COUNT(*) FROM member WHERE id_collective = ? AND is_resigned = FALSE";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);
@@ -67,8 +67,8 @@ public class CollectiveRepository {
 
     public int countMembersWithSixMonthsSeniority(int collectiveId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM member " +
-                "WHERE id_collectif = ? AND est_demissionne = FALSE " +
-                "AND date_adhesion <= CURRENT_DATE - INTERVAL '6 months'";
+                "WHERE id_collective = ? AND is_resigned = FALSE " +
+                "AND join_date <= CURRENT_DATE - INTERVAL '6 months'";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);
@@ -79,9 +79,9 @@ public class CollectiveRepository {
     }
 
     public boolean hasAllSpecificPositionsFilled(int collectiveId, int civilYear) throws SQLException {
-        String sql = "SELECT COUNT(DISTINCT libelle_poste) FROM poste_mandat " +
-                "WHERE id_collectif = ? AND annee_civile = ? " +
-                "AND libelle_poste IN ('Président','Président adjoint','Trésorier','Secrétaire')";
+        String sql = "SELECT COUNT(DISTINCT position_label) FROM position_mandate " +
+                "WHERE id_collective = ? AND calendar_year = ? " +
+                "AND position_label IN ('Président','Président adjoint','Trésorier','Secrétaire')";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);
@@ -93,7 +93,7 @@ public class CollectiveRepository {
     }
 
     public boolean existsByNumber(String number) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM collectif WHERE numero = ?";
+        String sql = "SELECT COUNT(*) FROM collective WHERE phone = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, number);
@@ -104,7 +104,7 @@ public class CollectiveRepository {
     }
 
     public boolean existsByName(String name) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM collectif WHERE nom = ?";
+        String sql = "SELECT COUNT(*) FROM collective WHERE name = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
@@ -115,7 +115,7 @@ public class CollectiveRepository {
     }
 
     public Collective assignIdentity(int collectiveId, String number, String name) throws SQLException {
-        String sql = "UPDATE collectif SET numero = ?, nom = ? WHERE id_collectif = ? RETURNING *";
+        String sql = "UPDATE collective SET phone = ?, name = ? WHERE id_collective = ? RETURNING *";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, number);
