@@ -7,6 +7,8 @@ import com.example.agricultureFederation.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
+import com.example.agricultureFederation.repository.StatisticsRepository;
+import com.example.agricultureFederation.service.StatisticsService;
 
 @Configuration
 public class AppConfig {
@@ -30,4 +32,7 @@ public class AppConfig {
     @Bean public MemberPaymentService memberPaymentService() { return new MemberPaymentService(memberPaymentRepository(), memberRepository(), membershipFeeRepository(), financialAccountRepository(), transactionRepository()); }
     @Bean public CollectivityTransactionService transactionService() { return new CollectivityTransactionService(transactionRepository(), collectiveRepository(), memberRepository(), financialAccountRepository()); }
     @Bean public FinancialAccountService financialAccountService() { return new FinancialAccountService(financialAccountRepository(), collectiveRepository()); }
+
+    @Bean public StatisticsRepository statisticsRepository() { return new StatisticsRepository(dataSource); }
+    @Bean public StatisticsService statisticsService() { return new StatisticsService(statisticsRepository(), collectiveRepository()); }
 }
