@@ -7,31 +7,27 @@ import java.util.Objects;
 
 public class Attendance {
 
-    private Integer idAttendance;        // maps to id_attendance (PK)
-    private Integer activityId;          // maps to id_activity (FK)
-    private Integer memberId;            // maps to id_member (FK)
-    private Boolean isPresent;           // maps to is_present
-    private Boolean isExcused;           // maps to is_excused
-    private String absenceReason;        // maps to absence_reason
-    private LocalDateTime recordedAt;    // maps to recorded_at (when attendance was recorded)
-    private LocalDateTime updatedAt;     // Optional: for tracking updates
+    private Integer idAttendance;
+    private Integer activityId;
+    private Integer memberId;
+    private Boolean isPresent;
+    private Boolean isExcused;
+    private String absenceReason;
+    private LocalDateTime recordedAt;
+    private LocalDateTime updatedAt;
 
-    // Derived fields (not stored in database, calculated from queries)
-    private LocalDate monthConcerned;        // Derived from activity date
-    private BigDecimal overallAttendanceRate; // Calculated from attendance data
-    private Integer activeMembersCount;       // Calculated from member table
-    private LocalDate reportDate;             // For reporting purposes
-    private String memberName;                // For display purposes (joined from member table)
-    private String activityTitle;             // For display purposes (joined from activity table)
+    private LocalDate monthConcerned;
+    private BigDecimal overallAttendanceRate;
+    private Integer activeMembersCount;
+    private LocalDate reportDate;
+    private String memberName;
+    private String activityTitle;
 
     public Attendance() {
         this.isPresent = false;
         this.isExcused = false;
     }
 
-    /**
-     * Constructor for creating a new attendance record
-     */
     public Attendance(Integer activityId, Integer memberId, Boolean isPresent, Boolean isExcused, String absenceReason) {
         this.activityId = activityId;
         this.memberId = memberId;
@@ -41,29 +37,22 @@ public class Attendance {
         this.recordedAt = LocalDateTime.now();
     }
 
-    /**
-     * Factory method for present member
-     */
+
     public static Attendance present(Integer activityId, Integer memberId) {
         return new Attendance(activityId, memberId, true, false, null);
     }
 
-    /**
-     * Factory method for absent member
-     */
+
     public static Attendance absent(Integer activityId, Integer memberId, String reason) {
         return new Attendance(activityId, memberId, false, false, reason);
     }
 
-    /**
-     * Factory method for excused member
-     */
+
     public static Attendance excused(Integer activityId, Integer memberId, String reason) {
         Attendance attendance = new Attendance(activityId, memberId, false, true, reason);
         return attendance;
     }
 
-    // Getters and Setters
 
     public Integer getIdAttendance() {
         return idAttendance;
@@ -129,7 +118,6 @@ public class Attendance {
         this.updatedAt = updatedAt;
     }
 
-    // Derived fields (not stored in DB)
 
     public LocalDate getMonthConcerned() {
         return monthConcerned;
@@ -179,25 +167,16 @@ public class Attendance {
         this.activityTitle = activityTitle;
     }
 
-    // Helper methods
 
-    /**
-     * Check if member was present
-     */
     public boolean isPresent() {
         return Boolean.TRUE.equals(isPresent);
     }
 
-    /**
-     * Check if member was excused
-     */
     public boolean isExcused() {
         return Boolean.TRUE.equals(isExcused);
     }
 
-    /**
-     * Check if member was absent without excuse
-     */
+    git
     public boolean isUnexcusedAbsence() {
         return !isPresent() && !isExcused();
     }

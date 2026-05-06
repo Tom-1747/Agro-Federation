@@ -14,7 +14,6 @@ public class AgriculturalTrade {
         this.label = label;
     }
 
-    // Getters et Setters
     public Integer getIdTrade() { return idTrade; }
     public void setIdTrade(Integer idTrade) { this.idTrade = idTrade; }
 

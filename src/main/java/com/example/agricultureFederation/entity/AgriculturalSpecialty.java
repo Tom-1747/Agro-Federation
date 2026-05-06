@@ -21,9 +21,7 @@ public class AgriculturalSpecialty {
         this.sector = sector;
     }
 
-    /**
-     * Factory method for creating a new specialty
-     */
+
     public static AgriculturalSpecialty create(String name, String sector) {
         AgriculturalSpecialty specialty = new AgriculturalSpecialty();
         specialty.setName(name);
@@ -31,7 +29,6 @@ public class AgriculturalSpecialty {
         return specialty;
     }
 
-    // Getters et Setters
     public Integer getIdSpecialty() {
         return idSpecialty;
     }
