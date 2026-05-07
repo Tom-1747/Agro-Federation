@@ -149,7 +149,7 @@ public class MandatePosition {
     }
 
     public boolean isVicePresident() {
-        return "Vice President".equalsIgnoreCase(positionLabel);
+        return "Vice_President".equalsIgnoreCase(positionLabel);
     }
 
     public boolean isTreasurer() {
@@ -161,7 +161,7 @@ public class MandatePosition {
     }
 
     public boolean isConfirmedMember() {
-        return "Confirmed Member".equalsIgnoreCase(positionLabel);
+        return "Confirmed_Member".equalsIgnoreCase(positionLabel);
     }
 
     public boolean isRequiredPosition() {

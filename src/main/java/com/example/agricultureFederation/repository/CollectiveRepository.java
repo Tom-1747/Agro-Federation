@@ -81,7 +81,7 @@ public class CollectiveRepository {
     public boolean hasAllSpecificPositionsFilled(int collectiveId, int civilYear) throws SQLException {
         String sql = "SELECT COUNT(DISTINCT position_label) FROM position_mandate " +
                 "WHERE id_collective = ? AND calendar_year = ? " +
-                "AND position_label IN ('Président','Président adjoint','Trésorier','Secrétaire')";
+                "AND position_label IN ('President','Vice_President','Treasurer','Secretary')";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, collectiveId);

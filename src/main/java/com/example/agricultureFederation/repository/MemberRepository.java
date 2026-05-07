@@ -100,7 +100,7 @@ public class MemberRepository {
 
     public boolean isConfirmedMember(int memberId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM position_mandate " +
-                "WHERE id_member = ? AND position_label = 'Confirmed Member'";
+                "WHERE id_member = ? AND position_label = 'Confirmed_Member'";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
