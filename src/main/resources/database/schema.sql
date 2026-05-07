@@ -349,3 +349,121 @@ VALUES
     (1, 1, 'Mamy', 'Zo', '1987-08-30', 'Male', 'Antananarivo', '034000008', 'zo@mail.com', '2025-11-01'),
     (1, 1, 'Seheno', 'Lala', '1996-04-18', 'Female', 'Antananarivo', '034000009', 'lala@mail.com', '2025-11-01'),
     (1, 1, 'Faniry', 'Rado', '1989-12-01', 'Male', 'Antananarivo', '034000010', 'rado@mail.com', '2025-11-01');
+
+
+
+
+
+TRUNCATE collectivity_transaction, membershipfees, contribution,
+    account, position_mandate, member, collective,
+    agricultural_specialty, agricultural_trade, provincial_branch,
+    federation RESTART IDENTITY CASCADE;
+
+-- FEDERATION
+INSERT INTO federation (name, headquarters)
+VALUES ('Fédération Agricole Madagascar', 'Antananarivo');
+
+-- SPECIALITES
+INSERT INTO agricultural_specialty (name, sector) VALUES
+                                                      ('Riziculture', 'Agriculture'),
+                                                      ('Pisciculture', 'Aquaculture'),
+                                                      ('Apiculture', 'Elevage');
+
+-- BRANCHES
+INSERT INTO provincial_branch (province, capital_city) VALUES
+                                                           ('Alaotra-Mangoro', 'Ambatondrazaka'),
+                                                           ('Atsinanana', 'Brickaville'),
+                                                           ('Vakinankaratra', 'Antsirabe');
+
+-- METIERS
+INSERT INTO agricultural_trade (label) VALUES
+                                           ('Riziculteur'), ('Agriculteur'), ('Collecteur'),
+                                           ('Distributeur'), ('Apiculteur');
+
+-- COLLECTIVITES
+INSERT INTO collective (id_federation, id_specialty, id_branch, name, location, creation_date) VALUES
+                                                                                                   (1, 1, 1, 'Mpanorina', 'Ambatondrazaka', '2020-01-01'),
+                                                                                                   (1, 2, 1, 'Dobo voalohany', 'Ambatondrazaka', '2020-01-01'),
+                                                                                                   (1, 3, 2, 'Tantely mamy', 'Brickaville', '2020-01-01');
+
+-- MEMBRES COLLECTIVITE 1 (join_date = 01/01/2026)
+INSERT INTO member (id_collective, id_trade, last_name, first_name, birth_date, gender, address, phone, email, join_date) VALUES
+                                                                                                                              (1, 1, 'Nom membre 1', 'Prénom membre 1', '1980-02-01', 'Male', 'Lot II V M Ambato.', '0341234567', 'member.1@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (1, 2, 'Nom membre 2', 'Prénom membre 2', '1982-03-05', 'Male', 'Lot II F Ambato.', '0321234567', 'member.2@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (1, 3, 'Nom membre 3', 'Prénom membre 3', '1992-03-10', 'Male', 'Lot II J Ambato.', '0331234567', 'member.3@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (1, 4, 'Nom membre 4', 'Prénom membre 4', '1988-05-22', 'Female', 'Lot A K 50 Ambato.', '0381234567', 'member.4@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (1, 1, 'Nom membre 5', 'Prénom membre 5', '1999-08-21', 'Male', 'Lot UV 80 Ambato.', '0373434567', 'member.5@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (1, 1, 'Nom membre 6', 'Prénom membre 6', '1998-08-22', 'Female', 'Lot UV 6 Ambato.', '0372234567', 'member.6@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (1, 1, 'Nom membre 7', 'Prénom membre 7', '1998-01-31', 'Male', 'Lot UV 7 Ambato.', '0374234567', 'member.7@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (1, 1, 'Nom membre 8', 'Prénom membre 8', '1975-08-20', 'Male', 'Lot UV 8 Ambato.', '0370234567', 'member.8@fed-agri.mg', '2026-01-01');
+
+-- MEMBRES COLLECTIVITE 2 (mêmes membres 1-8, join_date = 01/01/2026)
+INSERT INTO member (id_collective, id_trade, last_name, first_name, birth_date, gender, address, phone, email, join_date) VALUES
+                                                                                                                              (2, 1, 'Nom membre 1', 'Prénom membre 1', '1980-02-01', 'Male', 'Lot II V M Ambato.', '0341234568', 'member.1b@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (2, 2, 'Nom membre 2', 'Prénom membre 2', '1982-03-05', 'Male', 'Lot II F Ambato.', '0321234568', 'member.2b@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (2, 3, 'Nom membre 3', 'Prénom membre 3', '1992-03-10', 'Male', 'Lot II J Ambato.', '0331234568', 'member.3b@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (2, 4, 'Nom membre 4', 'Prénom membre 4', '1988-05-22', 'Female', 'Lot A K 50 Ambato.', '0381234568', 'member.4b@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (2, 1, 'Nom membre 5', 'Prénom membre 5', '1999-08-21', 'Male', 'Lot UV 80 Ambato.', '0373434568', 'member.5b@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (2, 1, 'Nom membre 6', 'Prénom membre 6', '1998-08-22', 'Female', 'Lot UV 6 Ambato.', '0372234568', 'member.6b@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (2, 1, 'Nom membre 7', 'Prénom membre 7', '1998-01-31', 'Male', 'Lot UV 7 Ambato.', '0374234568', 'member.7b@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (2, 1, 'Nom membre 8', 'Prénom membre 8', '1975-08-20', 'Male', 'Lot UV 8 Ambato.', '0370234568', 'member.8b@fed-agri.mg', '2026-01-01');
+
+-- MEMBRES COLLECTIVITE 3
+INSERT INTO member (id_collective, id_trade, last_name, first_name, birth_date, gender, address, phone, email, join_date) VALUES
+                                                                                                                              (3, 5, 'Nom membre 9',  'Prénom membre 9',  '1988-01-02', 'Male',   'Lot 33 J Antsirabe', '034034567',  'member.9@fed-agri.mg',  '2026-01-01'),
+                                                                                                                              (3, 2, 'Nom membre 10', 'Prénom membre 10', '1982-03-05', 'Male',   'Lot 2 J Antsirabe',  '0338634567', 'member.10@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (3, 3, 'Nom membre 11', 'Prénom membre 11', '1992-03-12', 'Male',   'Lot 8 KM Antsirabe', '0338234567', 'member.11@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (3, 4, 'Nom membre 12', 'Prénom membre 12', '1988-05-10', 'Female', 'Lot A K 50 Antsirabe','0382334567', 'member.12@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (3, 5, 'Nom membre 13', 'Prénom membre 13', '1999-08-11', 'Male',   'Lot UV 80 Antsirabe','0373365567', 'member.13@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (3, 5, 'Nom membre 14', 'Prénom membre 14', '1998-08-09', 'Female', 'Lot UV 6 Antsirabe', '0378234567', 'member.14@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (3, 5, 'Nom membre 15', 'Prénom membre 15', '1998-01-13', 'Male',   'Lot UV 7 Antsirabe', '0374914567', 'member.15@fed-agri.mg', '2026-01-01'),
+                                                                                                                              (3, 5, 'Nom membre 16', 'Prénom membre 16', '1975-08-02', 'Male',   'Lot UV 8 Antsirabe', '0370634567', 'member.16@fed-agri.mg', '2026-01-01');
+
+-- COMPTES col-1
+INSERT INTO account (id_collective, account_type, balance) VALUES (1, 'Cash', 0);
+INSERT INTO account (id_collective, account_type, account_holder, mobile_money_service, phone_number, balance)
+VALUES (1, 'Mobile_Money', 'Mpanorina', 'Orange_Money', '0370489612', 0);
+
+-- COMPTES col-2
+INSERT INTO account (id_collective, account_type, balance) VALUES (2, 'Cash', 0);
+INSERT INTO account (id_collective, account_type, account_holder, mobile_money_service, phone_number, balance)
+VALUES (2, 'Mobile_Money', 'Dobo voalohany', 'Orange_Money', '0320489612', 0);
+
+-- COMPTES col-3
+INSERT INTO account (id_collective, account_type, balance) VALUES (3, 'Cash', 0);
+INSERT INTO account (id_collective, account_type, account_holder, bank_name, bank_account_number, balance)
+VALUES (3, 'Bank', 'Koto', 'BMOI', '000040000112345678901200', 0);
+INSERT INTO account (id_collective, account_type, account_holder, bank_name, bank_account_number, balance)
+VALUES (3, 'Bank', 'Naivo', 'BRED', '000080000345678901235800', 0);
+INSERT INTO account (id_collective, account_type, account_holder, mobile_money_service, phone_number, balance)
+VALUES (3, 'Mobile_Money', 'Kolo', 'Mvola', '0341889612', 0);
+
+-- COTISATIONS
+INSERT INTO contribution (id_collective, contribution_type, frequency, amount, due_date, is_paid, is_active) VALUES
+                                                                                                                 (1, 'Periodic', 'Annual',  200000, '2026-01-01', FALSE, TRUE),
+                                                                                                                 (1, 'One_time', NULL,       20000, '2026-04-30', FALSE, TRUE),
+                                                                                                                 (2, 'Periodic', 'Annual',  200000, '2026-01-01', FALSE, TRUE),
+                                                                                                                 (2, 'Periodic', 'Annual',  100000, '2025-01-01', FALSE, FALSE),
+                                                                                                                 (3, 'Periodic', 'Monthly',  25000, '2026-04-01', FALSE, TRUE);
+
+-- NOUVEAUX MEMBRES col-1
+INSERT INTO member (id_collective, id_trade, last_name, first_name, birth_date, gender, address, phone, email, join_date) VALUES
+                                                                                                                              (1, 1, 'Nouveau A1', 'Junior', '2000-01-01', 'Male', 'Antananarivo', '0340000101', 'new1a@fed.mg', '2026-04-01'),
+                                                                                                                              (1, 1, 'Nouveau A2', 'Junior', '2001-02-01', 'Female', 'Antananarivo', '0340000102', 'new2a@fed.mg', '2026-04-01'),
+                                                                                                                              (1, 1, 'Nouveau A3', 'Junior', '2000-03-01', 'Male', 'Antananarivo', '0340000103', 'new3a@fed.mg', '2026-05-01'),
+                                                                                                                              (1, 1, 'Nouveau A4', 'Junior', '2001-04-01', 'Female', 'Antananarivo', '0340000104', 'new4a@fed.mg', '2026-06-01');
+
+-- NOUVEAUX MEMBRES col-2
+INSERT INTO member (id_collective, id_trade, last_name, first_name, birth_date, gender, address, phone, email, join_date) VALUES
+                                                                                                                              (2, 1, 'Nouveau B1', 'Junior', '2000-01-01', 'Male', 'Ambatondrazaka', '0340000201', 'new1b@fed.mg', '2026-03-01'),
+                                                                                                                              (2, 1, 'Nouveau B2', 'Junior', '2001-02-01', 'Female', 'Ambatondrazaka', '0340000202', 'new2b@fed.mg', '2026-03-01'),
+                                                                                                                              (2, 1, 'Nouveau B3', 'Junior', '2000-03-01', 'Male', 'Ambatondrazaka', '0340000203', 'new3b@fed.mg', '2026-03-01');
+
+-- NOUVEAUX MEMBRES col-3
+INSERT INTO member (id_collective, id_trade, last_name, first_name, birth_date, gender, address, phone, email, join_date) VALUES
+                                                                                                                              (3, 5, 'Nouveau C1', 'Junior', '2000-01-01', 'Male', 'Antsirabe', '0340000301', 'new1c@fed.mg', '2026-01-01'),
+                                                                                                                              (3, 5, 'Nouveau C2', 'Junior', '2001-02-01', 'Female', 'Antsirabe', '0340000302', 'new2c@fed.mg', '2026-02-01'),
+                                                                                                                              (3, 5, 'Nouveau C3', 'Junior', '2000-03-01', 'Male', 'Antsirabe', '0340000303', 'new3c@fed.mg', '2026-02-01'),
+                                                                                                                              (3, 5, 'Nouveau C4', 'Junior', '2001-04-01', 'Female', 'Antsirabe', '0340000304', 'new4c@fed.mg', '2026-03-01'),
+                                                                                                                              (3, 5, 'Nouveau C5', 'Junior', '2000-05-01', 'Male', 'Antsirabe', '0340000305', 'new5c@fed.mg', '2026-03-01'),
+                                                                                                                              (3, 5, 'Nouveau C6', 'Junior', '2001-06-01', 'Female', 'Antsirabe', '0340000306', 'new6c@fed.mg', '2026-03-01');
