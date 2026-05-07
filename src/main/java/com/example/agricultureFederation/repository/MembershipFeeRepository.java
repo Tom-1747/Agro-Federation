@@ -246,8 +246,8 @@ public class MembershipFeeRepository {
     private String mapContributionType(ContributionTypeType type) {
         if (type == null) return "One_time";
         return switch (type) {
-            case One_time -> "One_time";
-            case Periodic -> "Periodic";
+            case ONE_TIME -> "One_time";
+            case PERIODIC -> "Periodic";
         };
     }
 
@@ -256,7 +256,7 @@ public class MembershipFeeRepository {
         return switch (frequency) {
             case WEEKLY -> null;
             case MONTHLY -> "Monthly";
-            case ANNUALLY -> "Annual";
+            case ANNUAL -> "Annual";
             case PUNCTUALLY -> null;
         };
     }
