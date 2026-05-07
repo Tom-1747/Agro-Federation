@@ -26,7 +26,7 @@ public class CollectiveRepository {
             stmt.setDate(7, Date.valueOf(collective.getCreationDate()));
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                collective.setCollectiveId(rs.getInt("id_collectif"));
+                collective.setCollectiveId(rs.getInt("id_collective"));
             }
             return collective;
         }
@@ -129,16 +129,16 @@ public class CollectiveRepository {
 
     private Collective mapRow(ResultSet rs) throws SQLException {
         Collective c = new Collective();
-        c.setCollectiveId(rs.getInt("id_collectif"));
+        c.setCollectiveId(rs.getInt("id_collective"));
         c.setFederationId(rs.getInt("id_federation"));
-        c.setSpecialityId((Integer) rs.getObject("id_specialite"));
-        c.setBranchId((Integer) rs.getObject("id_branche"));
-        c.setName(rs.getString("nom"));
-        c.setNumber(rs.getString("numero"));
-        c.setLocation(rs.getString("lieu_exercice"));
-        c.setPhone(rs.getString("telephone"));
-        c.setCreationDate(rs.getDate("date_creation").toLocalDate());
-        c.setPresidentId((Integer) rs.getObject("id_president"));
+        c.setSpecialityId((Integer) rs.getObject("id_specialty"));
+        c.setBranchId((Integer) rs.getObject("id_branch"));
+        c.setName(rs.getString("name"));
+        c.setNumber(rs.getString("phone"));
+        c.setLocation(rs.getString("location"));
+        c.setPhone(rs.getString("phone"));
+        c.setCreationDate(rs.getDate("creation_date").toLocalDate());
+        c.setPresidentId((Integer) rs.getObject("president_id"));
         return c;
     }
 }

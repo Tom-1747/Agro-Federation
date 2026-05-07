@@ -323,3 +323,29 @@ GROUP BY a.id_activity, a.title, a.activity_date, a.activity_type, a.id_collecti
 ALTER TABLE contribution ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE;
 
 CREATE INDEX IF NOT EXISTS idx_contribution_is_active ON contribution(is_active);
+
+
+
+INSERT INTO federation (name, headquarters) VALUES ('Fédération Agricole Madagascar', 'Antananarivo');
+
+INSERT INTO agricultural_specialty (name, sector) VALUES ('Riziculture', 'Agriculture');
+
+INSERT INTO provincial_branch (province, capital_city) VALUES ('Analamanga', 'Antananarivo');
+
+INSERT INTO agricultural_trade (label) VALUES ('Agriculteur');
+
+INSERT INTO collective (id_federation, id_specialty, id_branch, name, location, creation_date)
+VALUES (1, 1, 1, 'Collective Test', 'Antananarivo', '2024-01-01');
+-- Insérer 10 membres (avec join_date ancienne pour avoir 6 mois d ancienneté)
+INSERT INTO member (id_collective, id_trade, last_name, first_name, birth_date, gender, address, phone, email, join_date)
+VALUES
+    (1, 1, 'Rakoto', 'Jean', '1990-01-01', 'Male', 'Antananarivo', '034000001', 'jean@mail.com', '2025-01-01'),
+    (1, 1, 'Rabe', 'Marie', '1992-03-15', 'Female', 'Antananarivo', '034000002', 'marie@mail.com', '2025-01-01'),
+    (1, 1, 'Razafy', 'Paul', '1988-07-20', 'Male', 'Antananarivo', '034000003', 'paul@mail.com', '2025-01-01'),
+    (1, 1, 'Andry', 'Soa', '1995-11-10', 'Female', 'Antananarivo', '034000004', 'soa@mail.com', '2025-01-01'),
+    (1, 1, 'Ravo', 'Luc', '1985-05-05', 'Male', 'Antananarivo', '034000005', 'luc@mail.com', '2025-01-01'),
+    (1, 1, 'Niry', 'Haja', '1993-09-25', 'Male', 'Antananarivo', '034000006', 'haja@mail.com', '2025-11-01'),
+    (1, 1, 'Tiana', 'Fara', '1991-02-14', 'Female', 'Antananarivo', '034000007', 'fara@mail.com', '2025-11-01'),
+    (1, 1, 'Mamy', 'Zo', '1987-08-30', 'Male', 'Antananarivo', '034000008', 'zo@mail.com', '2025-11-01'),
+    (1, 1, 'Seheno', 'Lala', '1996-04-18', 'Female', 'Antananarivo', '034000009', 'lala@mail.com', '2025-11-01'),
+    (1, 1, 'Faniry', 'Rado', '1989-12-01', 'Male', 'Antananarivo', '034000010', 'rado@mail.com', '2025-11-01');

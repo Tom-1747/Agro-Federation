@@ -15,10 +15,7 @@ public class FinancialAccountRepository {
         this.dataSource = dataSource;
     }
 
-    /**
-     * 3.1 Trouver un compte par ID
-     * SELECT * FROM account WHERE id_account = ?
-     */
+
     public FinancialAccount findById(int accountId) throws SQLException {
         String sql = "SELECT * FROM account WHERE id_account = ?";
         try (Connection conn = dataSource.getConnection();
@@ -30,10 +27,7 @@ public class FinancialAccountRepository {
         }
     }
 
-    /**
-     * 3.2 Lister les comptes d'un collectif
-     * SELECT * FROM account WHERE id_collective = ? ORDER BY id_account
-     */
+
     public List<FinancialAccount> findByCollectiveId(int collectiveId) throws SQLException {
         String sql = "SELECT * FROM account WHERE id_collective = ? ORDER BY id_account";
         try (Connection conn = dataSource.getConnection();
@@ -48,11 +42,7 @@ public class FinancialAccountRepository {
         }
     }
 
-    /**
-     * 3.4 Calculer le solde cumulé d'un compte à une date donnée
-     * SELECT COALESCE(SUM(amount), 0) FROM membershipfees
-     * WHERE id_account = ? AND membershipfees_date <= ?
-     */
+
     public double getBalanceAt(int accountId, LocalDate at) throws SQLException {
         String sql = "SELECT COALESCE(SUM(amount), 0) FROM membershipfees " +
                 "WHERE id_account = ? AND membershipfees_date <= ?";
@@ -68,10 +58,7 @@ public class FinancialAccountRepository {
         }
     }
 
-    /**
-     * 3.3 Mettre à jour le solde d'un compte
-     * UPDATE account SET balance = ? WHERE id_account = ?
-     */
+
     public void updateBalance(int accountId, double newBalance) throws SQLException {
         String sql = "UPDATE account SET balance = ? WHERE id_account = ?";
         try (Connection conn = dataSource.getConnection();
@@ -82,9 +69,7 @@ public class FinancialAccountRepository {
         }
     }
 
-    /**
-     * Create a new account for a collective
-     */
+
     public FinancialAccount save(FinancialAccount account) throws SQLException {
         String sql = """
             INSERT INTO account 
@@ -106,9 +91,7 @@ public class FinancialAccountRepository {
         }
     }
 
-    /**
-     * Get total collected amount for an account (all time)
-     */
+
     public double getTotalCollected(int accountId) throws SQLException {
         String sql = "SELECT COALESCE(SUM(amount), 0) FROM membershipfees WHERE id_account = ?";
         try (Connection conn = dataSource.getConnection();
