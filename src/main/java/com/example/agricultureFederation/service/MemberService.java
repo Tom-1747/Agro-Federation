@@ -6,100 +6,112 @@ import com.example.agricultureFederation.dto.response.MemberResponse;
 import com.example.agricultureFederation.entity.Member;
 import com.example.agricultureFederation.repository.CollectiveRepository;
 import com.example.agricultureFederation.repository.MemberRepository;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final CollectiveRepository collectiveRepository;
 
-    public MemberService(MemberRepository memberRepository, CollectiveRepository collectiveRepository) {
+    public MemberService(MemberRepository memberRepository,
+                         CollectiveRepository collectiveRepository) {
         this.memberRepository = memberRepository;
+        this.collectiveRepository = collectiveRepository;
     }
 
-    public MemberResponse registerMember(CreateMemberRequest request) throws SQLException {
+    public List<MemberResponse> createMembers(
+            List<CreateMemberRequest> requests) throws SQLException {
 
-        List<SponsorRequest> sponsors = request.getSponsors();
+        List<MemberResponse> responses = new ArrayList<>();
 
-        if (sponsors == null || sponsors.size() < 2) {
-            throw new IllegalArgumentException(
-                    "The candidate must have at least 2 confirmed sponsors."
-            );
-        }
+        for (CreateMemberRequest request : requests) {
 
-        List<Integer> sponsorIds = sponsors.stream()
-                .map(SponsorRequest::getMemberId)
-                .collect(Collectors.toList());
-
-        List<Member> sponsorMembers = memberRepository.findByIds(sponsorIds);
-
-        for (Member sponsor : sponsorMembers) {
-            boolean isConfirmed = memberRepository.isConfirmedMember(sponsor.getMemberId());
-            if (!isConfirmed) {
+            int collectiveId = request.getCollectiveId();
+            if (collectiveRepository.findById(collectiveId) == null) {
                 throw new IllegalArgumentException(
-                        "Sponsor with id " + sponsor.getMemberId() + " is not a confirmed member."
+                        "Collectivity not found: " + collectiveId
                 );
             }
-        }
 
-        long sponsorsFromTargetCollective = sponsorMembers.stream()
-                .filter(s -> s.getCollectiveId() == request.getCollectiveId())
-                .count();
+            if (request.getMembershipFee() != 50000) {
+                throw new IllegalArgumentException("Membership fee must be exactly 50,000 MGA.");
+            }
 
-        long sponsorsFromOtherCollectives = sponsorMembers.stream()
-                .filter(s -> s.getCollectiveId() != request.getCollectiveId())
-                .count();
+            if (request.getAnnualContribution() <= 0) {
+                throw new IllegalArgumentException("Annual contribution must be paid in full.");
+            }
 
-        if (sponsorsFromTargetCollective < sponsorsFromOtherCollectives) {
-            throw new IllegalArgumentException(
-                    "The number of sponsors from the target collective (" + sponsorsFromTargetCollective +
-                            ") must be greater than or equal to sponsors from other collectives (" + sponsorsFromOtherCollectives + ")."
+            List<SponsorRequest> sponsors = request.getSponsors();
+            if (sponsors == null || sponsors.size() < 2) {
+                throw new IllegalArgumentException("At least 2 confirmed sponsors are required.");
+            }
+
+            List<Integer> sponsorIds = sponsors.stream()
+                    .map(SponsorRequest::getMemberId)
+                    .collect(Collectors.toList());
+
+            List<Member> sponsorMembers = memberRepository.findByIds(sponsorIds);
+
+            int sponsorsFromTargetCollective = 0;
+            int sponsorsFromOtherCollectives = 0;
+
+            for (Member sponsor : sponsorMembers) {
+                boolean isConfirmed = memberRepository.isConfirmedMember(sponsor.getMemberId());
+                if (!isConfirmed) {
+                    throw new IllegalArgumentException(
+                            "Sponsor with id " + sponsor.getMemberId() + " is not a confirmed member."
+                    );
+                }
+                if (sponsor.getCollectiveId() == collectiveId) {
+                    sponsorsFromTargetCollective++;
+                } else {
+                    sponsorsFromOtherCollectives++;
+                }
+            }
+
+            if (sponsorsFromTargetCollective < sponsorsFromOtherCollectives) {
+                throw new IllegalArgumentException(
+                        "Sponsors from target collective (" + sponsorsFromTargetCollective +
+                                ") must be >= sponsors from other collectives (" + sponsorsFromOtherCollectives + ")."
+                );
+            }
+
+            Member member = new Member(
+                    collectiveId,
+                    request.getJobId(),
+                    request.getLastName(),
+                    request.getFirstName(),
+                    request.getBirthDate(),
+                    request.getGender(),
+                    request.getAddress(),
+                    request.getPhone(),
+                    request.getEmail(),
+                    LocalDate.now()
             );
+            Member saved = memberRepository.save(member);
+            responses.add(toMemberResponse(saved));
         }
 
-        if (request.getMembershipFee() != 50000) {
-            throw new IllegalArgumentException(
-                    "Membership fee must be exactly 50,000 MGA."
-            );
-        }
-
-        if (request.getAnnualContribution() <= 0) {
-            throw new IllegalArgumentException(
-                    "Annual contribution must be paid in full upon registration."
-            );
-        }
-
-        Member member = new Member(
-                request.getCollectiveId(),
-                request.getJobId(),
-                request.getLastName(),
-                request.getFirstName(),
-                request.getBirthDate(),
-                request.getGender(),
-                request.getAddress(),
-                request.getPhone(),
-                request.getEmail(),
-                LocalDate.now()
-        );
-
-        Member saved = memberRepository.save(member);
-        return toResponse(saved);
+        return responses;
     }
 
-    private MemberResponse toResponse(Member member) {
-        MemberResponse response = new MemberResponse();
-        response.setMemberId(member.getMemberId());
-        response.setCollectiveId(member.getCollectiveId());
-        response.setLastName(member.getLastName());
-        response.setFirstName(member.getFirstName());
-        response.setBirthDate(member.getBirthDate());
-        response.setGender(member.getGender());
-        response.setAddress(member.getAddress());
-        response.setPhone(member.getPhone());
-        response.setEmail(member.getEmail());
-        response.setMembershipDate(member.getMembershipDate());
-        return response;
+    private MemberResponse toMemberResponse(Member member) {
+        MemberResponse r = new MemberResponse();
+        r.setMemberId(member.getMemberId());
+        r.setCollectiveId(member.getCollectiveId());
+        r.setFirstName(member.getFirstName());
+        r.setLastName(member.getLastName());
+        r.setBirthDate(member.getBirthDate());
+        r.setGender(member.getGender());
+        r.setAddress(member.getAddress());
+        r.setPhone(member.getPhone());
+        r.setEmail(member.getEmail());
+        r.setMembershipDate(member.getMembershipDate());
+        return r;
     }
 }

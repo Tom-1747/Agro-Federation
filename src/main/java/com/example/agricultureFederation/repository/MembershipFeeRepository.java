@@ -254,8 +254,10 @@ public class MembershipFeeRepository {
     private String mapFrequencyType(FrequencyType frequency) {
         if (frequency == null) return null;
         return switch (frequency) {
-            case Monthly -> "Monthly";
-            case Annual -> "Annual";
+            case WEEKLY -> null;
+            case MONTHLY -> "Monthly";
+            case ANNUALLY -> "Annual";
+            case PUNCTUALLY -> null;
         };
     }
 }
