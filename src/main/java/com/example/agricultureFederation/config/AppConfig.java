@@ -1,6 +1,5 @@
 package com.example.agricultureFederation.config;
 
-import com.example.agricultureFederation.controller.*;
 import com.example.agricultureFederation.datasource.DataSourceConfig;
 import com.example.agricultureFederation.repository.*;
 import com.example.agricultureFederation.service.*;
@@ -35,4 +34,9 @@ public class AppConfig {
 
     @Bean public StatisticsRepository statisticsRepository() { return new StatisticsRepository(dataSource); }
     @Bean public StatisticsService statisticsService() { return new StatisticsService(statisticsRepository(), collectiveRepository()); }
+
+    @Bean public ActivityRepository activityRepository() { return new ActivityRepository(dataSource); }
+    @Bean public AttendanceRepository attendanceRepository() { return new AttendanceRepository(dataSource); }
+    @Bean public ActivityService activityService() { return new ActivityService(activityRepository(), collectiveRepository()); }
+    @Bean public AttendanceService attendanceService() { return new AttendanceService(attendanceRepository(), activityRepository(), memberRepository(), collectiveRepository()); }
 }
