@@ -1,299 +1,964 @@
-{
-  "info": {
-    "name": "Agro-Federation API",
-    "description": "Collection de tests pour l'API Agro-Federation (Spring Boot)\ baseUrl = http://localhost:8080",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
-    { "key": "id_collective", "value": "1", "type": "string" },
-    { "key": "memberId", "value": "1", "type": "string" },
-    { "key": "membershipFeeId", "value": "1", "type": "string" },
-    { "key": "accountId", "value": "1", "type": "string" }
-  ],
-  "item": [
-    {
-      "name": "A - Collectivités",
-      "item": [
-        {
-          "name": "POST /collectivities - Créer une collectivité",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/collectivities", "host": ["{{baseUrl}}"], "path": ["collectivities"] },
-            "body": {
-              "mode": "raw",
-              "raw": "[\n  {\n    \"federationApproval\": true,\n    \"location\": \"Antananarivo\",\n    \"specialtyId\": 1,\n    \"members\": [\"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\", \"8\", \"9\", \"10\"],\n    \"structure\": {\n      \"president\": \"1\",\n      \"vicePresident\": \"2\",\n      \"treasurer\": \"3\",\n      \"secretary\": \"4\"\n    }\n  }\n]"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /collectivities/{id} ",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "PUT /collectivities/{id}/informations - Assigner numéro et nom (J)",
-          "request": {
-            "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/informations", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}", "informations"] },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"number\": \"COLL-001\",\n  \"name\": \"Collectivité Riz du Nord\"\n}"
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "B-2 - Membres",
-      "item": [
-        {
-          "name": "POST /members - Admettre un membre (nouvelles conditions)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/members", "host": ["{{baseUrl}}"], "path": ["members"] },
-            "body": {
-              "mode": "raw",
-              "raw": "[\n  {\n    \"collectiveId\": 1,\n    \"jobId\": 1,\n    \"lastName\": \"Rakoto\",\n    \"firstName\": \"Jean\",\n    \"birthDate\": \"1990-05-15\",\n    \"gender\": \"Male\",\n    \"address\": \"123 Rue Principale, Antananarivo\",\n    \"phone\": \"0341234567\",\n    \"email\": \"jean.rakoto@example.com\",\n    \"membershipFee\": 50000,\n    \"annualContribution\": 200000,\n    \"sponsors\": [\n      { \"memberId\": 1, \"relationship\": \"Ami\" },\n      { \"memberId\": 2, \"relationship\": \"Collègue\" }\n    ]\n  }\n]"
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "C - Cotisations (Membership Fees)",
-      "item": [
-        {
-          "name": "POST /collectivities/{id}/membershipFees - Créer des cotisations",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/membershipFees", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}", "membershipFees"] },
-            "body": {
-              "mode": "raw",
-              "raw": "[\n  {\n    \"label\": \"Cotisation mensuelle 2026\",\n    \"frequency\": \"Monthly\",\n    \"amount\": 10000,\n    \"eligibleFrom\": \"2026-01-01\"\n  },\n  {\n    \"label\": \"Cotisation annuelle 2026\",\n    \"frequency\": \"Annual\",\n    \"amount\": 100000,\n    \"eligibleFrom\": \"2026-01-01\"\n  }\n]"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /collectivities/{id}/membershipFees - Lister les cotisations",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/membershipFees", "host": ["{{baseUrl}}"], "path": ["collectivities", "{{collectiveId}}", "membershipFees"] }
-          },
-          "response": []
-        },
-        {
-          "name": "POST /members/{id}/payments - Enregistrer un paiement",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/members/{{memberId}}/payments", "host": ["{{baseUrl}}"], "path": ["members", "{{memberId}}", "payments"] },
-            "body": {
-              "mode": "raw",
-              "raw": "[\n  {\n    \"membershipFeeIdentifier\": \"{{membershipFeeId}}\",\n    \"accountCreditedIdentifier\": \"{{accountId}}\",\n    \"amount\": 10000,\n    \"paymentMode\": \"Mobile_Money\"\n  }\n]"
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "D - Situation Trésorerie",
-      "item": [
-        {
-          "name": "GET /collectivities/{id}/financialAccounts - Comptes à une date",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/financialAccounts?at=2026-05-06",
-              "host": ["{{baseUrl}}"],
-              "path": ["collectivities", "{{collectiveId}}", "financialAccounts"],
-              "query": [{ "key": "at", "value": "2026-05-06" }]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /collectivities/{id}/transactions - Transactions par période",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/transactions?from=2026-01-01&to=2026-05-06",
-              "host": ["{{baseUrl}}"],
-              "path": ["collectivities", "{{collectiveId}}", "transactions"],
-              "query": [
-                { "key": "from", "value": "2026-01-01" },
-                { "key": "to", "value": "2026-05-06" }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "G - Statistiques d'une collectivité",
-      "item": [
-        {
-          "name": "GET /collectivities/{id}/statistics - Stats membres (encaissement + impayés)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 200', function() { pm.response.to.have.status(200); });",
-                  "pm.test('Has memberStats array', function() {",
-                  "  const body = pm.response.json();",
-                  "  pm.expect(body).to.have.property('memberStats');",
-                  "  pm.expect(body.memberStats).to.be.an('array');",
-                  "});",
-                  "pm.test('Has collectivityId', function() {",
-                  "  const body = pm.response.json();",
-                  "  pm.expect(body).to.have.property('collectivityId');",
-                  "});",
-                  "pm.test('Each member has totalCollected and potentialUnpaid', function() {",
-                  "  const body = pm.response.json();",
-                  "  body.memberStats.forEach(function(m) {",
-                  "    pm.expect(m).to.have.property('totalCollected');",
-                  "    pm.expect(m).to.have.property('potentialUnpaid');",
-                  "  });",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/statistics?from=2026-01-01&to=2026-05-31",
-              "host": ["{{baseUrl}}"],
-              "path": ["collectivities", "{{collectiveId}}", "statistics"],
-              "query": [
-                { "key": "from", "value": "2026-01-01" },
-                { "key": "to", "value": "2026-05-31" }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "H - Statistiques fédération",
-      "item": [
-        {
-          "name": "GET /collectivities/statistics - Stats globales par collectivité",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 200', function() { pm.response.to.have.status(200); });",
-                  "pm.test('Has collectivities array', function() {",
-                  "  const body = pm.response.json();",
-                  "  pm.expect(body).to.have.property('collectivities');",
-                  "  pm.expect(body.collectivities).to.be.an('array');",
-                  "});",
-                  "pm.test('Has from and to dates', function() {",
-                  "  const body = pm.response.json();",
-                  "  pm.expect(body).to.have.property('from');",
-                  "  pm.expect(body).to.have.property('to');",
-                  "});",
-                  "pm.test('Each collectivity has upToDatePercentage and newMembersCount', function() {",
-                  "  const body = pm.response.json();",
-                  "  body.collectivities.forEach(function(c) {",
-                  "    pm.expect(c).to.have.property('upToDatePercentage');",
-                  "    pm.expect(c).to.have.property('newMembersCount');",
-                  "    pm.expect(c).to.have.property('activeMembersCount');",
-                  "  });",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/collectivities/statistics?from=2026-01-01&to=2026-05-31",
-              "host": ["{{baseUrl}}"],
-              "path": ["collectivities", "statistics"],
-              "query": [
-                { "key": "from", "value": "2026-01-01" },
-                { "key": "to", "value": "2026-05-31" }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Tests erreurs - Validation",
-      "item": [
-        {
-          "name": "GET /collectivities/999 - Collectivité inexistante (400/404)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 404 or 400', function() {",
-                  "  pm.expect([400, 404]).to.include(pm.response.code);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/collectivities/999", "host": ["{{baseUrl}}"], "path": ["collectivities", "999"] }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /collectivities/{id}/statistics - dates invalides (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status is 400 for invalid date range', function() {",
-                  "  pm.response.to.have.status(400);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/collectivities/{{collectiveId}}/statistics?from=2026-05-31&to=2026-01-01",
-              "host": ["{{baseUrl}}"],
-              "path": ["collectivities", "{{collectiveId}}", "statistics"],
-              "query": [
-                { "key": "from", "value": "2026-05-31" },
-                { "key": "to", "value": "2026-01-01" }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    }
-  ]
-}
+openapi: 3.0.3
+info:
+  title: Fédération de Collectivités Agricoles API
+  description: >
+    API REST pour la gestion de la fédération de collectivités agricoles de Madagascar.
+    Couvre la création de collectivités, l'admission de membres, les cotisations,
+    les comptes financiers, les transactions et les statistiques.
+  version: 0.0.5
+
+servers:
+  - url: http://localhost:8080
+    description: Serveur de développement local
+
+tags:
+  - name: Collectivités
+    description: Gestion des collectivités agricoles
+  - name: Membres
+    description: Gestion des membres
+  - name: Cotisations
+    description: Gestion des cotisations
+  - name: Paiements
+    description: Paiements effectués par les membres
+  - name: Comptes financiers
+    description: Comptes financiers des collectivités
+  - name: Transactions
+    description: Transactions financières
+  - name: Statistiques
+    description: Statistiques collectivité et fédération
+
+paths:
+
+  /collectivities:
+    post:
+      tags: [Collectivités]
+      summary: Créer une ou plusieurs collectivités
+      description: >
+        Crée une liste de nouvelles collectivités agricoles. Chaque collectivité
+        doit avoir l'autorisation formelle de la fédération, au moins 10 membres
+        dont 5 avec 6 mois d'ancienneté, et les postes spécifiques occupés.
+      operationId: createCollectivities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateCollectiveRequest'
+            example:
+              - federationApproval: true
+                location: "Ambatondrazaka"
+                members: ["1","2","3","4","5","6","7","8","9","10"]
+                structure:
+                  president: "1"
+                  vicePresident: "2"
+                  treasurer: "4"
+                  secretary: "3"
+      responses:
+        '201':
+          description: Collectivités créées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CollectiveResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /collectivities/statistics:
+    get:
+      tags: [Statistiques]
+      summary: Statistiques globales de la fédération (H)
+      description: >
+        Retourne le pourcentage de membres à jour dans leur cotisation par collectivité
+        et le nombre de nouveaux adhérents sur une période donnée.
+        Seules les cotisations actives (is_active=true) sont prises en compte.
+      operationId: getFederationStatistics
+      parameters:
+        - $ref: '#/components/parameters/fromDate'
+        - $ref: '#/components/parameters/toDate'
+      responses:
+        '200':
+          description: Statistiques de la fédération
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FederationStatisticsResponse'
+              example:
+                from: "2026-01-01"
+                to: "2026-05-07"
+                collectivities:
+                  - collectivityId: "1"
+                    name: "Mpanorina"
+                    activeMembersCount: 12
+                    upToDateMembersCount: 8
+                    upToDatePercentage: 66.67
+                    newMembersCount: 2
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /collectivities/{id}:
+    get:
+      tags: [Collectivités]
+      summary: Obtenir une collectivité par ID
+      description: Retourne la collectivité avec ses membres actifs.
+      operationId: getCollectivityById
+      parameters:
+        - $ref: '#/components/parameters/collectivityId'
+      responses:
+        '200':
+          description: Collectivité trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectiveResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /collectivities/{id}/informations:
+    put:
+      tags: [Collectivités]
+      summary: Attribuer un numéro et un nom à une collectivité (J)
+      description: >
+        Attribue un numéro unique et un nom unique à une collectivité.
+        Une fois attribués, ces informations ne peuvent plus être modifiées.
+      operationId: assignCollectivityIdentity
+      parameters:
+        - $ref: '#/components/parameters/collectivityId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignCollectivityIdentityRequest'
+            example:
+              number: "1"
+              name: "Mpanorina"
+      responses:
+        '200':
+          description: Identité attribuée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectiveResponse'
+        '400':
+          description: Numéro ou nom déjà attribué / déjà pris
+          content:
+            application/json:
+              schema:
+                type: string
+              example: "Number has already been assigned and cannot be changed."
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /collectivities/{id}/membershipFees:
+    post:
+      tags: [Cotisations]
+      summary: Créer des cotisations pour une collectivité
+      description: >
+        Crée une liste de cotisations périodiques (mensuelles ou annuelles)
+        ou ponctuelles pour une collectivité.
+      operationId: createMembershipFees
+      parameters:
+        - $ref: '#/components/parameters/collectivityId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateMembershipFeeRequest'
+            example:
+              - label: "Cotisation annuelle"
+                frequency: "Annual"
+                amount: 200000
+                eligibleFrom: "2026-01-01"
+              - label: "Famangiana"
+                amount: 20000
+                eligibleFrom: "2026-04-30"
+      responses:
+        '200':
+          description: Cotisations créées
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      tags: [Cotisations]
+      summary: Lister les cotisations d'une collectivité
+      description: Retourne la liste de toutes les cotisations d'une collectivité.
+      operationId: getMembershipFees
+      parameters:
+        - $ref: '#/components/parameters/collectivityId'
+      responses:
+        '200':
+          description: Liste des cotisations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMembershipFees'
+              example:
+                status: 200
+                message: "Membership fees retrieved"
+                data:
+                  - id: "1"
+                    label: "Cotisation annuelle"
+                    frequency: "Annual"
+                    amount: 200000
+                    eligibleFrom: "2026-01-01"
+                    active: true
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /collectivities/{id}/financialAccounts:
+    get:
+      tags: [Comptes financiers]
+      summary: Lister les comptes financiers d'une collectivité à une date donnée
+      description: >
+        Retourne la liste des comptes financiers (caisse, mobile money, banque)
+        d'une collectivité avec le solde à la date spécifiée.
+      operationId: getFinancialAccounts
+      parameters:
+        - $ref: '#/components/parameters/collectivityId'
+        - name: at
+          in: query
+          required: true
+          description: Date à laquelle récupérer le solde (format YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+          example: "2026-05-07"
+      responses:
+        '200':
+          description: Liste des comptes financiers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FinancialAccountResponse'
+              example:
+                - id: "1"
+                  accountType: "Cash"
+                  balance: 650000
+                  accountHolder: null
+                - id: "2"
+                  accountType: "Mobile_Money"
+                  balance: 550000
+                  accountHolder: "Mpanorina"
+                  mobileMoneyService: "Orange_Money"
+                  phoneNumber: "0370489612"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /collectivities/{id}/transactions:
+    get:
+      tags: [Transactions]
+      summary: Lister les transactions d'une collectivité sur une période
+      description: >
+        Retourne la liste des transactions financières d'une collectivité
+        sur une période donnée (from → to).
+      operationId: getTransactions
+      parameters:
+        - $ref: '#/components/parameters/collectivityId'
+        - $ref: '#/components/parameters/fromDate'
+        - $ref: '#/components/parameters/toDate'
+      responses:
+        '200':
+          description: Liste des transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CollectivityTransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /collectivities/{id}/statistics:
+    get:
+      tags: [Statistiques]
+      summary: Statistiques détaillées d'une collectivité (G)
+      description: >
+        Retourne pour chaque membre actif (non démissionnaire) le montant
+        encaissé et le montant impayé potentiel sur une période donnée.
+        Seules les cotisations actives (is_active=true) sont prises en compte
+        pour le calcul des impayés.
+      operationId: getCollectivityStatistics
+      parameters:
+        - $ref: '#/components/parameters/collectivityId'
+        - $ref: '#/components/parameters/fromDate'
+        - $ref: '#/components/parameters/toDate'
+      responses:
+        '200':
+          description: Statistiques de la collectivité
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectivityStatisticsResponse'
+              example:
+                collectivityId: "1"
+                from: "2026-01-01"
+                to: "2026-05-07"
+                memberStats:
+                  - memberId: "1"
+                    firstName: "Prénom membre 1"
+                    lastName: "Nom membre 1"
+                    totalCollected: 200000
+                    potentialUnpaid: 0
+                  - memberId: "7"
+                    firstName: "Prénom membre 7"
+                    lastName: "Nom membre 7"
+                    totalCollected: 60000
+                    potentialUnpaid: 140000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /members:
+    post:
+      tags: [Membres]
+      summary: Admettre un nouveau membre (B-2)
+      description: >
+        Admet un nouveau membre dans une collectivité. Le candidat doit être
+        parrainé par au moins deux membres confirmés dont le nombre de parrains
+        de la collectivité cible est >= au nombre de parrains extérieurs.
+        Il doit payer 50 000 Ar de frais d'adhésion plus les cotisations annuelles obligatoires.
+      operationId: registerMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemberRequest'
+            example:
+              collectiveId: 1
+              jobId: 1
+              lastName: "Rakoto"
+              firstName: "Fidy"
+              birthDate: "2000-06-15"
+              gender: "Male"
+              address: "Lot 12 Ambatondrazaka"
+              phone: "0341112233"
+              email: "fidy.rakoto@fed-agri.mg"
+              membershipFee: 50000
+              annualContribution: 200000
+              sponsors:
+                - memberId: 5
+                  relationship: "Ami"
+                - memberId: 6
+                  relationship: "Collègue"
+      responses:
+        '201':
+          description: Membre admis avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMember'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /members/{id}/payments:
+    post:
+      tags: [Paiements]
+      summary: Enregistrer des paiements pour un membre
+      description: >
+        Enregistre une liste de paiements effectués par un membre pour une
+        ou plusieurs cotisations. Chaque paiement crée également une transaction
+        dans la collectivité.
+      operationId: createMemberPayments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identifiant du membre
+          schema:
+            type: string
+          example: "1"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateMemberPaymentRequest'
+            example:
+              - amount: 200000
+                membershipFeeIdentifier: "1"
+                accountCreditedIdentifier: "1"
+                paymentMode: "Cash"
+      responses:
+        '201':
+          description: Paiements enregistrés avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberPaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+
+  parameters:
+    collectivityId:
+      name: id
+      in: path
+      required: true
+      description: Identifiant de la collectivité
+      schema:
+        type: string
+      example: "1"
+
+    fromDate:
+      name: from
+      in: query
+      required: true
+      description: Date de début de la période (format YYYY-MM-DD)
+      schema:
+        type: string
+        format: date
+      example: "2026-01-01"
+
+    toDate:
+      name: to
+      in: query
+      required: true
+      description: Date de fin de la période (format YYYY-MM-DD)
+      schema:
+        type: string
+        format: date
+      example: "2026-05-07"
+
+  responses:
+    BadRequest:
+      description: Requête invalide
+      content:
+        application/json:
+          schema:
+            type: string
+          example: "Federation approval is required."
+
+    NotFound:
+      description: Ressource non trouvée
+      content:
+        application/json:
+          schema:
+            type: string
+          example: "Collectivity not found: 1"
+
+    InternalError:
+      description: Erreur interne du serveur
+      content:
+        application/json:
+          schema:
+            type: string
+          example: "Unexpected error."
+
+  schemas:
+
+
+    CreateCollectiveRequest:
+      type: object
+      required: [federationApproval, location, members, structure]
+      properties:
+        federationApproval:
+          type: boolean
+          description: Autorisation formelle de la fédération
+          example: true
+        location:
+          type: string
+          description: Localité (ville) de la collectivité
+          example: "Ambatondrazaka"
+        members:
+          type: array
+          description: Liste des IDs des membres (minimum 10)
+          minItems: 10
+          items:
+            type: string
+          example: ["1","2","3","4","5","6","7","8","9","10"]
+        structure:
+          $ref: '#/components/schemas/CollectiveStructureRequest'
+
+    CollectiveStructureRequest:
+      type: object
+      required: [president, vicePresident, treasurer, secretary]
+      properties:
+        president:
+          type: string
+          description: ID du membre occupant le poste de président
+          example: "1"
+        vicePresident:
+          type: string
+          description: ID du membre occupant le poste de vice-président
+          example: "2"
+        treasurer:
+          type: string
+          description: ID du membre occupant le poste de trésorier
+          example: "4"
+        secretary:
+          type: string
+          description: ID du membre occupant le poste de secrétaire
+          example: "3"
+
+    AssignCollectivityIdentityRequest:
+      type: object
+      required: [number, name]
+      properties:
+        number:
+          type: string
+          description: Numéro unique de la collectivité (attribué une seule fois)
+          example: "1"
+        name:
+          type: string
+          description: Nom unique de la collectivité (attribué une seule fois)
+          example: "Mpanorina"
+
+    CreateMemberRequest:
+      type: object
+      required: [collectiveId, lastName, firstName, birthDate, gender, address, phone, email, sponsors, membershipFee, annualContribution]
+      properties:
+        collectiveId:
+          type: integer
+          description: ID de la collectivité cible
+          example: 1
+        jobId:
+          type: integer
+          description: ID du métier exercé
+          example: 1
+        lastName:
+          type: string
+          example: "Rakoto"
+        firstName:
+          type: string
+          example: "Fidy"
+        birthDate:
+          type: string
+          format: date
+          example: "2000-06-15"
+        gender:
+          type: string
+          enum: [Male, Female]
+          example: "Male"
+        address:
+          type: string
+          example: "Lot 12 Ambatondrazaka"
+        phone:
+          type: string
+          example: "0341112233"
+        email:
+          type: string
+          format: email
+          example: "fidy.rakoto@fed-agri.mg"
+        membershipFee:
+          type: number
+          description: Frais d'adhésion (50 000 Ar)
+          example: 50000
+        annualContribution:
+          type: number
+          description: Cotisations annuelles obligatoires de la collectivité
+          example: 200000
+        sponsors:
+          type: array
+          description: Parrains (minimum 2 membres confirmés)
+          minItems: 2
+          items:
+            $ref: '#/components/schemas/SponsorRequest'
+
+    SponsorRequest:
+      type: object
+      required: [memberId, relationship]
+      properties:
+        memberId:
+          type: integer
+          description: ID du membre parrain
+          example: 5
+        relationship:
+          type: string
+          description: Nature de la relation avec le parrain
+          example: "Ami"
+
+    CreateMembershipFeeRequest:
+      type: object
+      required: [label, amount, eligibleFrom]
+      properties:
+        label:
+          type: string
+          description: Libellé de la cotisation
+          example: "Cotisation annuelle"
+        frequency:
+          type: string
+          enum: [Monthly, Annual]
+          description: Fréquence (null si ponctuelle)
+          example: "Annual"
+        amount:
+          type: number
+          description: Montant en Ariary
+          example: 200000
+        eligibleFrom:
+          type: string
+          format: date
+          description: Date à partir de laquelle la cotisation est applicable
+          example: "2026-01-01"
+
+    CreateMemberPaymentRequest:
+      type: object
+      required: [amount, membershipFeeIdentifier, accountCreditedIdentifier, paymentMode]
+      properties:
+        amount:
+          type: integer
+          description: Montant payé en Ariary
+          example: 200000
+        membershipFeeIdentifier:
+          type: string
+          description: ID de la cotisation concernée
+          example: "1"
+        accountCreditedIdentifier:
+          type: string
+          description: ID du compte crédité
+          example: "1"
+        paymentMode:
+          type: string
+          enum: [Cash, Bank_Transfer, Mobile_Money]
+          example: "Cash"
+
+
+    CollectiveResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        name:
+          type: string
+          example: "Mpanorina"
+        number:
+          type: string
+          example: "1"
+        location:
+          type: string
+          example: "Ambatondrazaka"
+        structure:
+          $ref: '#/components/schemas/CollectiveStructureResponse'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberResponse'
+
+    CollectiveStructureResponse:
+      type: object
+      properties:
+        president:
+          $ref: '#/components/schemas/MemberResponse'
+        vicePresident:
+          $ref: '#/components/schemas/MemberResponse'
+        treasurer:
+          $ref: '#/components/schemas/MemberResponse'
+        secretary:
+          $ref: '#/components/schemas/MemberResponse'
+
+    MemberResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        collectiveId:
+          type: integer
+          example: 1
+        lastName:
+          type: string
+          example: "Nom membre 1"
+        firstName:
+          type: string
+          example: "Prénom membre 1"
+        birthDate:
+          type: string
+          format: date
+          example: "1980-02-01"
+        gender:
+          type: string
+          enum: [Male, Female]
+          example: "Male"
+        address:
+          type: string
+          example: "Lot II V M Ambato."
+        phoneNumber:
+          type: string
+          example: "0341234567"
+        email:
+          type: string
+          example: "member.1@fed-agri.mg"
+        membershipDate:
+          type: string
+          format: date
+          example: "2026-01-01"
+
+    MembershipFeeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        label:
+          type: string
+          example: "Cotisation annuelle"
+        frequency:
+          type: string
+          enum: [Monthly, Annual]
+          example: "Annual"
+        amount:
+          type: number
+          example: 200000
+        eligibleFrom:
+          type: string
+          format: date
+          example: "2026-01-01"
+        active:
+          type: boolean
+          example: true
+
+    FinancialAccountResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        accountType:
+          type: string
+          enum: [Cash, Bank, Mobile_Money]
+          example: "Cash"
+        balance:
+          type: number
+          example: 650000
+        accountHolder:
+          type: string
+          nullable: true
+          example: "Mpanorina"
+        mobileMoneyService:
+          type: string
+          enum: [Orange_Money, Mvola, Airtel_Money]
+          nullable: true
+          example: "Orange_Money"
+        phoneNumber:
+          type: string
+          nullable: true
+          example: "0370489612"
+        bankName:
+          type: string
+          enum: [BRED, MCB, BMOI, BOA, BGFI, AFG, ACCES_BANQUE, BAOBAB, SIPEM]
+          nullable: true
+          example: null
+        bankAccountNumber:
+          type: string
+          nullable: true
+          example: null
+
+    CollectivityTransactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        creationDate:
+          type: string
+          format: date
+          example: "2026-01-01"
+        amount:
+          type: number
+          example: 200000
+        paymentMode:
+          type: string
+          enum: [Cash, Bank_Transfer, Mobile_Money]
+          example: "Cash"
+        accountCredited:
+          $ref: '#/components/schemas/FinancialAccountResponse'
+        memberDebited:
+          $ref: '#/components/schemas/MemberResponse'
+
+    MemberPaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        amount:
+          type: number
+          example: 200000
+        paymentMethod:
+          type: string
+          enum: [Cash, Bank_Transfer, Mobile_Money]
+          example: "Cash"
+        paymentDate:
+          type: string
+          format: date
+          example: "2026-01-01"
+        federationShare:
+          type: number
+          example: 0
+        membershipFeeId:
+          type: string
+          example: "1"
+        accountCredited:
+          $ref: '#/components/schemas/FinancialAccountResponse'
+
+    CollectivityStatisticsResponse:
+      type: object
+      properties:
+        collectivityId:
+          type: string
+          example: "1"
+        from:
+          type: string
+          format: date
+          example: "2026-01-01"
+        to:
+          type: string
+          format: date
+          example: "2026-05-07"
+        memberStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberStatDto'
+
+    MemberStatDto:
+      type: object
+      properties:
+        memberId:
+          type: string
+          example: "1"
+        firstName:
+          type: string
+          example: "Prénom membre 1"
+        lastName:
+          type: string
+          example: "Nom membre 1"
+        totalCollected:
+          type: number
+          description: Montant total encaissé sur la période
+          example: 200000
+        potentialUnpaid:
+          type: number
+          description: Montant impayé potentiel (cotisations actives non payées)
+          example: 0
+
+    FederationStatisticsResponse:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+          example: "2026-01-01"
+        to:
+          type: string
+          format: date
+          example: "2026-05-07"
+        collectivities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollectivitySummaryStatDto'
+
+    CollectivitySummaryStatDto:
+      type: object
+      properties:
+        collectivityId:
+          type: string
+          example: "1"
+        name:
+          type: string
+          example: "Mpanorina"
+        activeMembersCount:
+          type: integer
+          description: Nombre de membres actifs (non démissionnaires)
+          example: 12
+        upToDateMembersCount:
+          type: integer
+          description: Nombre de membres à jour dans leurs cotisations actives
+          example: 8
+        upToDatePercentage:
+          type: number
+          description: Pourcentage de membres à jour
+          example: 66.67
+        newMembersCount:
+          type: integer
+          description: Nombre de nouveaux adhérents sur la période
+          example: 2
+
+    ApiResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Membership fees created"
+        data:
+          nullable: true
+
+    ApiResponseMember:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: "Member registered successfully."
+        data:
+          $ref: '#/components/schemas/MemberResponse'
+
+    ApiResponseMembershipFees:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Membership fees retrieved"
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipFeeResponse'
